@@ -51,44 +51,39 @@ CATEGORIE AMMESSE (USA ESATTAMENTE QUESTE):
 
   if (type === 'Emissione') {
     return {
-      systemPrompt: `Sei un esperto estrattore dati per listini EMISSIONI ADM.
-          Estrai i prodotti in JSON. Per ogni prodotto cerca code, name, packageInfo, tar, nicotine, co.
-          Usa la categoria "Sigarette" come default.
+      systemPrompt: `Sei un esperto estrattore dati per listini EMISSIONI ADM (Nicotina, Catrame, Monossido).
+          Il tuo compito è trasformare il testo di una tabella in JSON puro.
           ${categoryInstruction}
+          
           REGOLE MANDATORIE SUI NUMERI:
-          - Assicurati che tar, nicotine e co siano restituiti come NUMERI NEL JSON (es. 0.30, 3.00, non stringhe).
-          - Usa SOLO il punto (.) come separatore decimale.
-          - Converti eventuali virgole (,) in punti (.).
-          - Se un valore è minore di 1, scrivi 0.X (es. 0.50).
-          - NON USARE MAI la notazione scientifica (es. no 1e-10).
+          - I valori 'nicotine', 'tar' e 'co' devono essere NUMERI (es. 0.30, 3.00).
+          - Usa sempre il punto (.) come separatore decimale. Se nel testo trovi la virgola (,), convertila.
           - Arrotonda a massimo 2 decimali.`,
       userPrompt: `Analizza questo testo estratto da un listino EMISSIONI SIGARETTE ADM.
-            
-CONFIGURAZIONE FORZATA:
+
+CONFIGURAZIONE:
 - CATEGORIA: Sigarette
-- TIPO: DATI EMISSIONI (Nicotina, Catrame, Monossido)
+- CAMPI DA ESTRARRE: code, name, packageInfo, nicotine, tar, co
 
-STRUTTURA TABELLA (ORDINE COLONNE):
-1. Codice (ADM)
-2. Sigarette (Nome Prodotto)
-3. Conf.ne (Informazione Confezione, es: astuccio da 20 pezzi)
-4. Nicotina (mg)
-5. Catrame (mg)
-6. Monossido di Carbonio (mg)
+ESEMPIO DI ESTRAZIONE (FEW-SHOT):
+Input: "7 821 ARGENTO astuccio da 20 pezzi 0,30 3,00 4,00"
+Output: { "code": "7", "name": "821 ARGENTO", "packageInfo": "astuccio da 20 pezzi", "nicotine": 0.30, "tar": 3.00, "co": 4.00, "category": "Sigarette" }
 
-DATI AGGIUNTIVI:
-- updateDate: Cerca nel testo diciture come "AGGIORNATI AL [DATA]" o "PUBBLICATI IL [DATA]". Estrai la data in formato YYYY-MM-DD. Se non la trovi, non includere il campo o lascialo vuoto.
+Input: "21265 CHE BLACK astuccio da 20 pezzi 0,90 10,00 9,00"
+Output: { "code": "21265", "name": "CHE BLACK", "packageInfo": "astuccio da 20 pezzi", "nicotine": 0.90, "tar": 10.00, "co": 9.00, "category": "Sigarette" }
 
-REGOLE DI ESTRAZIONE:
-1. Ignora la riga di intestazione: "Codice Sigarette Conf.ne Nicotina Catrame Monossido..."
-2. Ignora il titolo: "LIVELLI DI EMISSIONE DELLE SIGARETTE AGGIORNATI AL..."
-3. Ogni riga valida inizia con un CODICE numerico.
-4. ESTRAZIONE VALORI:
-   - packageInfo: Prendi esattamente la scritta dopo il nome (es: "astuccio da 20 pezzi").
-   - nicotine: È il primo dei tre valori numerici finali (es: 0.30).
-   - tar: È il secondo dei tre valori numerici finali (es: 3.00).
-   - co: È l'ultimo valore numerico della riga (es: 4.00).
-5. FORMATO JSON RICHIESTO: { "updateDate": "YYYY-MM-DD", "products": [ { "code": "...", "name": "...", "packageInfo": "...", "nicotine": 0.0, "tar": 0.0, "co": 0.0, "category": "Sigarette" }, ... ] }
+REGOLE LOGICHE:
+1. DATA AGGIORNAMENTO: Cerca nel testo una data (es. "AGGIORNATI AL 11/03/2026") e restituiscila nel campo "updateDate" in formato YYYY-MM-DD.
+2. NOME vs CONFEZIONE: Il nome è il brand commerciale (es. "CAMEL BLUE"). La confezione descrive il contenitore (es. "astuccio da 20 pezzi").
+3. VALORI CHIMICI: Sono gli ultimi tre numeri della riga. Nicotina è il primo dei tre, Catrame il secondo, Monossido l'ultimo.
+
+FORMATO JSON RICHIESTO:
+{ 
+  "updateDate": "YYYY-MM-DD", 
+  "products": [ 
+    { "code": "...", "name": "...", "packageInfo": "...", "nicotine": 0.0, "tar": 0.0, "co": 0.0, "category": "Sigarette" } 
+  ] 
+}
 
 Testo da analizzare:
 ${textData}`
@@ -97,34 +92,31 @@ ${textData}`
 
   if (type === 'Radiato') {
     return {
-      systemPrompt: `Sei un estrattore dati specializzato in listini ADM. 
-Estrai i prodotti RADIATI in formato JSON puro.
-${categoryInstruction}
-Devi separare in modo estremamente accurato il 'name' dalla 'packageInfo'. La confezione solitamente inizia con "astuccio", "cartoccio", "scatola", "da", "grammi", "pezzi".
-Devi estrarre sistematicamente 'radiationDate', 'pricePerKg' e 'price'. I prezzi devono essere numeri (es 4.30).`,
-      userPrompt: `Analizza questo testo estratto da un listino ADM di prodotti RADIATI.
+      systemPrompt: `Sei un esperto estrattore dati specializzato in listini ADM di prodotti RADIATI (fuori commercio).
+          ${categoryInstruction}
+          Devi estrarre i dati in JSON puro.`,
+      userPrompt: `Analizza questo testo di prodotti RADIATI ADM.
 
-CONFIGURAZIONE FORZATA (PRIORITÀ MASSIMA):
-- CATEGORIA DA USARE: ${forcedCategory || 'Deduci dal testo'}
-- STATO DA USARE: Radiato
+CONFIGURAZIONE:
+- CATEGORIA: ${forcedCategory || 'Deduci dal contesto'}
+- STATO: Radiato
 
-STRUTTURA TIPICA DELLA RIGA DEI RADIATI:
-L'ordine delle informazioni in una riga è tipicamente:
-[Data] [Codice] [Nome Prodotto] [Confezione] [Prezzo al kg] [Prezzo a confezione]
-Esempio: "18/06/2018 2206 500 RED astuccio da 20 pezzi 215,00 4,30"
+ESEMPIO DI ESTRAZIONE (FEW-SHOT):
+Input: "18/06/2018 2206 500 RED astuccio da 20 pezzi 215,00 4,30"
+Output: { "radiationDate": "2018-06-18", "code": "2206", "name": "500 RED", "packageInfo": "astuccio da 20 pezzi", "pricePerKg": 215.00, "price": 4.30, "status": "Radiato" }
 
-DATI AGGIUNTIVI:
-- updateDate: Cerca nel testo diciture come "ELENCO DEI TABACCHI RADIATI AGGIORNATO AL [DATA]". Estrai la data in formato YYYY-MM-DD.
+REGOLE LOGICHE:
+1. DATA RADIAZIONE: Ogni riga inizia con una data (DD/MM/YYYY). Convertila in YYYY-MM-DD.
+2. PREZZI: Identifica il prezzo unitario della confezione (solitamente l'ultimo numero) e il prezzo al kg (il numero decimale che lo precede). Converti le virgole in punti.
+3. NOME: Ferma il nome quando inizia la descrizione della confezione (astuccio, scatola, busta, cartoccio, ecc.).
 
-REGOLE DI ESTRAZIONE:
-1. Ogni riga rappresenta un prodotto radiato.
-2. radiationDate: La data trovata all'inizio della riga (nel formato DD/MM/YYYY, se possibile converti in YYYY-MM-DD o mantieni l'originale).
-3. code: Il numero intero identificativo (es. 2206) subito dopo la data.
-4. name: Il nome commerciale. IMPORTANTISSIMO: Ferma il nome PRIMA delle parole che descrivono il contenitore (come "astuccio", "cartoccio", "metallo", "busta", "da", "pezzi", "grammi"). Nell'esempio, il nome è solo "500 RED". Nessuna informazione sulla confezione deve finire qui.
-5. packageInfo: Estrai la dicitura dell'imballaggio (es. "astuccio da 20 pezzi", "da 30 grammi").
-6. pricePerKg: Il penultimo numero della riga (es. 215.00). Inserisci sempre il punto per i decimali.
-7. price: L'ultimo numero della riga, ovvero il prezzo finale della confezione (es. 4.30). Inserisci sempre il punto per i decimali.
-8. FORMATO JSON RICHIESTO: { "updateDate": "YYYY-MM-DD", "products": [ { "code": "...", "name": "...", "packageInfo": "...", "price": 0.0, "pricePerKg": 0.0, "radiationDate": "...", "category": "...", "status": "Radiato" }, ... ] }
+FORMATO JSON RICHIESTO:
+{ 
+  "updateDate": "YYYY-MM-DD", 
+  "products": [ 
+    { "code": "...", "name": "...", "packageInfo": "...", "price": 0.0, "pricePerKg": 0.0, "radiationDate": "...", "category": "...", "status": "Radiato" } 
+  ] 
+}
 
 Testo da analizzare:
 ${textData}`
@@ -133,31 +125,34 @@ ${textData}`
 
   // DEFAULT / ATTIVO
   return {
-    systemPrompt: `Sei un estrattore dati specializzato in listini ADM. 
-Usa i metadati forniti (Categoria e Stato) come verita' assoluta. 
-Estrai i prodotti in formato JSON puro. Il risultato deve essere un OGGETTO JSON con una chiave "products" che contiene un array di oggetti prodotto.
+    systemPrompt: `Sei un esperto estrattore dati per listini prezzi ADM Tabacchi.
+          Il tuo compito è trasformare il testo in JSON strutturato.
+          ${categoryInstruction}`,
+    userPrompt: `Analizza questo testo estratto da un listino prezzi ADM.
 
-${categoryInstruction}
+CONFIGURAZIONE:
+- CATEGORIA: ${forcedCategory || 'Deduci dal contesto'}
+- STATO: ${forcedStatus || 'Attivo'}
 
-Assicurati di estrarre correttamente il 'packageInfo' (es. "da 20 pezzi", "da 30 grammi", "da 70 grammi"). 
-I prezzi devono essere numeri (es. 5.50). Estrai pricePerKg se riconosciuto.
-Se lo stato e' 'Radiato', popola radiationDate se trovi una data nella riga.`,
-    userPrompt: `Analizza questo testo estratto da un listino ADM (Tabacchi). 
+ESEMPIO DI ESTRAZIONE (FEW-SHOT):
+Input: "3951 MARLBORO GOLD 100'S astuccio da 20 pezzi 250,00 5,00"
+Output: { "code": "3951", "name": "MARLBORO GOLD 100'S", "packageInfo": "astuccio da 20 pezzi", "price": 5.00, "pricePerKg": 250.00 }
 
-CONFIGURAZIONE FORZATA (PRIORITÀ MASSIMA):
-- CATEGORIA DA USARE: ${forcedCategory || 'Deduci dal testo'}
-- STATO DA USARE: ${forcedStatus || 'Deduci dal testo'}
+REGOLE LOGICHE:
+1. PREZZI: Il prezzo a confezione è solitamente l'ultimo numero della riga. Il prezzo al kg è il numero decimale che lo precede (più alto). Se c'è un solo prezzo, è quello a confezione.
+2. NOME vs CONFEZIONE: Usa la logica semantica. Il nome è il brand (es. "821 BLU"). La confezione è la descrizione fisica (es. "astuccio da 20 pezzi", "da 30 grammi").
+3. DATA AGGIORNAMENTO: Cerca nel testo frasi come "AGGIORNATO AL" o "IN VIGORE DAL" per estrarre la data del listino.
 
-REGOLE DI ESTRAZIONE:
-1. Ogni riga rappresenta un prodotto.
-2. CODICE: Il primo numero isolato della riga (Codice ADM).
-3. NOME: Il testo descrittivo del prodotto (es. MARLBORO GOLD, HEETS AMBER SELECTION).
-4. CONFEZIONE (packageInfo): Identifica la tipologia di confezionamento e il peso/quantità. Cerca diciture come "da 20 pezzi", "da 30 grammi", "da 70 grammi" o simili. Si trova solitamente tra il NOME e il PREZZO.
-5. PREZZO: L'ultimo numero decimale della riga (Prezzo unitario confezione). ESTRAI ANCHE IL PREZZO AL KG (pricePerKg) se presente prima del prezzo a confezione (es. 225,00 in una riga che finisce with 225,00 4,50).
-6. updateDate: Cerca nel testo diciture come "LISTINO AGGIORNATO AL [DATA]". Estrai la data in formato YYYY-MM-DD.
-7. FORMATO JSON RICHIESTO: { "updateDate": "YYYY-MM-DD", "products": [ { "code": "...", "name": "...", "packageInfo": "...", "price": 0.0, "pricePerKg": 0.0, "category": "...", "status": "..." }, ... ] }
+FORMATO JSON RICHIESTO:
+{ 
+  "updateDate": "YYYY-MM-DD", 
+  "products": [ 
+    { "code": "...", "name": "...", "packageInfo": "...", "price": 0.0, "pricePerKg": 0.0, "category": "...", "status": "..." } 
+  ] 
+}
 
 Testo da analizzare:
 ${textData}`
   };
 };
+
