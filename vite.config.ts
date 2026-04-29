@@ -18,8 +18,9 @@ export default defineConfig(() => {
             navigateFallbackDenylist: [/^\/api/],
           },
           manifest: {
-            name: 'T-Facile',
-            short_name: 'T-Facile',
+            id: process.env.VERCEL_ENV === 'production' ? 't-facile-prod' : 't-facile-dev',
+            name: process.env.VERCEL_ENV === 'production' ? 'T-Facile' : 'T-Facile (Dev)',
+            short_name: process.env.VERCEL_ENV === 'production' ? 'T-Facile' : 'T-Facile Dev',
             theme_color: '#ffffff',
             background_color: '#ffffff',
             display: 'standalone',

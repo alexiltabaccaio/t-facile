@@ -55,7 +55,7 @@ const CatalogPage: React.FC = () => {
     <div className="h-full flex flex-col lg:flex-row relative overflow-hidden min-h-0">
       {/* List Section: Visible on mobile only if not in detail, always on desktop */}
       <div 
-        className={`h-full flex-grow flex flex-col pt-2 min-h-0 min-w-0 overflow-hidden ${
+        className={`h-full flex-grow flex flex-col min-h-0 min-w-0 overflow-hidden ${
           isDetailView ? 'hidden lg:flex lg:w-[65%] xl:w-[70%]' : 'w-full lg:w-[65%] xl:w-[70%]'
         }`}
       >

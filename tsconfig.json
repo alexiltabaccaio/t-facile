@@ -24,7 +24,7 @@
     "noUncheckedSideEffectImports": false,
 
     "baseUrl": ".",
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "vite/client"],
     "paths": {
       "@/*" :  ["./src/*"]
     }

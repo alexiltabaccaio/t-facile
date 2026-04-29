@@ -124,9 +124,16 @@ const Header: React.FC = () => {
         {/* Center Slot: Title (Absolutely Centered) */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative flex items-center justify-center pointer-events-auto">
-            <h1 className="text-lg font-display font-black text-light-text dark:text-dark-text-primary tracking-tighter uppercase truncate lg:text-2xl">
-              {getTitle()}
-            </h1>
+            <div className="relative flex items-center justify-center">
+              <h1 className="text-lg font-display font-black text-light-text dark:text-dark-text-primary tracking-tighter uppercase truncate lg:text-2xl leading-tight">
+                {getTitle()}
+              </h1>
+              {import.meta.env.DEV && (
+                <span className="absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 text-[9px] font-bold text-orange-500 dark:text-orange-400 uppercase tracking-widest leading-none">
+                  (dev)
+                </span>
+              )}
+            </div>
             
             {location.pathname === '/admin' && (
               <div className="absolute left-full ml-3 flex items-center gap-1 bg-white dark:bg-neutral-800/80 backdrop-blur-sm rounded-full px-2 py-0.5 border border-neutral-200 dark:border-neutral-700 shadow-sm z-[100] cursor-pointer">

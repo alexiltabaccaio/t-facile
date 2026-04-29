@@ -164,7 +164,6 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
                   itemData={{ products, onProductClick, searchKeywords, sortOption, columnCount }}
                   initialScrollTop={initialOffset}
                   onScroll={handleScroll}
-                  className="lg:pt-4"
                   overscanRowCount={15}
                 >
                   {GridCell}
