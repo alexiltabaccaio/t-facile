@@ -56,7 +56,14 @@ const DesktopSidebar: React.FC = () => {
       <div className="flex items-center gap-3 px-2 mb-10">
         <Logo size={40} />
         <div className="flex flex-col">
-          <span className="text-xl font-display font-black text-neutral-900 dark:text-white tracking-tight">{t('layout.header.catalog')}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-display font-black text-neutral-900 dark:text-white tracking-tight">{t('layout.header.catalog')}</span>
+            {(import.meta.env.DEV || import.meta.env.VITE_GIT_BRANCH === 'dev') && (
+              <span className="text-[10px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-widest leading-none">
+                (dev)
+              </span>
+            )}
+          </div>
           <span className="text-[10px] text-neutral-500 uppercase font-semibold tracking-wider">{t('layout.sidebar.subtitle')}</span>
         </div>
       </div>
