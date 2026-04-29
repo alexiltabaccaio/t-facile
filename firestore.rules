@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default: deny everything
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() { return request.auth != null; }
+    
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Secrets collection: Admin only
+    match /secrets/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if false; // Disabilitato, usiamo i chunks in /system
+      allow write: if false;
+    }
+
+    // System metadata: Public read, Admin write
+    match /system/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admins collection: Authenticated read only for self
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && request.auth.uid == adminId;
+      allow write: if false;
+    }
+
+    // Test connection path
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Update History: Public read, Admin write
+    match /update_history/{updateId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Support Tickets: Authenticated users can create, only admin can read/manage
+    match /support_tickets/{ticketId} {
+      allow create: if isSignedIn() 
+                    && request.resource.data.keys().hasAll(['userId', 'userEmail', 'message', 'createdAt', 'status'])
+                    && request.resource.data.keys().size() == 5
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.userEmail is string
+                    && request.resource.data.message is string 
+                    && request.resource.data.message.size() <= 2000
+                    && request.resource.data.status == 'new';
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

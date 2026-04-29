@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product sold in a tobacco shop with flattened keys for faster processing.",
+      "type": "object",
+      "properties": {
+        "identity.code": { "type": "string", "description": "The product code." },
+        "identity.name": { "type": "string", "description": "The name of the product." },
+        "identity.category": { "type": "string", "description": "The category." },
+        "identity.packageInfo": { "type": "string" },
+        "pricing.currentPrice": { "type": "number" },
+        "pricing.pricePerKg": { "type": "number" },
+        "lifecycle.status": { "type": "string", "enum": ["Attivo", "Radiato", "Fuori Catalogo"] },
+        "lifecycle.radiationDate": { "type": "string", "description": "La data in cui il prodotto è stato radiato." },
+        "emissions.nicotine": { "type": "number" },
+        "emissions.tar": { "type": "number" },
+        "emissions.co": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["identity.code", "updatedAt"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User specific information.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email"]
+    },
+    "UpdateHistory": {
+      "title": "Update History",
+      "description": "Log of catalog updates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "new": { "type": "number" },
+            "price": { "type": "number" },
+            "status": { "type": "number" }
+          }
+        },
+        "variations": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["id", "title", "date", "timestamp"]
+    },
+    "SupportTicket": {
+      "title": "Support Ticket",
+      "description": "A user-submitted bug report or suggestion.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "message": { "type": "string", "description": "The message sent by the user." },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["new", "resolved"] }
+      },
+      "required": ["message", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/system/config": {
+      "schema": "object",
+      "description": "Global configuration and sync metadata."
+    },
+    "/system/catalog_chunk_{chunkId}": {
+      "schema": "object",
+      "description": "Serialized parts of the complete product catalog (JSON stringified array)."
+    },
+    "/update_history/{updateId}": {
+      "schema": "UpdateHistory",
+      "description": "Log of catalog updates for notifications."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles."
+    },
+    "/admins/{adminId}": {
+      "schema": "object",
+      "description": "Admin access control list."
+    },
+    "/support_tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "User submitted feedback or bug reports."
+    }
+  }
+}

@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --color-light-bg: #F5F5F7;
+  --color-light-text: #1A1A1A;
+  --color-dark-bg: #121212;
+  --color-dark-card-bg: #1E1E1E;
+  --color-dark-text-primary: #E0E0E0;
+  --color-dark-text-secondary: #9E9E9E;
+  --color-dark-border: #3A3A3A;
+}
+
+@layer base {
+  html, body {
+    @apply min-h-dvh w-full antialiased;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    @apply min-h-dvh w-full flex flex-col;
+  }
+}
+
+.orientation-landscape-overlay {
+  display: none;
+}
+
+@media (orientation: landscape) and (max-width: 1023px) {
+  .orientation-landscape-overlay {
+    display: flex !important;
+  }
+}

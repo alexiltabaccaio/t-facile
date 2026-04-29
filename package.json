@@ -1,0 +1,53 @@
+{
+  "name": "t-facile",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "start": "tsx server.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@google/genai": "^1.50.1",
+    "@testing-library/dom": "^10.4.1",
+    "@vercel/analytics": "^2.0.1",
+    "cheerio": "^1.2.0",
+    "express-rate-limit": "^8.4.0",
+    "firebase": "^12.12.0",
+    "lucide-react": "^1.8.0",
+    "motion": "^12.38.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.6.205",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.14.2",
+    "react-virtualized-auto-sizer": "^2.0.3",
+    "react-window": "^1.8.10",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@firebase/eslint-plugin-security-rules": "^0.0.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.14.0",
+    "@types/react-dom": "^19.2.3",
+    "@types/react-virtualized-auto-sizer": "^1.0.4",
+    "@types/react-window": "^1.8.8",
+    "eslint": "^10.2.1",
+    "express": "^5.2.1",
+    "jsdom": "^29.0.2",
+    "tailwindcss": "^4.2.2",
+    "tsx": "^4.21.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.4"
+  }
+}

@@ -1,0 +1,141 @@
+
+import React from 'react';
+import { useNotificationStore } from '@/entities/notification';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { 
+  SettingsIcon, 
+  BellIcon, 
+  LockIcon,
+  SearchIcon
+} from '@/shared/ui/Icons';
+import { Info, Shield, Flag } from 'lucide-react';
+import { Logo } from '@/shared/ui/Logo';
+
+const DesktopSidebar: React.FC = () => {
+  const hasUnreadNotifications = useNotificationStore(state => state.hasUnread);
+  const { isAdmin } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isCatalog = location.pathname === '/catalog' || location.pathname.startsWith('/catalog/');
+  const isNotifications = location.pathname === '/notifications' || location.pathname.startsWith('/notifications/');
+  const isSettings = location.pathname.startsWith('/settings');
+  const isAdminView = location.pathname === '/admin';
+
+  const navItems = [
+    { 
+      id: 'list', 
+      label: 'Catalogo', 
+      icon: SearchIcon, 
+      active: isCatalog,
+      onClick: () => navigate('/catalog')
+    },
+    { 
+      id: 'notifications', 
+      label: 'Aggiornamenti', 
+      icon: BellIcon, 
+      active: isNotifications,
+      onClick: () => navigate('/notifications'),
+      badge: hasUnreadNotifications
+    },
+    { 
+      id: 'settings', 
+      label: 'Impostazioni', 
+      icon: SettingsIcon, 
+      active: isSettings,
+      onClick: () => navigate('/settings') 
+    },
+  ];
+
+  return (
+    <aside className="hidden lg:flex flex-col w-72 h-screen bg-white dark:bg-dark-bg border-r border-neutral-200 dark:border-dark-border py-8 px-6 shrink-0 z-50">
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-2 mb-10">
+        <Logo size={40} />
+        <div className="flex flex-col">
+          <span className="text-xl font-display font-black text-neutral-900 dark:text-white tracking-tight">T-Facile</span>
+          <span className="text-[10px] text-neutral-500 uppercase font-semibold tracking-wider">Gestione Listini</span>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-grow space-y-2">
+        <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-2 mb-4">Navigazione</p>
+        
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={item.onClick}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl group ${
+              item.active 
+                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-lg shadow-neutral-200 dark:shadow-none' 
+                : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <item.icon size={20} strokeWidth={item.active ? 2.5 : 2} />
+              <span className="font-medium text-sm">{item.label}</span>
+            </div>
+            {item.badge && !item.active && (
+              <span className="w-2 h-2 rounded-full bg-red-500"></span>
+            )}
+            {item.active && (
+              <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-neutral-900 opacity-50"></div>
+            )}
+          </button>
+        ))}
+      </nav>
+
+      {/* Info, Legal, Report Links */}
+      <div className="mt-8 flex flex-col gap-2">
+        {[
+          { label: 'Info', path: '/settings/about', icon: Info },
+          { label: 'Legali', path: '/settings/legal', icon: Shield },
+          { label: 'Segnala', path: '/settings/report', icon: Flag },
+        ].map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl group ${
+                isActive
+                  ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-lg shadow-neutral-200 dark:shadow-none'
+                  : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <span className="font-medium text-sm">{item.label}</span>
+              </div>
+              {isActive && (
+                <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-neutral-900 opacity-50"></div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Admin Section */}
+      {isAdmin && (
+        <div className="mt-4 pt-6 border-t border-neutral-100 dark:border-neutral-800/50">
+          <button
+            onClick={() => navigate('/admin')}
+            className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl transition-all group border ${
+              isAdminView
+                ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-950/20 dark:border-red-900/30 dark:text-red-400'
+                : 'border-transparent text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
+            }`}
+          >
+            <LockIcon size={18} />
+            <span className="font-bold text-sm">Pannello Admin</span>
+          </button>
+        </div>
+      )}
+
+    </aside>
+  );
+};
+
+export default DesktopSidebar;
