@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { ShieldAlert, Zap, FileText, Cpu } from 'lucide-react';
 import { PDFUploader, ADMAutoUpdater, useADMSyncStore, useADMSyncActions } from '@/features/admin';
+import { useTranslation } from 'react-i18next';
 
 const AdminPage: React.FC = () => {
+  const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<'auto' | 'manual'>('auto');
   const aiModel = useADMSyncStore(s => s.aiModel);
@@ -13,9 +15,9 @@ const AdminPage: React.FC = () => {
     return (
       <div className="flex-grow flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-neutral-900/40">
         <ShieldAlert className="w-12 h-12 text-red-500 mb-4" />
-        <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100">Accesso Negato</h2>
+        <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100">{t('admin.denied')}</h2>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
-          Questa area è riservata agli amministratori del sistema.
+          {t('admin.deniedSubtitle')}
         </p>
       </div>
     );
@@ -29,15 +31,15 @@ const AdminPage: React.FC = () => {
         <div className="hidden lg:flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-display font-black text-neutral-900 dark:text-white uppercase tracking-tight">
-              Pannello Admin
+              {t('admin.title')}
             </h1>
-            <p className="text-sm text-neutral-500 font-medium">Gestione automatizzata dei listini</p>
+            <p className="text-sm text-neutral-500 font-medium">{t('admin.subtitle')}</p>
           </div>
 
           <div className="flex items-center gap-2 bg-white dark:bg-neutral-800 rounded-2xl px-4 py-2 border border-neutral-200 dark:border-neutral-700 shadow-sm">
             <div className="flex items-center gap-2 mr-3 border-r border-neutral-100 dark:border-neutral-700 pr-3">
               <Cpu className="w-4 h-4 text-blue-500" />
-              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Modello IA</span>
+              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{t('admin.aiModel')}</span>
             </div>
             <select 
               value={aiModel} 
@@ -61,7 +63,7 @@ const AdminPage: React.FC = () => {
             }`}
           >
             <Zap className={`w-3.5 h-3.5 lg:w-5 lg:h-5 ${activeTab === 'auto' ? 'fill-current' : ''}`} />
-            Pilota Auto
+            {t('admin.tabs.auto')}
           </button>
           <button
             onClick={() => setActiveTab('manual')}
@@ -72,7 +74,7 @@ const AdminPage: React.FC = () => {
             }`}
           >
             <FileText className="w-3.5 h-3.5 lg:w-5 lg:h-5" />
-            Lettore PDF
+            {t('admin.tabs.manual')}
           </button>
         </div>
  

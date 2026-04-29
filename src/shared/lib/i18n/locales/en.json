@@ -1,0 +1,95 @@
+{
+  "settings": {
+    "title": "Settings",
+    "theme": {
+      "title": "App Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "title": "Language",
+      "it": "Italian",
+      "en": "English"
+    },
+    "info": {
+      "title": "Information",
+      "about": "About T-Facile",
+      "legal": "Data Source & Legal Notes",
+      "report": "Report an issue"
+    },
+    "admin": "Admin",
+    "version": "Version {{version}} (Build {{build}})",
+    "auth": {
+      "loggedInAs": "Logged in as:",
+      "logout": "Logout",
+      "login": "Login"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "back": "Back",
+    "details": "Detail",
+    "search": "Search...",
+    "noResults": "No results found",
+    "error": "An error occurred"
+  },
+  "layout": {
+    "sidebar": {
+      "navigation": "Navigation",
+      "catalog": "Catalog",
+      "updates": "Updates",
+      "settings": "Settings",
+      "admin": "Admin Panel",
+      "subtitle": "Price Management",
+      "info": "Info",
+      "legal": "Legal",
+      "report": "Report"
+    },
+    "header": {
+      "catalog": "T-Facile",
+      "updatedAt": "Upd: {{date}}",
+      "refresh": "Refresh",
+      "notifications": "Notifications",
+      "online": "ONLINE",
+      "offline": "OFFLINE"
+    }
+  },
+  "catalog": {
+    "emptyState": "Select a product from the list\nto view details",
+    "searchPlaceholder": "Search by brand or type...",
+    "searchEmissions": "Filter emissions (e.g.: nicotine=0.5 cat<5)",
+    "searchAria": "Search product",
+    "filterAria": "Filter and sort results",
+    "filters": "Filters",
+    "refreshAria": "Refresh catalog",
+    "sort": {
+      "title": "Filter and Sort",
+      "visibility": "Visibility",
+      "showRetired": "Show retired products",
+      "showOutOfCatalog": "Show out of catalog products",
+      "sortBy": "Sort by",
+      "orderAsc": "Ascending",
+      "orderDesc": "Descending",
+      "relevance": "Relevance",
+      "name": "Name",
+      "price": "Price",
+      "code": "Code",
+      "emissions": "Emissions (cigarettes only)",
+      "nicotine": "Nicotine",
+      "tar": "Tar",
+      "co": "CO"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Automated price management",
+    "denied": "Access Denied",
+    "deniedSubtitle": "This area is restricted to system administrators.",
+    "aiModel": "AI Model",
+    "tabs": {
+      "auto": "Auto Pilot",
+      "manual": "PDF Reader"
+    }
+  }
+}

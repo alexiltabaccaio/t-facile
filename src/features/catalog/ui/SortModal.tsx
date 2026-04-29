@@ -3,6 +3,7 @@ import React from 'react';
 import { SortKey, useCatalogStore, useCatalogActions } from '@/entities/product';
 import { ArrowsUpDownIcon } from '@/shared/ui/Icons';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 
 const ToggleSwitch: React.FC<{ checked: boolean; onChange: () => void; label: string; id: string }> = ({ checked, onChange, label, id }) => (
     <label htmlFor={id} className="flex items-center justify-between cursor-pointer p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 active:bg-neutral-200 dark:active:bg-neutral-800">
@@ -39,6 +40,7 @@ interface SortModalProps {
 const SortModal: React.FC<SortModalProps> = ({
   onClose,
 }) => {
+  const { t } = useTranslation();
   const { sortOption, showRetired, showOutOfCatalog } = useCatalogStore(useShallow((state) => ({
     sortOption: state.sortOption,
     showRetired: state.showRetired,
@@ -83,7 +85,7 @@ const SortModal: React.FC<SortModalProps> = ({
           <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mb-4" />
           <div className="w-full flex justify-between items-center px-6 mb-2">
             <h2 className="text-xl font-bold text-light-text dark:text-dark-text-primary">
-              Filtra e Ordina
+              {t('catalog.sort.title')}
             </h2>
             <button 
               onClick={onClose} 
@@ -98,18 +100,18 @@ const SortModal: React.FC<SortModalProps> = ({
         <div className="px-4 pb-8 overflow-y-auto space-y-8">
           <section>
             <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-3 px-1">
-              Visibilità
+              {t('catalog.sort.visibility')}
             </h3>
             <ToggleSwitch
                 id="retired-toggle"
-                label="Mostra prodotti radiati"
+                label={t('catalog.sort.showRetired')}
                 checked={showRetired}
                 onChange={() => setShowRetired(!showRetired)}
             />
             <div className="mt-2">
               <ToggleSwitch
                   id="out-of-catalog-toggle"
-                  label="Mostra prodotti fuori catalogo"
+                  label={t('catalog.sort.showOutOfCatalog')}
                   checked={showOutOfCatalog}
                   onChange={() => setShowOutOfCatalog(!showOutOfCatalog)}
               />
@@ -119,7 +121,7 @@ const SortModal: React.FC<SortModalProps> = ({
           <section>
             <div className="flex justify-between items-center mb-3 px-1">
                  <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px]">
-                   Ordina per
+                   {t('catalog.sort.sortBy')}
                  </h3>
                  <button
                     onClick={handleToggleOrder}
@@ -127,25 +129,25 @@ const SortModal: React.FC<SortModalProps> = ({
                     className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 disabled:opacity-40"
                  >
                      <ArrowsUpDownIcon size={14} />
-                     {sortOption.order === 'asc' ? 'Crescente' : 'Decrescente'}
+                     {sortOption.order === 'asc' ? t('catalog.sort.orderAsc') : t('catalog.sort.orderDesc')}
                  </button>
             </div>
             <div className="grid grid-cols-2 gap-2">
-                <SortKeyButton label="Rilevanza" active={sortOption.key === 'smart'} onClick={() => handleSortKeyChange('smart')} />
-                <SortKeyButton label="Nome" active={sortOption.key === 'name'} onClick={() => handleSortKeyChange('name')} />
-                <SortKeyButton label="Prezzo" active={sortOption.key === 'price'} onClick={() => handleSortKeyChange('price')} />
-                <SortKeyButton label="Codice" active={sortOption.key === 'code'} onClick={() => handleSortKeyChange('code')} />
+                <SortKeyButton label={t('catalog.sort.relevance')} active={sortOption.key === 'smart'} onClick={() => handleSortKeyChange('smart')} />
+                <SortKeyButton label={t('catalog.sort.name')} active={sortOption.key === 'name'} onClick={() => handleSortKeyChange('name')} />
+                <SortKeyButton label={t('catalog.sort.price')} active={sortOption.key === 'price'} onClick={() => handleSortKeyChange('price')} />
+                <SortKeyButton label={t('catalog.sort.code')} active={sortOption.key === 'code'} onClick={() => handleSortKeyChange('code')} />
             </div>
           </section>
           
           <section>
              <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-3 px-1">
-               Emissioni (solo sigarette)
+               {t('catalog.sort.emissions')}
              </h3>
              <div className="flex gap-2 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
-                <SortKeyButton label="Nicotina" active={sortOption.key === 'nicotine'} onClick={() => handleSortKeyChange('nicotine')} />
-                <SortKeyButton label="Catrame" active={sortOption.key === 'tar'} onClick={() => handleSortKeyChange('tar')} />
-                <SortKeyButton label="CO" active={sortOption.key === 'co'} onClick={() => handleSortKeyChange('co')} />
+                <SortKeyButton label={t('catalog.sort.nicotine')} active={sortOption.key === 'nicotine'} onClick={() => handleSortKeyChange('nicotine')} />
+                <SortKeyButton label={t('catalog.sort.tar')} active={sortOption.key === 'tar'} onClick={() => handleSortKeyChange('tar')} />
+                <SortKeyButton label={t('catalog.sort.co')} active={sortOption.key === 'co'} onClick={() => handleSortKeyChange('co')} />
             </div>
           </section>
         </div>

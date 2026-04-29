@@ -11,8 +11,10 @@ import {
 } from '@/shared/ui/Icons';
 import { Info, Shield, Flag } from 'lucide-react';
 import { Logo } from '@/shared/ui/Logo';
+import { useTranslation } from 'react-i18next';
 
 const DesktopSidebar: React.FC = () => {
+  const { t } = useTranslation();
   const hasUnreadNotifications = useNotificationStore(state => state.hasUnread);
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -26,14 +28,14 @@ const DesktopSidebar: React.FC = () => {
   const navItems = [
     { 
       id: 'list', 
-      label: 'Catalogo', 
+      label: t('layout.sidebar.catalog'), 
       icon: SearchIcon, 
       active: isCatalog,
       onClick: () => navigate('/catalog')
     },
     { 
       id: 'notifications', 
-      label: 'Aggiornamenti', 
+      label: t('layout.sidebar.updates'), 
       icon: BellIcon, 
       active: isNotifications,
       onClick: () => navigate('/notifications'),
@@ -41,7 +43,7 @@ const DesktopSidebar: React.FC = () => {
     },
     { 
       id: 'settings', 
-      label: 'Impostazioni', 
+      label: t('layout.sidebar.settings'), 
       icon: SettingsIcon, 
       active: isSettings,
       onClick: () => navigate('/settings') 
@@ -54,14 +56,14 @@ const DesktopSidebar: React.FC = () => {
       <div className="flex items-center gap-3 px-2 mb-10">
         <Logo size={40} />
         <div className="flex flex-col">
-          <span className="text-xl font-display font-black text-neutral-900 dark:text-white tracking-tight">T-Facile</span>
-          <span className="text-[10px] text-neutral-500 uppercase font-semibold tracking-wider">Gestione Listini</span>
+          <span className="text-xl font-display font-black text-neutral-900 dark:text-white tracking-tight">{t('layout.header.catalog')}</span>
+          <span className="text-[10px] text-neutral-500 uppercase font-semibold tracking-wider">{t('layout.sidebar.subtitle')}</span>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-grow space-y-2">
-        <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-2 mb-4">Navigazione</p>
+        <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-2 mb-4">{t('layout.sidebar.navigation')}</p>
         
         {navItems.map((item) => (
           <button
@@ -90,9 +92,9 @@ const DesktopSidebar: React.FC = () => {
       {/* Info, Legal, Report Links */}
       <div className="mt-8 flex flex-col gap-2">
         {[
-          { label: 'Info', path: '/settings/about', icon: Info },
-          { label: 'Legali', path: '/settings/legal', icon: Shield },
-          { label: 'Segnala', path: '/settings/report', icon: Flag },
+          { label: t('layout.sidebar.info'), path: '/settings/about', icon: Info },
+          { label: t('layout.sidebar.legal'), path: '/settings/legal', icon: Shield },
+          { label: t('layout.sidebar.report'), path: '/settings/report', icon: Flag },
         ].map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -129,7 +131,7 @@ const DesktopSidebar: React.FC = () => {
             }`}
           >
             <LockIcon size={18} />
-            <span className="font-bold text-sm">Pannello Admin</span>
+            <span className="font-bold text-sm">{t('layout.sidebar.admin')}</span>
           </button>
         </div>
       )}

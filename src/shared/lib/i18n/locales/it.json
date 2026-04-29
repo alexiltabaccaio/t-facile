@@ -1,0 +1,95 @@
+{
+  "settings": {
+    "title": "Impostazioni",
+    "theme": {
+      "title": "Tema Applicazione",
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "system": "Sistema"
+    },
+    "language": {
+      "title": "Lingua",
+      "it": "Italiano",
+      "en": "Inglese"
+    },
+    "info": {
+      "title": "Informazioni",
+      "about": "Info su T-Facile",
+      "legal": "Fonte Dati & Note Legali",
+      "report": "Segnala un problema"
+    },
+    "admin": "Admin",
+    "version": "Versione {{version}} (Build {{build}})",
+    "auth": {
+      "loggedInAs": "Accesso effettuato come:",
+      "logout": "Esci",
+      "login": "Accedi"
+    }
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "back": "Indietro",
+    "details": "Dettaglio",
+    "search": "Cerca...",
+    "noResults": "Nessun risultato trovato",
+    "error": "Si è verificato un errore"
+  },
+  "layout": {
+    "sidebar": {
+      "navigation": "Navigazione",
+      "catalog": "Catalogo",
+      "updates": "Aggiornamenti",
+      "settings": "Impostazioni",
+      "admin": "Pannello Admin",
+      "subtitle": "Gestione Listini",
+      "info": "Info",
+      "legal": "Legali",
+      "report": "Segnala"
+    },
+    "header": {
+      "catalog": "T-Facile",
+      "updatedAt": "Agg: {{date}}",
+      "refresh": "Aggiorna",
+      "notifications": "Notifiche",
+      "online": "ONLINE",
+      "offline": "OFFLINE"
+    }
+  },
+  "catalog": {
+    "emptyState": "Seleziona un prodotto dalla lista\nper visualizzarne i dettagli",
+    "searchPlaceholder": "Cerca per marca o tipo...",
+    "searchEmissions": "Filtra emissioni (es: nicotina=0.5 cat<5)",
+    "searchAria": "Cerca prodotto",
+    "filterAria": "Filtra e ordina risultati",
+    "filters": "Filtri",
+    "refreshAria": "Aggiorna listino",
+    "sort": {
+      "title": "Filtra e Ordina",
+      "visibility": "Visibilità",
+      "showRetired": "Mostra prodotti radiati",
+      "showOutOfCatalog": "Mostra prodotti fuori catalogo",
+      "sortBy": "Ordina per",
+      "orderAsc": "Crescente",
+      "orderDesc": "Decrescente",
+      "relevance": "Rilevanza",
+      "name": "Nome",
+      "price": "Prezzo",
+      "code": "Codice",
+      "emissions": "Emissioni (solo sigarette)",
+      "nicotine": "Nicotina",
+      "tar": "Catrame",
+      "co": "CO"
+    }
+  },
+  "admin": {
+    "title": "Pannello Admin",
+    "subtitle": "Gestione automatizzata dei listini",
+    "denied": "Accesso Negato",
+    "deniedSubtitle": "Questa area è riservata agli amministratori del sistema.",
+    "aiModel": "Modello IA",
+    "tabs": {
+      "auto": "Pilota Auto",
+      "manual": "Lettore PDF"
+    }
+  }
+}

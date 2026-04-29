@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ProductList, ProductDetail, SearchBar, useProductSearch } from '@/features/catalog';
 import { useCatalogStore, useCatalogActions, Product } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 
 const CatalogPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { 
@@ -87,7 +89,7 @@ const CatalogPage: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-sm font-medium">Seleziona un prodotto dalla lista<br/>per visualizzarne i dettagli</p>
+            <p className="text-sm font-medium">{t('catalog.emptyState')}</p>
           </div>
         )}
       </div>
