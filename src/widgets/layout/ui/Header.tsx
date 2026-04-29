@@ -128,7 +128,7 @@ const Header: React.FC = () => {
               <h1 className="text-lg font-display font-black text-light-text dark:text-dark-text-primary tracking-tighter uppercase truncate lg:text-2xl leading-tight">
                 {getTitle()}
               </h1>
-              {import.meta.env.DEV && (
+              {(import.meta.env.DEV || import.meta.env.VITE_GIT_BRANCH === 'dev') && (
                 <span className="absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 text-[9px] font-bold text-orange-500 dark:text-orange-400 uppercase tracking-widest leading-none">
                   (dev)
                 </span>
