@@ -1,4 +1,4 @@
-import { ParsedProduct } from '../services/pdfAnalyzer';
+import { ParsedProduct } from '../api/pdfAnalyzer';
 import { Product } from '@/entities/product';
 
 /**

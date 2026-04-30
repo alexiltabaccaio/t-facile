@@ -2,9 +2,9 @@
 
 import { useMemo } from 'react';
 import { Product, SortOption } from '@/entities/product';
-import { parseSearchQuery } from '../utils/searchParser';
-import { filterProducts } from '../utils/productFilters';
-import { sortProducts } from '../utils/productSorter';
+import { parseSearchQuery } from '../lib/searchParser';
+import { filterProducts } from '../lib/productFilters';
+import { sortProducts } from '../lib/productSorter';
 
 interface UseProductSearchProps {
   products: Product[];

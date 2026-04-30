@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { ParsedPDFResult } from '../services/pdfAnalyzer';
-import { saveParsedDataToFirestore } from '../services/dbSyncer';
+import { ParsedPDFResult } from '../api/pdfAnalyzer';
+import { saveParsedDataToFirestore } from '../api/dbSyncer';
 import { useCatalogStore } from '@/entities/product';
-import { Listino, fetchListini } from '../services/admApiService';
-import { processListiniBatch } from '../services/admProcessor';
+import { Listino, fetchListini } from '../api/admApiService';
+import { processListiniBatch } from '../api/admProcessor';
 
 interface ADMSyncState {
   aiModel: string;

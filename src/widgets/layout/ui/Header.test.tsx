@@ -15,11 +15,11 @@ vi.mock('@/entities/product/model/useCatalogStore', () => ({
   useCatalogStore: vi.fn(),
   useCatalogActions: vi.fn(() => ({})),
 }));
-vi.mock('@/features/admin/store/useADMSyncStore', () => ({
+vi.mock('@/features/admin/model/useADMSyncStore', () => ({
   useADMSyncStore: vi.fn(),
   useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
 }));
-vi.mock('@/features/admin/services/pdfExtractor', () => ({
+vi.mock('@/features/admin/api/pdfExtractor', () => ({
   extractTextFromPDF: vi.fn(),
 }));
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle } from 'lucide-react';
-import { useADMSyncStore, useADMSyncActions } from '../store/useADMSyncStore';
+import { useADMSyncStore, useADMSyncActions } from '../model/useADMSyncStore';
 import { useCatalogStore } from '@/entities/product';
 import { PDFPreviewTable } from './PDFPreviewTable';
 import { useShallow } from 'zustand/react/shallow';

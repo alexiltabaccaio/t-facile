@@ -1,7 +1,7 @@
 import { extractTextFromPDF } from './pdfExtractor';
 import { splitTextInChunks } from './textChunker';
 import { analyzeTextWithAI } from './aiService';
-import { createPrompts } from '../utils/pdfPromptFactory';
+import { createPrompts } from '../lib/pdfPromptFactory';
 
 export interface ParsedProduct {
   code: string;

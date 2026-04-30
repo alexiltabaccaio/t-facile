@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { auth, handleFirestoreError } from '@/shared/api/firebase/firebase';
 import { useCatalogStore } from '@/entities/product';
-import { analyzePdfChunks, ParsedPDFResult } from '../services/pdfAnalyzer';
-import { saveParsedDataToFirestore } from '../services/dbSyncer';
+import { analyzePdfChunks, ParsedPDFResult } from '../api/pdfAnalyzer';
+import { saveParsedDataToFirestore } from '../api/dbSyncer';
 import { PDFPreviewTable } from './PDFPreviewTable';
 import { PDFUploadDropzone } from './PDFUploadDropzone';
 import { PDFFileList } from './PDFFileList';
 import { useTranslation } from 'react-i18next';
 
-import { useADMSyncStore } from '../store/useADMSyncStore';
+import { useADMSyncStore } from '../model/useADMSyncStore';
 
 export const PDFUploader: React.FC = () => {
   const { t } = useTranslation();

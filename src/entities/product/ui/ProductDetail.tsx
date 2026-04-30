@@ -1,6 +1,6 @@
 import React from 'react';
 import { Product } from '@/entities/product';
-import { formatToDisplayDate } from '../../admin/utils/dateUtils';
+import { formatToDisplayDate } from '@/features/admin/lib/dateUtils';
 import { useTranslation } from 'react-i18next';
 
 interface ProductDetailProps {

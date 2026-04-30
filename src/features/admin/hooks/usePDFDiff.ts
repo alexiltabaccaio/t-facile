@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ParsedPDFResult } from '../services/pdfAnalyzer';
+import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { Product } from '@/entities/product';
 
 export type ChangeType = 'new' | 'price' | 'status' | 'emissions' | 'unchanged';

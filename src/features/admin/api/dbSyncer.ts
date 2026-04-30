@@ -2,8 +2,8 @@ import { doc, writeBatch, serverTimestamp, collection } from 'firebase/firestore
 import { db } from '@/shared/api/firebase/firebase';
 import { useCatalogStore, Product } from '@/entities/product';
 import { ParsedPDFResult } from './pdfAnalyzer';
-import { isDateNewer } from '../utils/dateUtils';
-import { mapParsedProductToFirestore, detectProductVariations } from '../utils/syncUtils';
+import { isDateNewer } from '../lib/dateUtils';
+import { mapParsedProductToFirestore, detectProductVariations } from '../lib/syncUtils';
 
 export const saveParsedDataToFirestore = async (
   parsedData: ParsedPDFResult,
