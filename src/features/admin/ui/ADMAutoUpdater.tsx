@@ -4,10 +4,12 @@ import { useADMSyncStore, useADMSyncActions } from '../store/useADMSyncStore';
 import { useCatalogStore } from '@/entities/product';
 import { PDFPreviewTable } from './PDFPreviewTable';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 
 import { ADMUpdateItem } from './ADMUpdateItem';
 
 export const ADMAutoUpdater: React.FC = () => {
+  const { t } = useTranslation();
   const {
     isChecking,
     isProcessing,
@@ -49,9 +51,9 @@ export const ADMAutoUpdater: React.FC = () => {
           {isChecking ? (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              Verifica in corso...
+              {t('admin.auto.checking')}
             </>
-          ) : 'Cerca Nuovi Listini'}
+          ) : t('admin.auto.search')}
         </button>
       </div>
 
@@ -65,7 +67,7 @@ export const ADMAutoUpdater: React.FC = () => {
              className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 text-xs font-bold uppercase rounded-lg transition-colors border border-red-200 dark:border-red-800/50"
            >
              <XCircle className="w-4 h-4" />
-             Interrompi
+             {t('admin.auto.stop')}
            </button>
          </div>
       )}
@@ -83,7 +85,7 @@ export const ADMAutoUpdater: React.FC = () => {
       {success && !isProcessing && (
         <div className="bg-green-100/50 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded p-3 flex items-center gap-2 text-xs font-bold mt-4">
           <CheckCircle className="w-4 h-4 text-green-500" />
-          Database aggiornato con successo!
+          {t('admin.auto.success')}
         </div>
       )}
 
@@ -98,16 +100,16 @@ export const ADMAutoUpdater: React.FC = () => {
            </div>
            <button 
              onClick={() => {
-               navigator.clipboard.writeText(error).then(() => {
+               navigator.clipboard.writeText(error!).then(() => {
                  const btn = document.getElementById('copy-btn-adm');
-                 if (btn) btn.innerText = "Copiato!";
-                 setTimeout(() => { if(btn) btn.innerText = "Copia"; }, 2000);
+                 if (btn) btn.innerText = t('admin.auto.copied') as string;
+                 setTimeout(() => { if(btn) btn.innerText = t('admin.auto.copy') as string; }, 2000);
                });
              }}
              id="copy-btn-adm"
              className="absolute top-4 right-4 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-[10px] uppercase font-black px-2 py-1 rounded border border-red-200 dark:border-red-700 hover:bg-red-200 transition-colors"
            >
-             Copia
+             {t('admin.auto.copy')}
            </button>
          </div>
       )}
@@ -121,7 +123,7 @@ export const ADMAutoUpdater: React.FC = () => {
               disabled={availableUpdates.filter(u => u.selected).length === 0}
               className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 shadow-md disabled:opacity-50 transition-all uppercase tracking-widest"
             >
-              Analizza {availableUpdates.filter(u => u.selected).length} listini con IA
+              {t('admin.auto.analyzeCount', { count: availableUpdates.filter(u => u.selected).length })}
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -130,10 +132,10 @@ export const ADMAutoUpdater: React.FC = () => {
                 onClick={toggleAll}
                 className="text-[10px] font-bold text-neutral-500 uppercase hover:text-blue-600 transition-colors"
               >
-                {availableUpdates.every(u => u.selected) ? 'Deseleziona tutto' : 'Seleziona tutto'}
+                {availableUpdates.every(u => u.selected) ? t('admin.auto.deselectAll') : t('admin.auto.selectAll')}
               </button>
               <span className="text-[10px] font-bold text-neutral-400 uppercase">
-                {availableUpdates.filter(u => u.selected).length} selezionati
+                {t('admin.auto.selectedCount', { count: availableUpdates.filter(u => u.selected).length })}
               </span>
             </div>
           </div>

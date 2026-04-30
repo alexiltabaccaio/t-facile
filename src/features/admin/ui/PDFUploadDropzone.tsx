@@ -1,5 +1,6 @@
 import React from 'react';
 import { UploadCloud } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface PDFUploadDropzoneProps {
   onFileClick: () => void;
@@ -8,6 +9,8 @@ interface PDFUploadDropzoneProps {
 }
 
 export const PDFUploadDropzone: React.FC<PDFUploadDropzoneProps> = ({ onFileClick, onFileChange, fileInputRef }) => {
+  const { t } = useTranslation();
+
   return (
     <div 
       onClick={onFileClick}
@@ -15,9 +18,9 @@ export const PDFUploadDropzone: React.FC<PDFUploadDropzoneProps> = ({ onFileClic
     >
       <UploadCloud className="w-8 h-8 text-neutral-400 mb-2" />
       <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300 text-center">
-        Tocca per caricare uno o più PDF
+        {t('admin.manual.dropzoneTitle')}
       </p>
-      <p className="text-[10px] text-neutral-400 mt-1">Puoi selezionare più file contemporaneamente</p>
+      <p className="text-[10px] text-neutral-400 mt-1">{t('admin.manual.dropzoneSubtitle')}</p>
       <input 
         type="file" 
         multiple

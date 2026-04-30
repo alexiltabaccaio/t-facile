@@ -100,8 +100,8 @@ const Header: React.FC = () => {
               <button 
                 className="text-neutral-600 hover:text-light-text dark:text-dark-text-secondary dark:hover:text-dark-text-primary p-1 lg:hidden"
                 onClick={() => navigate('/settings')}
-                title="Impostazioni"
-                aria-label="Impostazioni"
+                title={t('settings.title')}
+                aria-label={t('settings.title')}
               >
                 <SettingsIcon size={20} />
               </button>

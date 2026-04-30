@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface PDFFileListProps {
   files: File[];
@@ -8,12 +9,14 @@ interface PDFFileListProps {
 }
 
 export const PDFFileList: React.FC<PDFFileListProps> = ({ files, onCancel, onProcess }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 flex flex-col border border-blue-100 dark:border-blue-900/50">
       <div className="mb-4">
         <p className="text-sm font-bold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
           <FileText className="w-4 h-4" />
-          {files.length} {files.length === 1 ? 'file pronto' : 'file pronti'} per l'analisi
+          {t('admin.manual.filesReady', { count: files.length })}
         </p>
         <ul className="space-y-1">
           {files.slice(0, 5).map((f, i) => (
@@ -23,7 +26,9 @@ export const PDFFileList: React.FC<PDFFileListProps> = ({ files, onCancel, onPro
             </li>
           ))}
           {files.length > 5 && (
-            <li className="text-[10px] text-blue-500 italic">...e altri {files.length - 5} file</li>
+            <li className="text-[10px] text-blue-500 italic">
+              {t('admin.manual.andOthers', { count: files.length - 5 })}
+            </li>
           )}
         </ul>
       </div>
@@ -33,13 +38,13 @@ export const PDFFileList: React.FC<PDFFileListProps> = ({ files, onCancel, onPro
           onClick={onCancel}
           className="px-4 py-2 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 rounded shadow-sm text-sm font-medium w-32"
         >
-          Annulla
+          {t('admin.preview.cancel')}
         </button>
         <button 
           onClick={onProcess}
           className="px-4 py-2 bg-blue-600 text-white rounded shadow-sm text-sm font-medium flex-grow hover:bg-blue-700 flex items-center justify-center gap-2"
         >
-          Analizza {files.length === 1 ? 'il file' : 'tutti i file insieme'}
+          {files.length === 1 ? t('admin.manual.analyzeFile') : t('admin.manual.analyzeAll')}
         </button>
       </div>
     </div>

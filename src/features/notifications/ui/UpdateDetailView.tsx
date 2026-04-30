@@ -1,41 +1,44 @@
 import React from 'react';
 import { UpdateRecord } from '@/entities/notification';
 import { PlusCircle, AlertTriangle, MinusCircle, Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface UpdateDetailViewProps {
   update: UpdateRecord;
 }
 
 const UpdateDetailView: React.FC<UpdateDetailViewProps> = ({ update }) => {
+    const { t } = useTranslation();
+    
     return (
         <div className="p-4 w-full">
             <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm">
                 <h2 className="text-xl font-bold text-light-text dark:text-dark-text-primary text-center mb-1 leading-tight">{update.title}</h2>
                 <p className="text-xs text-neutral-500 dark:text-dark-text-secondary text-center mb-6 italic">
                     {update.date.includes('non rilevata') 
-                      ? "Data del listino originale non rintracciata nel documento" 
-                      : `Listino datato: ${update.date}`}
+                      ? t('notifications.noDate') 
+                      : t('notifications.dated', { date: update.date })}
                 </p>
                 
                 {update.stats && (
                     <div className="grid grid-cols-3 gap-2 mb-8">
                         <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 p-2 rounded-lg flex flex-col items-center justify-center">
                             <span className="text-sm font-bold text-green-700 dark:text-green-400">{update.stats.new}</span>
-                            <span className="text-[9px] uppercase font-bold text-green-600/60">Nuovi</span>
+                            <span className="text-[9px] uppercase font-bold text-green-600/60">{t('notifications.new')}</span>
                         </div>
                         <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 p-2 rounded-lg flex flex-col items-center justify-center">
                             <span className="text-sm font-bold text-blue-700 dark:text-blue-400">{update.stats.price}</span>
-                            <span className="text-[9px] uppercase font-bold text-blue-600/60">Variazioni</span>
+                            <span className="text-[9px] uppercase font-bold text-blue-600/60">{t('notifications.variations')}</span>
                         </div>
                         <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 p-2 rounded-lg flex flex-col items-center justify-center">
                             <span className="text-sm font-bold text-red-700 dark:text-red-400">{update.stats.status}</span>
-                            <span className="text-[9px] uppercase font-bold text-red-600/60">Radiati</span>
+                            <span className="text-[9px] uppercase font-bold text-red-600/60">{t('notifications.retired')}</span>
                         </div>
                     </div>
                 )}
 
                 <div className="space-y-3 mt-4">
-                    <h3 className="text-[10px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-1">Dettaglio Modifiche</h3>
+                    <h3 className="text-[10px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-1">{t('notifications.modDetails')}</h3>
                     {update.variations && update.variations.length > 0 ? (
                         <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-lg border border-neutral-200 dark:border-neutral-800 p-2 space-y-1">
                             {update.variations.map((v: string, i: number) => {
@@ -92,7 +95,7 @@ const UpdateDetailView: React.FC<UpdateDetailViewProps> = ({ update }) => {
                     ) : (
                         <div className="p-4 text-center rounded-lg border border-dashed border-neutral-300 dark:border-neutral-700">
                            <Info className="w-5 h-5 text-neutral-400 mx-auto mb-2" />
-                           <p className="text-xs text-neutral-500 dark:text-neutral-400">Nessuna specifica dettagliata disponibile per questo record.</p>
+                           <p className="text-xs text-neutral-500 dark:text-neutral-400">{t('notifications.noDetails')}</p>
                         </div>
                     )}
                 </div>

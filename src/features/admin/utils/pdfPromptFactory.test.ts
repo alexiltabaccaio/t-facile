@@ -47,19 +47,19 @@ describe('pdfPromptFactory', () => {
     it('should create Emission prompt for Emission type', () => {
       const prompts = createPrompts('emi_test.pdf', 'nicotine levels');
       expect(prompts.systemPrompt).toContain('EMISSIONI ADM');
-      expect(prompts.userPrompt).toContain('TIPO: DATI EMISSIONI');
+      expect(prompts.userPrompt).toContain('EMISSIONI SIGARETTE ADM');
     });
 
     it('should create Radiato prompt for Radiato type', () => {
       const prompts = createPrompts('rad_test.pdf', 'archived items');
       expect(prompts.systemPrompt).toContain('prodotti RADIATI');
-      expect(prompts.userPrompt).toContain('STATO DA USARE: Radiato');
+      expect(prompts.userPrompt).toContain('- STATO: Radiato');
     });
 
     it('should create Standard prompt for Attivo type', () => {
       const prompts = createPrompts('att_test.pdf', 'active list');
-      expect(prompts.systemPrompt).toContain('listini ADM');
-      expect(prompts.userPrompt).toContain('STATO DA USARE: Attivo');
+      expect(prompts.systemPrompt).toContain('prezzi ADM');
+      expect(prompts.userPrompt).toContain('- STATO: Attivo');
     });
   });
 });

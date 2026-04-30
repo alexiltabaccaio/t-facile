@@ -1,6 +1,7 @@
 import React from 'react';
 import { Product } from '@/entities/product';
 import { formatToDisplayDate } from '../../admin/utils/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 interface ProductDetailProps {
   product: Product;
@@ -33,6 +34,7 @@ const StatusRow: React.FC<{ label: string; value: string | undefined }> = ({ lab
 
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
+  const { t } = useTranslation();
   const formattedPrice = `€ ${product.pricing.currentPrice.toFixed(2).replace('.', ',')}`;
 
   const proFeatures = (
@@ -43,29 +45,29 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         product.identity.brand ||
         product.identity.manufacturer) && (
         <div className="mt-6 p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
-          <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">Informazioni Avanzate</h3>
+          <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.advancedInfo')}</h3>
           <dl>
               {product.lifecycle.status && product.lifecycle.status !== 'Attivo' && (
-                <StatusRow label="Stato" value={product.lifecycle.status} />
+                <StatusRow label={t('productDetail.status')} value={product.lifecycle.status} />
               )}
               {product.lifecycle.radiationDate ? (
-                <DetailRow label="Data Radiazione" value={formatToDisplayDate(product.lifecycle.radiationDate)} />
+                <DetailRow label={t('productDetail.radiationDate')} value={formatToDisplayDate(product.lifecycle.radiationDate)} />
               ) : product.lifecycle.retirementDate ? (
-                <DetailRow label="Data Radiazione" value={formatToDisplayDate(product.lifecycle.retirementDate)} />
+                <DetailRow label={t('productDetail.radiationDate')} value={formatToDisplayDate(product.lifecycle.retirementDate)} />
               ) : null}
-              {product.identity.brand && <DetailRow label="Marca" value={product.identity.brand} />}
-              {product.identity.manufacturer && <DetailRow label="Produttore" value={product.identity.manufacturer} />}
+              {product.identity.brand && <DetailRow label={t('productDetail.brand')} value={product.identity.brand} />}
+              {product.identity.manufacturer && <DetailRow label={t('productDetail.manufacturer')} value={product.identity.manufacturer} />}
           </dl>
         </div>
       )}
 
       {product.emissions && (
         <div className="mt-4 p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
-          <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">Dati su Emissioni</h3>
+          <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.emissions')}</h3>
            <dl>
-              <DetailRow label="Catrame (mg)" value={product.emissions.tar} />
-              <DetailRow label="Nicotina (mg)" value={product.emissions.nicotine} />
-              <DetailRow label="Monossido di C. (mg)" value={product.emissions.co} />
+              <DetailRow label={t('productDetail.tar')} value={product.emissions.tar} />
+              <DetailRow label={t('productDetail.nicotine')} value={product.emissions.nicotine} />
+              <DetailRow label={t('productDetail.co')} value={product.emissions.co} />
            </dl>
         </div>
       )}
@@ -79,24 +81,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         
         {product.lifecycle.status === 'Radiato' && (
           <div className="inline-block px-4 py-2 mb-2 text-center bg-red-100 dark:bg-red-900/40 border border-red-200 dark:border-red-700/50 rounded-lg">
-              <p className="font-bold text-sm text-red-800 dark:text-red-200">Prodotto non più in commercio</p>
+              <p className="font-bold text-sm text-red-800 dark:text-red-200">{t('productDetail.retiredMessage')}</p>
           </div>
         )}
         {product.lifecycle.status === 'Fuori Catalogo' && (
           <div className="inline-block px-4 py-2 mb-2 text-center bg-yellow-100 dark:bg-yellow-900/40 border border-yellow-200 dark:border-yellow-700/50 rounded-lg">
-              <p className="font-bold text-sm text-yellow-800 dark:text-yellow-200">Prodotto Fuori Catalogo</p>
+              <p className="font-bold text-sm text-yellow-800 dark:text-yellow-200">{t('productDetail.outOfCatalogMessage')}</p>
           </div>
         )}
       </div>
 
       <div className="p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
-        <h2 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">Informazioni Base</h2>
+        <h2 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.basicInfo')}</h2>
         <dl>
-          <DetailRow label="Prezzo" value={formattedPrice} />
-          <DetailRow label="Codice" value={product.identity.code} />
-          <DetailRow label="Tipologia" value={product.identity.category} />
-          <DetailRow label="Confezione" value={product.identity.packageInfo} />
-          {!!product.pricing.pricePerKg && <DetailRow label="Prezzo al Kg" value={`€ ${product.pricing.pricePerKg.toFixed(2).replace('.', ',')}`} />}
+          <DetailRow label={t('productDetail.price')} value={formattedPrice} />
+          <DetailRow label={t('productDetail.code')} value={product.identity.code} />
+          <DetailRow label={t('productDetail.type')} value={product.identity.category} />
+          <DetailRow label={t('productDetail.package')} value={product.identity.packageInfo} />
+          {!!product.pricing.pricePerKg && <DetailRow label={t('productDetail.pricePerKg')} value={`€ ${product.pricing.pricePerKg.toFixed(2).replace('.', ',')}`} />}
           {!!product.pricing.conventionalPricePerKg && <DetailRow label="Conventional Price/Kg" value={`€ ${product.pricing.conventionalPricePerKg.toFixed(2).replace('.', ',')}`} />}
           {!!product.pricing.fiscalValuePer1000Pieces && <DetailRow label="Fiscal Value/1000 pcs" value={`€ ${product.pricing.fiscalValuePer1000Pieces.toFixed(2).replace('.', ',')}`} />}
         </dl>

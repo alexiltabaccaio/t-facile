@@ -2,6 +2,7 @@ import React from 'react';
 import { PlusCircle, MinusCircle, AlertTriangle, Zap, Info } from 'lucide-react';
 import { DiffItem } from '../hooks/usePDFDiff';
 import { formatToDisplayDate } from '../utils/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 interface PDFPreviewRowProps {
   item: DiffItem;
@@ -15,6 +16,8 @@ const ArrowRight = ({ className }: { className?: string }) => (
 );
 
 export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
+  const { t } = useTranslation();
+
   return (
     <tr className="bg-white dark:bg-neutral-900/40 hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group">
       <td className="px-4 py-3 lg:px-6 lg:py-4">
@@ -22,7 +25,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
           <span className="font-black text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase truncate max-w-[180px] lg:max-w-xs">
             {item.product.name}
           </span>
-          <span className="text-[10px] font-mono text-neutral-500">Cod: {item.product.code}</span>
+          <span className="text-[10px] font-mono text-neutral-500">{t('productDetail.code')}: {item.product.code}</span>
         </div>
       </td>
       <td className="px-4 py-3 lg:px-6 lg:py-4">
@@ -34,42 +37,42 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
       <td className="px-4 py-3 lg:px-6 lg:py-4">
         {item.type === 'new' && item.diffData.statusAssigned === 'Fuori Catalogo' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <PlusCircle className="w-3 h-3" /> Fuori Catalogo
+            <PlusCircle className="w-3 h-3" /> {t('admin.preview.outOfCatalog')}
           </span>
         )}
         {item.type === 'new' && item.diffData.statusAssigned === 'Radiato' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <MinusCircle className="w-3 h-3" /> Nuovo: Radiato
+            <MinusCircle className="w-3 h-3" /> {t('admin.preview.newRetired')}
           </span>
         )}
         {item.type === 'new' && item.diffData.statusAssigned !== 'Fuori Catalogo' && item.diffData.statusAssigned !== 'Radiato' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <PlusCircle className="w-3 h-3" /> Nuova entry
+            <PlusCircle className="w-3 h-3" /> {t('admin.preview.newEntry')}
           </span>
         )}
         {item.type === 'price' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <AlertTriangle className="w-3 h-3" /> Variazione prezzo
+            <AlertTriangle className="w-3 h-3" /> {t('admin.preview.priceVariation')}
           </span>
         )}
         {item.type === 'status' && item.diffData.newStatus === 'Radiato' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <MinusCircle className="w-3 h-3" /> Radiato
+            <MinusCircle className="w-3 h-3" /> {t('admin.preview.retired')}
           </span>
         )}
         {item.type === 'status' && item.diffData.newStatus !== 'Radiato' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <AlertTriangle className="w-3 h-3" /> Stato: {item.diffData.newStatus}
+            <AlertTriangle className="w-3 h-3" /> {t('admin.preview.statusLabel', { status: item.diffData.newStatus })}
           </span>
         )}
         {item.type === 'emissions' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-purple-600 bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <Zap className="w-3 h-3" /> Variazione emissioni
+            <Zap className="w-3 h-3" /> {t('admin.preview.emissionsVariation')}
           </span>
         )}
         {item.type === 'unchanged' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-bold text-neutral-400 bg-neutral-100 dark:bg-neutral-800/50 px-2 py-0.5 rounded-full uppercase w-fit">
-            <Info className="w-3 h-3" /> Invariato
+            <Info className="w-3 h-3" /> {t('admin.preview.unchanged')}
           </span>
         )}
       </td>
@@ -94,13 +97,13 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
             </div>
             {item.diffData.newStatus === 'Radiato' && item.product.radiationDate && (
               <div className="text-[10px] italic text-red-500">
-                Dal: {formatToDisplayDate(item.product.radiationDate)}
+                {t('admin.preview.since', { date: formatToDisplayDate(item.product.radiationDate) })}
               </div>
             )}
           </div>
         )}
         {item.type === 'new' && (
-          <span className="text-[10px] text-neutral-500 italic">{item.diffData.reason || 'Manca nel database'}</span>
+          <span className="text-[10px] text-neutral-500 italic">{item.diffData.reason || t('admin.preview.missingInDb')}</span>
         )}
         {item.type === 'emissions' && (
           <div className="flex flex-col gap-1 text-[10px]">
@@ -131,7 +134,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
           </div>
         )}
         {item.type === 'unchanged' && (
-          <span className="text-[10px] text-neutral-400">Nessuna modifica rilevata</span>
+          <span className="text-[10px] text-neutral-400">{t('admin.preview.noChanges')}</span>
         )}
       </td>
       <td className="px-4 py-3 text-right lg:px-6 lg:py-4">

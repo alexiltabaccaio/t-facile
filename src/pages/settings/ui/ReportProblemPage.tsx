@@ -5,8 +5,10 @@ import { db } from '@/shared/api/firebase/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 const ReportProblemPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [message, setMessage] = useState('');
@@ -33,7 +35,7 @@ const ReportProblemPage: React.FC = () => {
       setMessage('');
     } catch (err) {
       console.error('Error submitting support ticket:', err);
-      setError('Si è verificato un errore durante l\'invio. Riprova più tardi.');
+      setError(t('reportPage.error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -50,16 +52,16 @@ const ReportProblemPage: React.FC = () => {
           <CheckCircle2 className="w-10 h-10" />
         </motion.div>
         <div className="space-y-2">
-          <h2 className="text-xl font-bold">Inviato con successo!</h2>
+          <h2 className="text-xl font-bold">{t('reportPage.successTitle')}</h2>
           <p className="text-neutral-500 text-sm">
-            Grazie per la tua segnalazione. La prenderemo in carico il prima possibile.
+            {t('reportPage.successDesc')}
           </p>
         </div>
         <button
           onClick={() => navigate('/settings')}
           className="mt-4 px-8 py-3 bg-neutral-900 dark:bg-white text-white dark:text-black font-bold rounded-xl text-sm transition-transform active:scale-95"
         >
-          Torna alle impostazioni
+          {t('reportPage.backToSettings')}
         </button>
       </div>
     );
@@ -70,7 +72,7 @@ const ReportProblemPage: React.FC = () => {
       <div className="p-6 max-w-lg mx-auto space-y-6">
         <div className="space-y-2">
           <p className="text-sm text-neutral-500 leading-relaxed">
-            Hai riscontrato un bug, un errore nei prezzi o hai un suggerimento per migliorare T-Facile? Scrivici qui sotto.
+            {t('reportPage.formDesc')}
           </p>
         </div>
 
@@ -79,7 +81,7 @@ const ReportProblemPage: React.FC = () => {
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Descrivi il problema o il suggerimento..."
+              placeholder={t('reportPage.placeholder')}
               className="w-full h-48 p-4 bg-neutral-50 dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-neutral-400"
               disabled={isSubmitting}
               maxLength={2000}
@@ -111,12 +113,12 @@ const ReportProblemPage: React.FC = () => {
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Invio in corso...
+                {t('reportPage.submitting')}
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Invia segnalazione
+                {t('reportPage.submit')}
               </>
             )}
           </button>
@@ -124,7 +126,7 @@ const ReportProblemPage: React.FC = () => {
 
         <div className="pt-4 flex items-center gap-2 text-[10px] text-neutral-400 dark:text-neutral-600">
           <CheckCircle2 className="w-3 h-3" />
-          <span>La tua segnalazione aiuterà a migliorare l'app per tutti i tabaccai.</span>
+          <span>{t('reportPage.footerNote')}</span>
         </div>
       </div>
     </div>
