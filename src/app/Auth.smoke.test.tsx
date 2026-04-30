@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
@@ -135,6 +135,34 @@ describe('Auth & Route Protection Smoke Test', () => {
       expect(screen.queryByText(/Accesso Negato/i)).toBeNull();
       const adminTitles = screen.getAllByText(/Pannello Admin/i);
       expect(adminTitles.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('should redirect back to catalog if session is lost on admin page', async () => {
+    // Start as admin
+    mockOnAuthStateChanged.mockImplementation((callback) => callback({ uid: 'admin123' }));
+    mockGetDoc.mockResolvedValue({ exists: () => true });
+
+    const { rerender } = render(
+      <MemoryRouter initialEntries={['/admin']}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+        expect(screen.queryByText(/Pannello Admin/i)).toBeDefined();
+    });
+
+    // Simulate session loss by triggering the stored callback
+    const authCallback = mockOnAuthStateChanged.mock.calls[0][0];
+    await act(async () => {
+        authCallback(null);
+    });
+    
+    await waitFor(() => {
+        expect(screen.getByText(/Accesso Negato/i)).toBeDefined();
     });
   });
 });

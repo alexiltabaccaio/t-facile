@@ -160,6 +160,7 @@ const Header: React.FC = () => {
                 onClick={handleManualRefresh}
                 className={`p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all active:scale-90 ${isRefreshing ? 'animate-spin opacity-50' : ''}`}
                 title={t('layout.header.refresh')}
+                aria-label={t('layout.header.refresh')}
               >
                 <RefreshIcon size={14} className="text-neutral-400" />
               </button>

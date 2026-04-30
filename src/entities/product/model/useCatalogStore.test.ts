@@ -39,4 +39,23 @@ describe('useCatalogStore', () => {
     setShowRetired(true);
     expect(useCatalogStore.getState().showRetired).toBe(true);
   });
+
+  describe('persistence', () => {
+    it('should partialize only specific fields for storage', () => {
+      const state = useCatalogStore.getState();
+      const persistOptions = (useCatalogStore as any).persist.getOptions();
+      
+      const partial = persistOptions.partialize(state);
+      
+      expect(partial).toHaveProperty('products');
+      expect(partial).toHaveProperty('lastUpdateDate');
+      expect(partial).toHaveProperty('categoryDates');
+      expect(partial).toHaveProperty('lastSyncId');
+      
+      // Should NOT include transient UI state
+      expect(partial).not.toHaveProperty('searchTerm');
+      expect(partial).not.toHaveProperty('selectedProduct');
+      expect(partial).not.toHaveProperty('isInitialLoading');
+    });
+  });
 });

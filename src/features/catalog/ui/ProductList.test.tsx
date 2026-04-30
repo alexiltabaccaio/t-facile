@@ -52,4 +52,14 @@ describe('ProductList', () => {
     expect(screen.getByText('Nessun prodotto trovato')).toBeDefined();
     expect(screen.getByText(/Prova a modificare i termini di ricerca/)).toBeDefined();
   });
+
+  it('calls onProductClick when a product is clicked', () => {
+    const onProductClick = vi.fn();
+    const { getByText } = render(<ProductList {...defaultProps} onProductClick={onProductClick} />);
+    
+    const productItem = getByText('Product 1');
+    productItem.click();
+    
+    expect(onProductClick).toHaveBeenCalledWith(mockProducts[0]);
+  });
 });

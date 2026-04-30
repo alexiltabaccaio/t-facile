@@ -74,4 +74,31 @@ describe('ProductItem', () => {
     expect(screen.getByText(/NIC/)).toBeDefined();
     expect(screen.getByText('0.8')).toBeDefined();
   });
+
+  it('handles regex special characters in search keywords safely', () => {
+    render(<ProductItem {...defaultProps} searchKeywords={['(', '*', '+', '[']} />);
+    
+    // Should render without crashing
+    expect(screen.getByText('Marlboro Gold')).toBeDefined();
+  });
+
+  it('handles zero price correctly', () => {
+    const zeroPriceProduct = {
+      ...mockProduct,
+      pricing: { currentPrice: 0 }
+    };
+    render(<ProductItem {...defaultProps} product={zeroPriceProduct} />);
+    
+    expect(screen.getByText(/0,00/)).toBeDefined();
+  });
+
+  it('handles very long names without crashing', () => {
+    const longNameProduct = {
+      ...mockProduct,
+      identity: { ...mockProduct.identity, name: 'A'.repeat(500) }
+    };
+    render(<ProductItem {...defaultProps} product={longNameProduct} />);
+    
+    expect(screen.getByText('A'.repeat(500))).toBeDefined();
+  });
 });
