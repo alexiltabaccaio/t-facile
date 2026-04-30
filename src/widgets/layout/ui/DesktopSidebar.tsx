@@ -8,9 +8,9 @@ import {
   BellIcon, 
   LockIcon,
   SearchIcon
-} from '@/shared/ui/Icons';
+} from '@/shared/ui';
 import { Info, Shield, Flag } from 'lucide-react';
-import { Logo } from '@/shared/ui/Logo';
+import { Logo } from '@/shared/ui';
 import { useTranslation } from 'react-i18next';
 
 const DesktopSidebar: React.FC = () => {
@@ -148,3 +148,4 @@ const DesktopSidebar: React.FC = () => {
 };
 
 export default DesktopSidebar;
+

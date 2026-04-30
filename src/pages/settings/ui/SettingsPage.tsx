@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronRightIcon } from '@/shared/ui/Icons';
-import { useThemeStore, useThemeActions } from '@/shared/lib/theme/model';
+import { ChevronRightIcon } from '@/shared/ui';
+import { useThemeStore, useThemeActions } from '@/shared/lib';
 import { useAuth } from '@/entities/session';
-import { signInWithGoogle, signOut } from '@/shared/api/firebase/auth';
+import { signInWithGoogle, signOut } from '@/shared/api';
 import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -125,3 +125,4 @@ const SettingsPage: React.FC = () => {
 };
 
 export default SettingsPage;
+

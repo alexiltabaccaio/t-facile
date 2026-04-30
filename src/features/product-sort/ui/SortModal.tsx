@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { SortKey, useCatalogStore, useCatalogActions } from '@/entities/product';
-import { ArrowsUpDownIcon } from '@/shared/ui/Icons';
+import { ArrowsUpDownIcon } from '@/shared/ui';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
@@ -157,3 +157,4 @@ const SortModal: React.FC<SortModalProps> = ({
 };
 
 export default SortModal;
+

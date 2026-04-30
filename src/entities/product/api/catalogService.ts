@@ -5,7 +5,7 @@ import {
   onSnapshot, 
   FirestoreError
 } from 'firebase/firestore';
-import { db } from '@/shared/api/firebase/firebase';
+import { db } from '@/shared/api';
 import { Product } from '../model/types';
 
 export interface CatalogConfig {
@@ -92,3 +92,4 @@ export const catalogService = {
     }));
   }
 };
+

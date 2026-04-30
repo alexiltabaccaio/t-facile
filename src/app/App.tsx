@@ -11,12 +11,9 @@ import { AdminPage } from '@/pages/admin';
 // Widgets
 import { MainLayout } from '@/widgets/layout';
 
-// Features
-import { SortModal, useCatalogUiStore, useCatalogUiActions } from '@/features/product-sort';
-
 // Shared
 import { InstallPwaPrompt, UpdatePwaPrompt, OrientationLockOverlay } from '@/shared/ui';
-import { useScrollToTop } from '@/shared/hooks/useScrollToTop';
+import { useScrollToTop } from '@/shared/hooks';
 
 // App Providers
 import { InitializationProvider } from './providers';
@@ -24,8 +21,6 @@ import { InitializationProvider } from './providers';
 const App: React.FC = () => {
   const mainContentRef = useRef<HTMLElement>(null);
   const location = useLocation();
-  const showSortModal = useCatalogUiStore((state) => state.showSortModal);
-  const { setShowSortModal } = useCatalogUiActions();
 
   // Scroll management
   useScrollToTop(mainContentRef);
@@ -53,12 +48,6 @@ const App: React.FC = () => {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/catalog" replace />} />
         </Routes>
-        
-        {showSortModal && (
-          <SortModal
-              onClose={() => setShowSortModal(false)}
-          />
-        )}
         
         <InstallPwaPrompt />
         <UpdatePwaPrompt />

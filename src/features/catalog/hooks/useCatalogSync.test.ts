@@ -17,7 +17,7 @@ vi.mock('@/entities/product', async (importOriginal) => {
   };
 });
 
-vi.mock('@/shared/api/firebase/firebase', () => ({
+vi.mock('@/shared/api', () => ({
   testConnection: vi.fn(),
   db: {},
 }));
@@ -144,3 +144,4 @@ describe('useCatalogSync', () => {
     consoleSpy.mockRestore();
   });
 });
+

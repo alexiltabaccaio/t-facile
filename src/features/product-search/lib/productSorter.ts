@@ -1,6 +1,6 @@
 
 import { Product, SortOption } from '@/entities/product';
-import { createWordStartRegex, SYNONYM_MAP, escapeRegExp } from '@/shared/lib/utils/utils';
+import { createWordStartRegex, SYNONYM_MAP, escapeRegExp } from '@/shared/lib';
 import { EmissionFilter } from './searchParser';
 
 export const calculateRelevance = (p: Product, kws: string[], emissionFilters: EmissionFilter[]): number => {
@@ -100,3 +100,4 @@ export const sortProducts = (
     });
   }
 };
+

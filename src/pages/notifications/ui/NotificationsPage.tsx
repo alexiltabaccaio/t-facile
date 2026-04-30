@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BellIcon, ChevronRightIcon, TrashIcon } from '@/shared/ui/Icons';
+import { BellIcon, ChevronRightIcon, TrashIcon } from '@/shared/ui';
 import { useNotificationStore, useNotificationActions } from '@/entities/notification';
 import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
@@ -143,3 +143,4 @@ const NotificationsPage: React.FC = () => {
 };
 
 export default NotificationsPage;
+

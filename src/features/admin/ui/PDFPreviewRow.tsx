@@ -1,7 +1,7 @@
 import React from 'react';
 import { PlusCircle, MinusCircle, AlertTriangle, Zap, Info } from 'lucide-react';
 import { DiffItem } from '../hooks/usePDFDiff';
-import { formatToDisplayDate } from '../lib/dateUtils';
+import { formatToDisplayDate } from '@/shared/lib';
 import { useTranslation } from 'react-i18next';
 
 interface PDFPreviewRowProps {
@@ -148,3 +148,4 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
     </tr>
   );
 };
+

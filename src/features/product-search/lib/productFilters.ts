@@ -1,6 +1,6 @@
 
 import { Product } from '@/entities/product';
-import { SYNONYM_MAP, escapeRegExp, createWordStartRegex } from '@/shared/lib/utils/utils';
+import { SYNONYM_MAP, escapeRegExp, createWordStartRegex } from '@/shared/lib';
 import { EmissionFilter } from './searchParser';
 
 export const checkTextMatch = (p: Product, keyword: string): boolean => {
@@ -95,3 +95,4 @@ export const filterProducts = (
 
   return filtered;
 };
+

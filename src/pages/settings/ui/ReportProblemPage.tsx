@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/entities/session';
-import { db } from '@/shared/api/firebase/firebase';
+import { db } from '@/shared/api';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -134,3 +134,4 @@ const ReportProblemPage: React.FC = () => {
 };
 
 export default ReportProblemPage;
+

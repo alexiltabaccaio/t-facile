@@ -9,7 +9,7 @@ vi.mock('firebase/firestore', () => ({
   onSnapshot: vi.fn(),
 }));
 
-vi.mock('@/shared/api/firebase/firebase', () => ({
+vi.mock('@/shared/api', () => ({
   db: {}
 }));
 
@@ -125,3 +125,4 @@ describe('catalogService', () => {
     });
   });
 });
+

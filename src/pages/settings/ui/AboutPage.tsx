@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExternalLink, Sparkles } from 'lucide-react';
-import { Logo } from '@/shared/ui/Logo';
+import { Logo } from '@/shared/ui';
 import { useTranslation } from 'react-i18next';
 
 const AboutPage: React.FC = () => {
@@ -64,3 +64,4 @@ const AboutPage: React.FC = () => {
 };
 
 export default AboutPage;
+

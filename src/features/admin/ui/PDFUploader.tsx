@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
-import { auth, handleFirestoreError } from '@/shared/api/firebase/firebase';
+import { auth, handleFirestoreError } from '@/shared/api';
 import { useCatalogStore } from '@/entities/product';
 import { analyzePdfChunks, ParsedPDFResult } from '../api/pdfAnalyzer';
 import { saveParsedDataToFirestore } from '../api/dbSyncer';
@@ -168,3 +168,4 @@ export const PDFUploader: React.FC = () => {
     </div>
   );
 };
+

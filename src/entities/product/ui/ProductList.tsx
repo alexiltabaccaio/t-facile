@@ -1,7 +1,7 @@
 
 
 import React, { memo, useRef, useEffect } from 'react';
-import { Product, SortOption } from '@/entities/product';
+import { Product, SortOption } from '../model/types';
 import ProductItem from './ProductItem';
 import { FixedSizeList as List, FixedSizeGrid as Grid } from 'react-window';
 import { AutoSizer } from 'react-virtualized-auto-sizer';

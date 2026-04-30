@@ -12,7 +12,7 @@ import {
   getDocs,
   FirestoreError
 } from 'firebase/firestore';
-import { db } from '@/shared/api/firebase/firebase';
+import { db } from '@/shared/api';
 import { UpdateRecord } from '../model/types';
 
 export const notificationService = {
@@ -83,3 +83,4 @@ export const notificationService = {
     await batch.commit();
   }
 };
+

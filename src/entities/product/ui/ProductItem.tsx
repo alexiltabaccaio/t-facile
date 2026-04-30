@@ -2,8 +2,8 @@
 
 
 import React from 'react';
-import { Product, SortKey } from '@/entities/product';
-import { escapeRegExp, SYNONYM_MAP } from '@/shared/lib/utils/utils';
+import { Product, SortKey } from '../model/types';
+import { escapeRegExp, SYNONYM_MAP } from '@/shared/lib';
 
 interface ProductItemProps {
   product: Product;
@@ -179,3 +179,4 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywo
 };
 
 export default ProductItem;
+

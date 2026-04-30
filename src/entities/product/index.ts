@@ -1,4 +1,5 @@
 export * from './model/useCatalogStore';
+export * from './model/useCatalogUiStore';
 export * from './model/types';
 export * from './api/catalogService';
 export { default as ProductList } from './ui/ProductList';

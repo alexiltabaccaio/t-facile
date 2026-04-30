@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
 import { SearchIcon, FilterIcon, RefreshIcon } from '@/shared/ui';
-import { useCatalogStore, useCatalogActions } from '@/entities/product';
-import { useCatalogUiStore, useCatalogUiActions } from '@/features/product-sort';
+import { useCatalogStore, useCatalogActions, useCatalogUiStore, useCatalogUiActions } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 

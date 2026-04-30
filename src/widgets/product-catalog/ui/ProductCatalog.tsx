@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SearchBar, useProductSearch } from '@/features/product-search';
-import { useCatalogStore, useCatalogActions, Product, ProductList, ProductDetail } from '@/entities/product';
+import { SortModal } from '@/features/product-sort';
+import { useCatalogStore, useCatalogActions, useCatalogUiStore, useCatalogUiActions, Product, ProductList, ProductDetail } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +28,8 @@ export const ProductCatalog: React.FC = () => {
   })));
   
   const { setSelectedProduct, setListScrollPosition } = useCatalogActions();
+  const showSortModal = useCatalogUiStore(s => s.showSortModal);
+  const { setShowSortModal } = useCatalogUiActions();
 
   const { displayedProducts, searchKeywords } = useProductSearch({
     products: products,
@@ -74,7 +77,7 @@ export const ProductCatalog: React.FC = () => {
         <SearchBar />
       </div>
 
-      {/* Detail Section: Visible on mobile only if in detail, always on desktop empty/filled */}
+      {/* Detail Section */}
       <div 
         className={`h-full bg-neutral-50 dark:bg-neutral-900 overflow-y-auto ${
           isDetailView 
@@ -95,6 +98,10 @@ export const ProductCatalog: React.FC = () => {
           </div>
         )}
       </div>
+
+      {showSortModal && (
+        <SortModal onClose={() => setShowSortModal(false)} />
+      )}
     </div>
   );
 };

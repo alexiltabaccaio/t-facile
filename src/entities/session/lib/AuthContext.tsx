@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/shared/api/firebase/firebase';
-import { handleRedirectResult } from '@/shared/api/firebase/auth';
+import { auth, db } from '@/shared/api';
+import { handleRedirectResult } from '@/shared/api';
 import { AuthContextType } from '../model/types';
 
 const AuthContext = createContext<AuthContextType>({ 
@@ -48,3 +48,4 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     </AuthContext.Provider>
   );
 };
+

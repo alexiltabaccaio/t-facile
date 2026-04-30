@@ -1,6 +1,6 @@
 import React from 'react';
-import { Product } from '@/entities/product';
-import { formatToDisplayDate } from '@/features/admin/lib/dateUtils';
+import { Product } from '../model/types';
+import { formatToDisplayDate } from '@/shared/lib';
 import { useTranslation } from 'react-i18next';
 
 interface ProductDetailProps {
@@ -111,3 +111,4 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 };
 
 export default ProductDetail;
+

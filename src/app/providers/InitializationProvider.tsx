@@ -1,8 +1,8 @@
 import React from 'react';
 import { useCatalogSync } from '@/features/catalog';
 import { useNotificationInit } from '@/features/notifications';
-import { useThemeSync } from '@/shared/lib/theme/useThemeSync';
-import { useOrientationLock } from '@/shared/hooks/useOrientationLock';
+import { useThemeSync } from '@/shared/lib';
+import { useOrientationLock } from '@/shared/hooks';
 
 interface InitializationProviderProps {
   children: React.ReactNode;
@@ -17,3 +17,4 @@ export const InitializationProvider: React.FC<InitializationProviderProps> = ({ 
 
   return <>{children}</>;
 };
+

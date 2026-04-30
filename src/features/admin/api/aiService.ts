@@ -1,4 +1,4 @@
-import { auth } from "@/shared/api/firebase/firebase";
+import { auth } from "@/shared/api";
 
 /**
  * Analizza il testo estratto da un PDF ADM utilizzando l'IA Gemini sul server.
@@ -32,3 +32,4 @@ export async function analyzeTextWithAI(
 
   return data.result;
 }
+

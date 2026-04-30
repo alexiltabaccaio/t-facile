@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SettingsIcon, BellIcon, RefreshIcon } from '@/shared/ui/Icons';
+import { SettingsIcon, BellIcon, RefreshIcon } from '@/shared/ui';
 import { useNotificationStore } from '@/entities/notification';
 import { useCatalogStore } from '@/entities/product';
 import { useADMSyncStore, useADMSyncActions } from '@/features/admin';
@@ -186,3 +186,4 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+

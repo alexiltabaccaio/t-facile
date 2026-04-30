@@ -1,4 +1,4 @@
-import { auth } from '@/shared/api/firebase/firebase';
+import { auth } from '@/shared/api';
 
 export interface Listino {
   url: string;
@@ -71,3 +71,4 @@ export async function downloadListinoAsFile(listino: Listino, signal?: AbortSign
   
   return new File([blob], `${prefix}_${listino.category.toLowerCase()}_${listino.date.replace(/\//g, '.')}.pdf`, { type: 'application/pdf' });
 }
+

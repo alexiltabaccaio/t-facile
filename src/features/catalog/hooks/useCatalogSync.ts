@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { testConnection } from '@/shared/api/firebase/firebase';
+import { testConnection } from '@/shared/api';
 import { useCatalogStore, useCatalogActions, catalogService } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -118,3 +118,4 @@ export const useCatalogSync = () => {
     };
   }, [setProducts, setIsOnline, setSyncError, setLastUpdateDate, setIsInitialLoading, setLastSyncId]);
 };
+

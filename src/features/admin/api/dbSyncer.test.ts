@@ -14,7 +14,7 @@ vi.mock('firebase/firestore', () => ({
   serverTimestamp: vi.fn(() => 'mock-timestamp')
 }));
 
-vi.mock('@/shared/api/firebase/firebase', () => ({
+vi.mock('@/shared/api', () => ({
   db: {}
 }));
 
@@ -91,3 +91,4 @@ describe('dbSyncer', () => {
     });
   });
 });
+
