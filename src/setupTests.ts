@@ -51,3 +51,23 @@ vi.mock('react-i18next', () => ({
     init: vi.fn(),
   },
 }));
+
+// Mock idb-keyval for IndexedDB storage in tests
+vi.mock('idb-keyval', () => ({
+  get: vi.fn(() => Promise.resolve(null)),
+  set: vi.fn(() => Promise.resolve()),
+  del: vi.fn(() => Promise.resolve()),
+  clear: vi.fn(() => Promise.resolve()),
+  keys: vi.fn(() => Promise.resolve([])),
+  values: vi.fn(() => Promise.resolve([])),
+  entries: vi.fn(() => Promise.resolve([])),
+}));
+
+// Mock virtual:pwa-register/react
+vi.mock('virtual:pwa-register/react', () => ({
+  useRegisterSW: () => ({
+    needRefresh: [false, vi.fn()],
+    offlineReady: [false, vi.fn()],
+    updateServiceWorker: vi.fn(),
+  }),
+}));

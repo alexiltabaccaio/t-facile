@@ -65,8 +65,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mt-4 p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
           <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.emissions')}</h3>
            <dl>
-              <DetailRow label={t('productDetail.tar')} value={product.emissions.tar} />
               <DetailRow label={t('productDetail.nicotine')} value={product.emissions.nicotine} />
+              <DetailRow label={t('productDetail.tar')} value={product.emissions.tar} />
               <DetailRow label={t('productDetail.co')} value={product.emissions.co} />
            </dl>
         </div>
