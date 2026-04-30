@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNotificationStore } from '@/entities/notification';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/entities/session';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   SettingsIcon, 

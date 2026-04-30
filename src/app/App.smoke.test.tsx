@@ -1,8 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { AuthProvider } from './providers/AuthProvider';
+import { SessionProvider } from '@/entities/session';
 
 // 1. Mock delle dipendenze esterne "rumorose"
 vi.mock('@vercel/analytics/react', () => ({
@@ -16,7 +16,7 @@ vi.mock('firebase/app', () => ({
 
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
-  onAuthStateChanged: vi.fn((auth, callback) => {
+  onAuthStateChanged: vi.fn((_auth, callback) => {
     // Simula un utente non loggato inizialmente
     callback(null);
     return () => {};
@@ -87,9 +87,9 @@ describe('App Smoke Test', () => {
   it('renders the application and redirects to catalog', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 
@@ -104,9 +104,9 @@ describe('App Smoke Test', () => {
   it('navigates to settings page correctly', async () => {
     render(
       <MemoryRouter initialEntries={['/settings']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/entities/session';
 import { db } from '@/shared/api/firebase/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';

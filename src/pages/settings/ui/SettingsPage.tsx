@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRightIcon } from '@/shared/ui/Icons';
 import { useThemeStore, useThemeActions } from '@/shared/lib/theme/model';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/entities/session';
 import { signInWithGoogle, signOut } from '@/shared/api/firebase/auth';
 import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

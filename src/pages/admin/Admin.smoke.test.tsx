@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import AdminPage from './ui/AdminPage';
-import { AuthProvider } from '@/app/providers/AuthProvider';
+import { SessionProvider } from '@/entities/session';
 
 // 1. Mock delle dipendenze
 vi.mock('@vercel/analytics/react', () => ({ Analytics: () => null }));
@@ -67,9 +67,9 @@ describe('Admin Page Smoke Test', () => {
   it('renders the Admin Page with default "Pilota Auto" tab', async () => {
     render(
       <MemoryRouter>
-        <AuthProvider>
+        <SessionProvider>
           <AdminPage />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 
@@ -82,9 +82,9 @@ describe('Admin Page Smoke Test', () => {
   it('switches to "Lettore PDF" tab when clicked', async () => {
     render(
       <MemoryRouter>
-        <AuthProvider>
+        <SessionProvider>
           <AdminPage />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 

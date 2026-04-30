@@ -2,7 +2,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { AuthProvider } from './providers/AuthProvider';
+import { SessionProvider } from '@/entities/session';
 
 // 1. Mock delle dipendenze esterne
 vi.mock('@vercel/analytics/react', () => ({
@@ -83,9 +83,9 @@ describe('Auth & Route Protection Smoke Test', () => {
 
     render(
       <MemoryRouter initialEntries={['/admin']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 
@@ -104,9 +104,9 @@ describe('Auth & Route Protection Smoke Test', () => {
 
     render(
       <MemoryRouter initialEntries={['/admin']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 
@@ -123,9 +123,9 @@ describe('Auth & Route Protection Smoke Test', () => {
 
     render(
       <MemoryRouter initialEntries={['/admin']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 
@@ -143,11 +143,11 @@ describe('Auth & Route Protection Smoke Test', () => {
     mockOnAuthStateChanged.mockImplementation((callback) => callback({ uid: 'admin123' }));
     mockGetDoc.mockResolvedValue({ exists: () => true });
 
-    const { rerender } = render(
+    render(
       <MemoryRouter initialEntries={['/admin']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 

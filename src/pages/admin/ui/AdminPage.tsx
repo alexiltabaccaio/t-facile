@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/entities/session';
 import { ShieldAlert, Zap, FileText, Cpu } from 'lucide-react';
 import { PDFUploader, ADMAutoUpdater, useADMSyncStore, useADMSyncActions } from '@/features/admin';
 import { useTranslation } from 'react-i18next';

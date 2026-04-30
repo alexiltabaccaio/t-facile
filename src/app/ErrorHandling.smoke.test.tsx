@@ -2,7 +2,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { AuthProvider } from './providers/AuthProvider';
+import { SessionProvider } from '@/entities/session';
 import { useCatalogStore } from '@/entities/product';
 
 // Mock dependencies
@@ -78,9 +78,9 @@ describe('Error Handling Smoke Test', () => {
   it('displays connection error message when Firestore subscription fails', async () => {
     render(
       <MemoryRouter initialEntries={['/catalog']}>
-        <AuthProvider>
+        <SessionProvider>
           <App />
-        </AuthProvider>
+        </SessionProvider>
       </MemoryRouter>
     );
 
