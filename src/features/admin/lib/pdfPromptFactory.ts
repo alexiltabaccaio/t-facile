@@ -58,30 +58,36 @@ CATEGORIE AMMESSE (USA ESATTAMENTE QUESTE):
           REGOLE MANDATORIE SUI NUMERI:
           - I valori 'nicotine', 'tar' e 'co' devono essere NUMERI (es. 0.30, 3.00).
           - Usa sempre il punto (.) come separatore decimale. Se nel testo trovi la virgola (,), convertila.
-          - Arrotonda a massimo 2 decimali.`,
+          - Arrotonda a massimo 2 decimali.
+          
+          REGOLE CONFEZIONE (package):
+          - Deve essere un oggetto con: type, quantity, unit.
+          - type deve essere uno di: ASTUCCIO, CARTOCCIO, BUSTA, SCATOLA, LATTINA, BARATTOLO, GENERIC.
+          - unit deve essere uno di: PIECES, GRAMS, ML.
+          - quantity deve essere un NUMERO.`,
       userPrompt: `Analizza questo testo estratto da un listino EMISSIONI SIGARETTE ADM.
 
 CONFIGURAZIONE:
 - CATEGORIA: Sigarette
-- CAMPI DA ESTRARRE: code, name, packageInfo, nicotine, tar, co
+- CAMPI DA ESTRARRE: code, name, package, nicotine, tar, co
 
 ESEMPIO DI ESTRAZIONE (FEW-SHOT):
 Input: "7 821 ARGENTO astuccio da 20 pezzi 0,30 3,00 4,00"
-Output: { "code": "7", "name": "821 ARGENTO", "packageInfo": "astuccio da 20 pezzi", "nicotine": 0.30, "tar": 3.00, "co": 4.00, "category": "Sigarette" }
+Output: { "code": "7", "name": "821 ARGENTO", "package": { "type": "ASTUCCIO", "quantity": 20, "unit": "PIECES" }, "nicotine": 0.30, "tar": 3.00, "co": 4.00, "category": "Sigarette" }
 
 Input: "21265 CHE BLACK astuccio da 20 pezzi 0,90 10,00 9,00"
-Output: { "code": "21265", "name": "CHE BLACK", "packageInfo": "astuccio da 20 pezzi", "nicotine": 0.90, "tar": 10.00, "co": 9.00, "category": "Sigarette" }
+Output: { "code": "21265", "name": "CHE BLACK", "package": { "type": "ASTUCCIO", "quantity": 20, "unit": "PIECES" }, "nicotine": 0.90, "tar": 10.00, "co": 9.00, "category": "Sigarette" }
 
 REGOLE LOGICHE:
 1. DATA AGGIORNAMENTO: Cerca nel testo una data (es. "AGGIORNATI AL 11/03/2026") e restituiscila nel campo "updateDate" in formato YYYY-MM-DD.
-2. NOME vs CONFEZIONE: Il nome è il brand commerciale (es. "CAMEL BLUE"). La confezione descrive il contenitore (es. "astuccio da 20 pezzi").
+2. NOME vs CONFEZIONE: Il nome è il brand commerciale. La confezione descrive il contenitore (astuccio, cartoccio, etc.) e la quantità (20 pezzi, 30 grammi).
 3. VALORI CHIMICI: Sono gli ultimi tre numeri della riga. Nicotina è il primo dei tre, Catrame il secondo, Monossido l'ultimo.
 
 FORMATO JSON RICHIESTO:
 { 
   "updateDate": "YYYY-MM-DD", 
   "products": [ 
-    { "code": "...", "name": "...", "packageInfo": "...", "nicotine": 0.0, "tar": 0.0, "co": 0.0, "category": "Sigarette" } 
+    { "code": "...", "name": "...", "package": { "type": "...", "quantity": 0, "unit": "..." }, "nicotine": 0.0, "tar": 0.0, "co": 0.0, "category": "Sigarette" } 
   ] 
 }
 
@@ -94,7 +100,12 @@ ${textData}`
     return {
       systemPrompt: `Sei un esperto estrattore dati specializzato in listini ADM di prodotti RADIATI (fuori commercio).
           ${categoryInstruction}
-          Devi estrarre i dati in JSON puro.`,
+          Devi estrarre i dati in JSON puro.
+          
+          REGOLE CONFEZIONE (package):
+          - type: ASTUCCIO, CARTOCCIO, BUSTA, SCATOLA, LATTINA, BARATTOLO, GENERIC.
+          - unit: PIECES, GRAMS, ML.
+          - quantity: numero.`,
       userPrompt: `Analizza questo testo di prodotti RADIATI ADM.
 
 CONFIGURAZIONE:
@@ -103,18 +114,18 @@ CONFIGURAZIONE:
 
 ESEMPIO DI ESTRAZIONE (FEW-SHOT):
 Input: "18/06/2018 2206 500 RED astuccio da 20 pezzi 215,00 4,30"
-Output: { "radiationDate": "2018-06-18", "code": "2206", "name": "500 RED", "packageInfo": "astuccio da 20 pezzi", "pricePerKg": 215.00, "price": 4.30, "status": "Radiato" }
+Output: { "radiationDate": "2018-06-18", "code": "2206", "name": "500 RED", "package": { "type": "ASTUCCIO", "quantity": 20, "unit": "PIECES" }, "pricePerKg": 215.00, "price": 4.30, "status": "Radiato" }
 
 REGOLE LOGICHE:
 1. DATA RADIAZIONE: Ogni riga inizia con una data (DD/MM/YYYY). Convertila in YYYY-MM-DD.
 2. PREZZI: Identifica il prezzo unitario della confezione (solitamente l'ultimo numero) e il prezzo al kg (il numero decimale che lo precede). Converti le virgole in punti.
-3. NOME: Ferma il nome quando inizia la descrizione della confezione (astuccio, scatola, busta, cartoccio, ecc.).
+3. NOME: Ferma il nome quando inizia la descrizione della confezione (astuccio, scatola, busta, cartoccio, etc.).
 
 FORMATO JSON RICHIESTO:
 { 
   "updateDate": "YYYY-MM-DD", 
   "products": [ 
-    { "code": "...", "name": "...", "packageInfo": "...", "price": 0.0, "pricePerKg": 0.0, "radiationDate": "...", "category": "...", "status": "Radiato" } 
+    { "code": "...", "name": "...", "package": { "type": "...", "quantity": 0, "unit": "..." }, "price": 0.0, "pricePerKg": 0.0, "radiationDate": "...", "category": "...", "status": "Radiato" } 
   ] 
 }
 
@@ -127,7 +138,12 @@ ${textData}`
   return {
     systemPrompt: `Sei un esperto estrattore dati per listini prezzi ADM Tabacchi.
           Il tuo compito è trasformare il testo in JSON strutturato.
-          ${categoryInstruction}`,
+          ${categoryInstruction}
+          
+          REGOLE CONFEZIONE (package):
+          - type: ASTUCCIO, CARTOCCIO, BUSTA, SCATOLA, LATTINA, BARATTOLO, GENERIC.
+          - unit: PIECES, GRAMS, ML.
+          - quantity: numero.`,
     userPrompt: `Analizza questo testo estratto da un listino prezzi ADM.
 
 CONFIGURAZIONE:
@@ -136,18 +152,21 @@ CONFIGURAZIONE:
 
 ESEMPIO DI ESTRAZIONE (FEW-SHOT):
 Input: "3951 MARLBORO GOLD 100'S astuccio da 20 pezzi 250,00 5,00"
-Output: { "code": "3951", "name": "MARLBORO GOLD 100'S", "packageInfo": "astuccio da 20 pezzi", "price": 5.00, "pricePerKg": 250.00 }
+Output: { "code": "3951", "name": "MARLBORO GOLD 100'S", "package": { "type": "ASTUCCIO", "quantity": 20, "unit": "PIECES" }, "price": 5.00, "pricePerKg": 250.00 }
+
+Input: "4057 CHESTERFIELD da 30 grammi 230,00 6,90"
+Output: { "code": "4057", "name": "CHESTERFIELD", "package": { "type": "GENERIC", "quantity": 30, "unit": "GRAMS" }, "price": 6.90, "pricePerKg": 230.00 }
 
 REGOLE LOGICHE:
-1. PREZZI: Il prezzo a confezione è solitamente l'ultimo numero della riga. Il prezzo al kg è il numero decimale che lo precede (più alto). Se c'è un solo prezzo, è quello a confezione.
-2. NOME vs CONFEZIONE: Usa la logica semantica. Il nome è il brand (es. "821 BLU"). La confezione è la descrizione fisica (es. "astuccio da 20 pezzi", "da 30 grammi").
+1. PREZZI: Il prezzo a confezione è solitamente l'ultimo numero della riga. Il prezzo al kg è il numero decimale che lo precede.
+2. NOME vs CONFEZIONE: Il nome è il brand. La confezione è la descrizione fisica (es. "astuccio da 20 pezzi", "da 30 grammi").
 3. DATA AGGIORNAMENTO: Cerca nel testo frasi come "AGGIORNATO AL" o "IN VIGORE DAL" per estrarre la data del listino.
 
 FORMATO JSON RICHIESTO:
 { 
   "updateDate": "YYYY-MM-DD", 
   "products": [ 
-    { "code": "...", "name": "...", "packageInfo": "...", "price": 0.0, "pricePerKg": 0.0, "category": "...", "status": "..." } 
+    { "code": "...", "name": "...", "package": { "type": "...", "quantity": 0, "unit": "..." }, "price": 0.0, "pricePerKg": 0.0, "category": "...", "status": "..." } 
   ] 
 }
 

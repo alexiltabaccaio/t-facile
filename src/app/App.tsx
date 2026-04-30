@@ -17,15 +17,33 @@ import { useScrollToTop } from '@/shared/hooks';
 
 // App Providers
 import { InitializationProvider } from './providers';
+import { useCatalogStore } from '@/entities/product';
 
 const App: React.FC = () => {
   const mainContentRef = useRef<HTMLElement>(null);
   const location = useLocation();
+  const [isHydrated, setIsHydrated] = React.useState(false);
+
+  React.useEffect(() => {
+    // Check initial hydration state
+    setIsHydrated(useCatalogStore.persist.hasHydrated());
+    
+    // Subscribe to hydration events
+    const unsubFinishHydration = useCatalogStore.persist.onFinishHydration(() => setIsHydrated(true));
+    
+    return () => {
+      unsubFinishHydration();
+    };
+  }, []);
 
   // Scroll management
   useScrollToTop(mainContentRef);
 
   const isCatalogRoute = location.pathname === '/' || location.pathname.startsWith('/catalog');
+
+  if (!isHydrated) {
+    return null; // Evita il flash dell'interfaccia prima del caricamento da IndexedDB
+  }
 
   return (
     <InitializationProvider>

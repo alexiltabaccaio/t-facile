@@ -1,4 +1,3 @@
-
 import { 
   doc, 
   getDoc, 
@@ -7,6 +6,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/shared/api';
 import { Product } from '../model/types';
+import { parseLegacyPackageInfo } from '@/features/catalog/lib/productMapper';
 
 export interface CatalogConfig {
   lastUpdateDate: string;
@@ -64,15 +64,20 @@ export const catalogService = {
       }
     }
 
-    return rawArray.map(raw => ({
-      identity: {
-        code: raw.identity?.code || '',
-        name: raw.identity?.name || '',
-        category: raw.identity?.category || '',
-        packageInfo: raw.identity?.packageInfo || '',
-        brand: raw.identity?.brand || undefined,
-        manufacturer: raw.identity?.manufacturer || undefined,
-      },
+    return rawArray.map(raw => {
+      const packageInfo = raw.identity?.packageInfo || '';
+      const packageData = raw.identity?.package;
+
+      return {
+        identity: {
+          code: raw.identity?.code || '',
+          name: raw.identity?.name || '',
+          category: raw.identity?.category || '',
+          packageInfo: packageInfo,
+          package: packageData || parseLegacyPackageInfo(packageInfo),
+          brand: raw.identity?.brand || undefined,
+          manufacturer: raw.identity?.manufacturer || undefined,
+        },
       pricing: {
         currentPrice: raw.pricing?.currentPrice || 0,
         pricePerKg: raw.pricing?.pricePerKg,
@@ -89,7 +94,8 @@ export const catalogService = {
         nicotine: raw.emissions.nicotine,
         co: raw.emissions.co,
       } : undefined
-    }));
+    };
+  });
   }
 };
 

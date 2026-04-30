@@ -31,8 +31,9 @@
     "back": "Indietro",
     "details": "Dettaglio",
     "search": "Cerca...",
-    "noResults": "Nessun risultato trovato",
-    "error": "Si è verificato un errore"
+     "noResults": "Nessun risultato trovato",
+    "error": "Si è verificato un errore",
+    "nd": "N/D"
   },
   "layout": {
     "sidebar": {
@@ -79,6 +80,34 @@
       "nicotine": "Nicotina",
       "tar": "Catrame",
       "co": "CO"
+    },
+    "categories": {
+      "Sigarette": "Sigarette",
+      "Sigari": "Sigari",
+      "Sigaretti": "Sigaretti",
+      "Trinciati": "Trinciati",
+      "Fiuto e Mastico": "Fiuto e Mastico",
+      "Altri Tabacchi": "Altri Tabacchi",
+      "Prodotti da inalazione senza combustione": "Prodotti da inalazione senza combustione"
+    },
+    "packageTypes": {
+      "ASTUCCIO": "Astuccio",
+      "CARTOCCIO": "Cartoccio",
+      "BUSTA": "Busta",
+      "SCATOLA": "Scatola",
+      "LATTINA": "Lattina",
+      "BARATTOLO": "Barattolo",
+      "GENERIC": "Confezione"
+    },
+    "units": {
+      "PIECES": "pezzi",
+      "GRAMS": "grammi",
+      "ML": "ml",
+      "piece": "pezzo",
+      "gram": "grammo"
+    },
+    "common": {
+      "of": "da"
     }
   },
   "admin": {
@@ -212,7 +241,24 @@
     "code": "Codice",
     "type": "Tipologia",
     "package": "Confezione",
-    "pricePerKg": "Prezzo al Kg"
+    "pricePerKg": "Prezzo al Kg",
+    "conventionalPricePerKg": "Prezzo conv./Kg",
+    "fiscalValue": "Valore fiscale/1000 pz"
+  },
+  "product": {
+    "status": {
+      "retired": "RADIATO",
+      "outOfCatalog": "FUORI CATALOGO",
+      "active": "Attivo"
+    },
+    "labels": {
+      "seeDetails": "Vedi dettagli per {{name}}"
+    },
+    "emissions": {
+      "nic": "NIC",
+      "cat": "CAT",
+      "co": "CO"
+    }
   },
   "notifications": {
     "modDetails": "Dettaglio Modifiche",

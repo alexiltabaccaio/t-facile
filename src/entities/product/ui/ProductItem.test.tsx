@@ -31,7 +31,7 @@ describe('ProductItem', () => {
     
     expect(screen.getByText('Marlboro Gold')).toBeDefined();
     expect(screen.getByText('Sigarette')).toBeDefined();
-    expect(screen.getByText('20 pezzi')).toBeDefined();
+    expect(screen.getByText('da 20 pezzi')).toBeDefined();
     expect(screen.getByText(/6,00/)).toBeDefined();
     expect(screen.getByText('12345')).toBeDefined();
   });

@@ -1,9 +1,10 @@
 
 
-
 import React from 'react';
 import { Product, SortKey } from '../model/types';
 import { escapeRegExp, SYNONYM_MAP } from '@/shared/lib';
+import { useTranslation } from 'react-i18next';
+import { formatPackage } from '../lib/packageFormatter';
 
 interface ProductItemProps {
   product: Product;
@@ -43,11 +44,15 @@ const Highlight: React.FC<{ text: string | undefined; keywords: string[]; isCate
 
 
 const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywords, style, sortKey }) => {
+  const { t } = useTranslation();
   const formattedPrice = `€ ${product.pricing.currentPrice.toFixed(2).replace('.', ',')}`;
   const isRetired = product.lifecycle.status === 'Radiato';
   const isOutOfCatalog = product.lifecycle.status === 'Fuori Catalogo';
   const shouldHighlightText = searchKeywords.length > 0;
   const showEmissions = ['nicotine', 'tar', 'co'].includes(sortKey) && product.emissions;
+
+  const localizedCategory = t(`catalog.categories.${product.identity.category}`, { defaultValue: product.identity.category });
+  const localizedPackage = formatPackage(product.identity.package, product.identity.packageInfo, t);
 
   const renderPriceWithHighlight = () => {
     if (searchKeywords.length === 0) {
@@ -128,21 +133,21 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywo
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onClick()}
-      aria-label={`Vedi dettagli per ${product.identity.name}`}
+      aria-label={t('product.labels.seeDetails', { name: product.identity.name })}
     >
       <div className="flex-grow min-w-0 flex flex-col">
         <div>
             <h3 className="text-light-text dark:text-dark-text-primary font-semibold text-sm leading-tight flex items-start gap-2">
             <span className="block min-w-0 break-words line-clamp-2">{shouldHighlightText ? <Highlight text={product.identity.name} keywords={searchKeywords} /> : product.identity.name}</span>
-            {isRetired && <span className="text-[10px] font-semibold text-red-100 bg-red-600 dark:bg-red-700 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">RADIATO</span>}
-            {isOutOfCatalog && <span className="text-[10px] font-semibold text-yellow-900 bg-yellow-400 dark:bg-yellow-500 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">FUORI CATALOGO</span>}
+            {isRetired && <span className="text-[10px] font-semibold text-red-100 bg-red-600 dark:bg-red-700 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">{t('product.status.retired')}</span>}
+            {isOutOfCatalog && <span className="text-[10px] font-semibold text-yellow-900 bg-yellow-400 dark:bg-yellow-500 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">{t('product.status.outOfCatalog')}</span>}
             </h3>
             <p className="text-xs leading-snug text-neutral-600 dark:text-dark-text-primary mt-1">
-            {shouldHighlightText ? <Highlight text={product.identity.category} keywords={searchKeywords} isCategory={true} /> : product.identity.category}
+            {shouldHighlightText ? <Highlight text={localizedCategory} keywords={searchKeywords} isCategory={true} /> : localizedCategory}
             </p>
         </div>
         <p className="text-xs leading-snug text-neutral-500 dark:text-dark-text-secondary mt-1">
-          {shouldHighlightText ? <Highlight text={product.identity.packageInfo} keywords={searchKeywords} /> : product.identity.packageInfo}
+          {shouldHighlightText ? <Highlight text={localizedPackage} keywords={searchKeywords} /> : localizedPackage}
         </p>
       </div>
       <div className="text-right flex-shrink-0">
@@ -155,18 +160,18 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywo
         {showEmissions && (
             <div className="text-[10px] text-neutral-500 dark:text-dark-text-secondary mt-1.5 flex items-center gap-x-1.5 justify-end">
                 <span className={sortKey === 'nicotine' ? 'font-bold text-light-text dark:text-dark-text-primary' : ''}>
-                    NIC&nbsp;<span className="tabular-nums">{product.emissions!.nicotine.toFixed(1)}</span>
+                    {t('product.emissions.nic')}&nbsp;<span className="tabular-nums">{product.emissions!.nicotine.toFixed(1)}</span>
                 </span>
                 <span className="text-neutral-400 dark:text-neutral-600" aria-hidden="true">|</span>
                 <span className={`${sortKey === 'tar' ? 'font-bold text-light-text dark:text-dark-text-primary' : ''}`}>
-                    CAT&nbsp;
+                    {t('product.emissions.cat')}&nbsp;
                     <span className="inline-block w-4 tabular-nums">
                         {product.emissions!.tar.toFixed(0)}
                     </span>
                 </span>
                 <span className="text-neutral-400 dark:text-neutral-600" aria-hidden="true">|</span>
                 <span className={`${sortKey === 'co' ? 'font-bold text-light-text dark:text-dark-text-primary' : ''}`}>
-                    CO&nbsp;
+                    {t('product.emissions.co')}&nbsp;
                     <span className="inline-block w-4 tabular-nums">
                         {product.emissions!.co.toFixed(0)}
                     </span>

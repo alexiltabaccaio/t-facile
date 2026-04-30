@@ -41,7 +41,7 @@ describe('ProductDetail', () => {
     expect(screen.getByText('Tipologia')).toBeDefined();
     expect(screen.getByText('Sigarette')).toBeDefined();
     expect(screen.getByText('Confezione')).toBeDefined();
-    expect(screen.getByText('20 pezzi')).toBeDefined();
+    expect(screen.getByText('da 20 pezzi')).toBeDefined();
   });
 
   it('renders advanced information correctly', () => {

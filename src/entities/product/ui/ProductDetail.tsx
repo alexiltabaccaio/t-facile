@@ -2,19 +2,24 @@ import React from 'react';
 import { Product } from '../model/types';
 import { formatToDisplayDate } from '@/shared/lib';
 import { useTranslation } from 'react-i18next';
+import { formatPackage } from '../lib/packageFormatter';
 
 interface ProductDetailProps {
   product: Product;
 }
 
-const DetailRow: React.FC<{ label: string; value: string | number | undefined }> = ({ label, value }) => (
-  <div className="flex justify-between py-3 border-b border-neutral-200 dark:border-dark-border">
-    <dt className="text-neutral-600 dark:text-dark-text-secondary">{label}</dt>
-    <dd className="text-light-text dark:text-dark-text-primary font-medium text-right">{value ?? 'N/D'}</dd>
-  </div>
-);
+const DetailRow: React.FC<{ label: string; value: string | number | undefined }> = ({ label, value }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex justify-between py-3 border-b border-neutral-200 dark:border-dark-border">
+      <dt className="text-neutral-600 dark:text-dark-text-secondary">{label}</dt>
+      <dd className="text-light-text dark:text-dark-text-primary font-medium text-right">{value ?? t('common.nd')}</dd>
+    </div>
+  );
+};
 
 const StatusRow: React.FC<{ label: string; value: string | undefined }> = ({ label, value }) => {
+  const { t } = useTranslation();
   const isRetired = value === 'Radiato';
   const isOutOfCatalog = value === 'Fuori Catalogo';
   
@@ -22,11 +27,13 @@ const StatusRow: React.FC<{ label: string; value: string | undefined }> = ({ lab
   if (isRetired) statusColor = 'text-red-600 dark:text-red-500';
   if (isOutOfCatalog) statusColor = 'text-yellow-600 dark:text-yellow-500';
 
+  const localizedStatus = value === 'Attivo' ? t('product.status.active') : value;
+
   return (
       <div className="flex justify-between py-3 border-b border-neutral-200 dark:border-dark-border">
           <dt className="text-neutral-600 dark:text-dark-text-secondary">{label}</dt>
           <dd className={`font-medium text-right ${statusColor}`}>
-              {value ?? 'N/D'}
+              {localizedStatus ?? t('common.nd')}
           </dd>
       </div>
   );
@@ -36,6 +43,9 @@ const StatusRow: React.FC<{ label: string; value: string | undefined }> = ({ lab
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { t } = useTranslation();
   const formattedPrice = `€ ${product.pricing.currentPrice.toFixed(2).replace('.', ',')}`;
+
+  const localizedCategory = t(`catalog.categories.${product.identity.category}`, { defaultValue: product.identity.category });
+  const localizedPackage = formatPackage(product.identity.package, product.identity.packageInfo, t);
 
   const proFeatures = (
     <>
@@ -96,11 +106,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <dl>
           <DetailRow label={t('productDetail.price')} value={formattedPrice} />
           <DetailRow label={t('productDetail.code')} value={product.identity.code} />
-          <DetailRow label={t('productDetail.type')} value={product.identity.category} />
-          <DetailRow label={t('productDetail.package')} value={product.identity.packageInfo} />
+          <DetailRow label={t('productDetail.type')} value={localizedCategory} />
+          <DetailRow label={t('productDetail.package')} value={localizedPackage} />
           {!!product.pricing.pricePerKg && <DetailRow label={t('productDetail.pricePerKg')} value={`€ ${product.pricing.pricePerKg.toFixed(2).replace('.', ',')}`} />}
-          {!!product.pricing.conventionalPricePerKg && <DetailRow label="Conventional Price/Kg" value={`€ ${product.pricing.conventionalPricePerKg.toFixed(2).replace('.', ',')}`} />}
-          {!!product.pricing.fiscalValuePer1000Pieces && <DetailRow label="Fiscal Value/1000 pcs" value={`€ ${product.pricing.fiscalValuePer1000Pieces.toFixed(2).replace('.', ',')}`} />}
+          {!!product.pricing.conventionalPricePerKg && <DetailRow label={t('productDetail.conventionalPricePerKg')} value={`€ ${product.pricing.conventionalPricePerKg.toFixed(2).replace('.', ',')}`} />}
+          {!!product.pricing.fiscalValuePer1000Pieces && <DetailRow label={t('productDetail.fiscalValue')} value={`€ ${product.pricing.fiscalValuePer1000Pieces.toFixed(2).replace('.', ',')}`} />}
         </dl>
       </div>
       

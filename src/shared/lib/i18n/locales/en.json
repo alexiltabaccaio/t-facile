@@ -31,8 +31,9 @@
     "back": "Back",
     "details": "Detail",
     "search": "Search...",
-    "noResults": "No results found",
-    "error": "An error occurred"
+     "noResults": "No results found",
+    "error": "An error occurred",
+    "nd": "N/A"
   },
   "layout": {
     "sidebar": {
@@ -79,6 +80,34 @@
       "nicotine": "Nicotine",
       "tar": "Tar",
       "co": "CO"
+    },
+    "categories": {
+      "Sigarette": "Cigarettes",
+      "Sigari": "Cigars",
+      "Sigaretti": "Cigarillos",
+      "Trinciati": "Rolling Tobacco",
+      "Fiuto e Mastico": "Snuff & Chewing Tobacco",
+      "Altri Tabacchi": "Other Tobacco Products",
+      "Prodotti da inalazione senza combustione": "Heated Tobacco / E-liquids"
+    },
+    "packageTypes": {
+      "ASTUCCIO": "Box",
+      "CARTOCCIO": "Soft Pack",
+      "BUSTA": "Pouch",
+      "SCATOLA": "Tin",
+      "LATTINA": "Can",
+      "BARATTOLO": "Jar",
+      "GENERIC": "Package"
+    },
+    "units": {
+      "PIECES": "pieces",
+      "GRAMS": "grams",
+      "ML": "ml",
+      "piece": "piece",
+      "gram": "gram"
+    },
+    "common": {
+      "of": "of"
     }
   },
   "admin": {
@@ -212,7 +241,24 @@
     "code": "Code",
     "type": "Type",
     "package": "Package",
-    "pricePerKg": "Price per Kg"
+    "pricePerKg": "Price per Kg",
+    "conventionalPricePerKg": "Conv. Price/Kg",
+    "fiscalValue": "Fiscal Value/1000 pcs"
+  },
+  "product": {
+    "status": {
+      "retired": "RETIRED",
+      "outOfCatalog": "OUT OF CATALOG",
+      "active": "Active"
+    },
+    "labels": {
+      "seeDetails": "View details for {{name}}"
+    },
+    "emissions": {
+      "nic": "NIC",
+      "cat": "CAT",
+      "co": "CO"
+    }
   },
   "notifications": {
     "modDetails": "Modification Details",

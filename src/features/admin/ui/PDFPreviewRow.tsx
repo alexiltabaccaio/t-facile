@@ -3,6 +3,7 @@ import { PlusCircle, MinusCircle, AlertTriangle, Zap, Info } from 'lucide-react'
 import { DiffItem } from '../hooks/usePDFDiff';
 import { formatToDisplayDate } from '@/shared/lib';
 import { useTranslation } from 'react-i18next';
+import { formatPackage } from '@/entities/product/lib/packageFormatter';
 
 interface PDFPreviewRowProps {
   item: DiffItem;
@@ -18,6 +19,9 @@ const ArrowRight = ({ className }: { className?: string }) => (
 export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
   const { t } = useTranslation();
 
+  const localizedCategory = t(`catalog.categories.${item.product.category}`, { defaultValue: item.product.category });
+  const localizedPackage = formatPackage(item.product.package, item.product.packageInfo || '', t);
+
   return (
     <tr className="bg-white dark:bg-neutral-900/40 hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group">
       <td className="px-4 py-3 lg:px-6 lg:py-4">
@@ -30,8 +34,8 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
       </td>
       <td className="px-4 py-3 lg:px-6 lg:py-4">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold text-neutral-700 dark:text-neutral-300 uppercase">{item.product.category}</span>
-          <span className="text-[10px] text-neutral-500 truncate max-w-[120px] lg:max-w-xs" title={item.product.packageInfo}>{item.product.packageInfo || '---'}</span>
+          <span className="text-[10px] font-bold text-neutral-700 dark:text-neutral-300 uppercase">{localizedCategory}</span>
+          <span className="text-[10px] text-neutral-500 truncate max-w-[120px] lg:max-w-xs" title={localizedPackage}>{localizedPackage || '---'}</span>
         </div>
       </td>
       <td className="px-4 py-3 lg:px-6 lg:py-4">
@@ -62,7 +66,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
         )}
         {item.type === 'status' && item.diffData.newStatus !== 'Radiato' && (
           <span className="flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full uppercase w-fit">
-            <AlertTriangle className="w-3 h-3" /> {t('admin.preview.statusLabel', { status: item.diffData.newStatus })}
+            <AlertTriangle className="w-3 h-3" /> {t('admin.preview.statusLabel', { status: item.diffData.newStatus === 'Attivo' ? t('product.status.active') : item.diffData.newStatus })}
           </span>
         )}
         {item.type === 'emissions' && (
@@ -89,10 +93,10 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
         {item.type === 'status' && (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-[10px]">
-              <span className="text-neutral-400 line-through">{item.diffData.oldStatus || 'Attivo'}</span>
+              <span className="text-neutral-400 line-through">{item.diffData.oldStatus === 'Attivo' ? t('product.status.active') : (item.diffData.oldStatus || t('product.status.active'))}</span>
               <ArrowRight className="w-3 h-3 text-neutral-400" />
               <span className={`font-black ${item.diffData.newStatus === 'Radiato' ? 'text-red-500' : 'text-blue-500'}`}>
-                {item.diffData.newStatus}
+                {item.diffData.newStatus === 'Attivo' ? t('product.status.active') : item.diffData.newStatus}
               </span>
             </div>
             {item.diffData.newStatus === 'Radiato' && item.product.radiationDate && (
@@ -109,7 +113,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
           <div className="flex flex-col gap-1 text-[10px]">
             {item.diffData.newTar !== item.diffData.oldTar && (
               <div className="flex items-center gap-2">
-                <span className="font-bold w-7">CAT:</span>
+                <span className="font-bold w-7">{t('product.emissions.cat')}:</span>
                 <span className="text-neutral-400 line-through">{item.diffData.oldTar}</span>
                 <ArrowRight className="w-3 h-3 text-neutral-400" />
                 <span className="font-black text-purple-500">{item.diffData.newTar}</span>
@@ -117,7 +121,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
             )}
             {item.diffData.newNicotine !== item.diffData.oldNicotine && (
               <div className="flex items-center gap-2">
-                <span className="font-bold w-7">NIC:</span>
+                <span className="font-bold w-7">{t('product.emissions.nic')}:</span>
                 <span className="text-neutral-400 line-through">{item.diffData.oldNicotine}</span>
                 <ArrowRight className="w-3 h-3 text-neutral-400" />
                 <span className="font-black text-purple-500">{item.diffData.newNicotine}</span>
@@ -125,7 +129,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
             )}
             {item.diffData.newCo !== item.diffData.oldCo && (
               <div className="flex items-center gap-2">
-                <span className="font-bold w-7">CO:</span>
+                <span className="font-bold w-7">{t('product.emissions.co')}:</span>
                 <span className="text-neutral-400 line-through">{item.diffData.oldCo}</span>
                 <ArrowRight className="w-3 h-3 text-neutral-400" />
                 <span className="font-black text-purple-500">{item.diffData.newCo}</span>

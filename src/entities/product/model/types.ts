@@ -5,11 +5,19 @@ export interface ProductEmissions {
   co: number;
 }
 
+export type PackageType = 'ASTUCCIO' | 'CARTOCCIO' | 'BUSTA' | 'SCATOLA' | 'LATTINA' | 'BARATTOLO' | 'GENERIC';
+export type PackageUnit = 'PIECES' | 'GRAMS' | 'ML';
+
 export interface ProductIdentity {
   code: string;
   name: string;
   category: string;
-  packageInfo: string;
+  packageInfo: string; // Legacy
+  package?: {
+    type: PackageType;
+    quantity: number;
+    unit: PackageUnit;
+  };
   brand?: string;
   manufacturer?: string;
 }

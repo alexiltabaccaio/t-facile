@@ -72,4 +72,34 @@ describe('productMapper', () => {
     expect(product.pricing.currentPrice).toBe(0);
     expect(product.emissions).toBeUndefined();
   });
+
+  it('should parse legacy packageInfo strings', () => {
+    const testCases = [
+      { info: 'astuccio da 20 pezzi', expected: { type: 'ASTUCCIO', quantity: 20, unit: 'PIECES' } },
+      { info: 'da 30 grammi', expected: { type: 'GENERIC', quantity: 30, unit: 'GRAMS' } },
+      { info: 'cartoccio da 20 pezzi', expected: { type: 'CARTOCCIO', quantity: 20, unit: 'PIECES' } },
+      { info: 'da 1 pezzo', expected: { type: 'GENERIC', quantity: 1, unit: 'PIECES' } },
+      { info: 'da 1000 grammi', expected: { type: 'GENERIC', quantity: 1000, unit: 'GRAMS' } },
+      { info: 'da 10 ml', expected: { type: 'GENERIC', quantity: 10, unit: 'ML' } },
+    ];
+
+    testCases.forEach(({ info, expected }) => {
+      const mockData = { identity: { packageInfo: info } };
+      const mockSnapshot = { id: 'test', data: () => mockData } as any;
+      const product = mapFirestoreDocToProduct(mockSnapshot);
+      expect(product.identity.package).toEqual(expected);
+    });
+  });
+
+  it('should prioritize new structured package field over legacy string', () => {
+    const mockData = {
+      identity: {
+        packageInfo: 'astuccio da 20 pezzi',
+        package: { type: 'SCATOLA', quantity: 50, unit: 'GRAMS' }
+      }
+    };
+    const mockSnapshot = { id: 'test', data: () => mockData } as any;
+    const product = mapFirestoreDocToProduct(mockSnapshot);
+    expect(product.identity.package).toEqual({ type: 'SCATOLA', quantity: 50, unit: 'GRAMS' });
+  });
 });
