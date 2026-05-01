@@ -6,7 +6,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/shared/api';
 import { Product } from '../model/types';
-import { parseLegacyPackageInfo } from '@/features/catalog/lib/productMapper';
+import { parseLegacyPackageInfo } from '../lib/productParser';
 
 export interface CatalogConfig {
   lastUpdateDate: string;

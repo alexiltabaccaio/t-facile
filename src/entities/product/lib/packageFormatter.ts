@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 import { PackageType, PackageUnit } from '../model/types';
-import { parseLegacyPackageInfo } from '@/features/catalog/lib/productMapper';
+import { parseLegacyPackageInfo } from './productParser';
 
 export interface PackageData {
   type: PackageType;

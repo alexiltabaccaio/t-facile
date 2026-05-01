@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProductList from './ProductList';
-import { Product } from '@/entities/product';
+import { Product } from '../model/types';
 
 // Mock AutoSizer to render children immediately with fixed dimensions
 vi.mock('react-virtualized-auto-sizer', () => ({

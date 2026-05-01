@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Theme } from '@/shared/types';
+import { Theme } from '../../types';
 
 interface ThemeState {
   theme: Theme;

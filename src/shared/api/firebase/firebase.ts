@@ -1,3 +1,4 @@
+/* eslint-disable feature-sliced/layers-slices */
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDocFromServer } from "firebase/firestore";

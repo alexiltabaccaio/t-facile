@@ -3,7 +3,7 @@ import { PlusCircle, MinusCircle, AlertTriangle, Zap, Info } from 'lucide-react'
 import { DiffItem } from '../hooks/usePDFDiff';
 import { formatToDisplayDate } from '@/shared/lib';
 import { useTranslation } from 'react-i18next';
-import { formatPackage } from '@/entities/product/lib/packageFormatter';
+import { formatPackage } from '@/entities/product';
 
 interface PDFPreviewRowProps {
   item: DiffItem;
