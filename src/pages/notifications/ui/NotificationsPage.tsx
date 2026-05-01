@@ -3,8 +3,10 @@ import { BellIcon, ChevronRightIcon, TrashIcon } from '@/shared/ui';
 import { useNotificationStore, useNotificationActions } from '@/entities/notification';
 import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 
 const NotificationsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [isConfirming, setIsConfirming] = useState(false);
   const navigate = useNavigate();
 
@@ -22,8 +24,8 @@ const NotificationsPage: React.FC = () => {
   if (updates.length === 0) {
     return (
       <div className="text-center py-10 px-4">
-        <h3 className="text-xl font-semibold text-light-text dark:text-dark-text-primary">Nessuna Notifica</h3>
-        <p className="text-neutral-600 dark:text-dark-text-secondary mt-2">Non ci sono aggiornamenti da mostrare.</p>
+        <h3 className="text-xl font-semibold text-light-text dark:text-dark-text-primary">{t('notifications.emptyTitle')}</h3>
+        <p className="text-neutral-600 dark:text-dark-text-secondary mt-2">{t('notifications.emptySubtitle')}</p>
       </div>
     );
   }
@@ -33,13 +35,13 @@ const NotificationsPage: React.FC = () => {
       <div className="px-4 border-b border-neutral-200 dark:border-dark-border flex items-center h-12">
         {isConfirming ? (
           <div className="flex justify-between items-center w-full animate-in fade-in slide-in-from-top-2 duration-200">
-            <span className="text-sm font-bold text-light-text dark:text-dark-text-primary">Sicuro di voler svuotare?</span>
+            <span className="text-sm font-bold text-light-text dark:text-dark-text-primary">{t('notifications.clearConfirm')}</span>
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setIsConfirming(false)} 
                 className="text-sm font-semibold text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
               >
-                Annulla
+                {t('notifications.cancel')}
               </button>
               <button 
                 onClick={() => {
@@ -48,7 +50,7 @@ const NotificationsPage: React.FC = () => {
                 }} 
                 className="text-sm font-bold text-red-600 dark:text-red-500 hover:text-red-700"
               >
-                Sì, elimina
+                {t('notifications.confirmDelete')}
               </button>
             </div>
           </div>
@@ -58,18 +60,18 @@ const NotificationsPage: React.FC = () => {
                 <button
                     onClick={handleMarkAllAsRead}
                     className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                    aria-label="Segna tutte le notifiche come lette"
+                    aria-label={t('notifications.aria.markAllRead')}
                 >
-                    Segna tutto come letto
+                    {t('notifications.markAllRead')}
                 </button>
             ) : <div />}
             {updates.length > 0 && (
                 <button
                     onClick={() => setIsConfirming(true)}
                     className="text-sm font-semibold text-red-600 dark:text-red-500 hover:underline"
-                    aria-label="Elimina tutte le notifiche"
+                    aria-label={t('notifications.aria.deleteAll')}
                 >
-                    Elimina tutto
+                    {t('notifications.deleteAll')}
                 </button>
             )}
           </div>
@@ -108,13 +110,13 @@ const NotificationsPage: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3 mt-1">
                     <p className="text-[10px] text-neutral-500 dark:text-dark-text-secondary">
-                      {update.date === "Non disponibile" ? "Data non rilevata" : update.date}
+                      {update.date === "Non disponibile" ? t('notifications.noDateDetected') : update.date}
                     </p>
                     {update.stats && (
                       <div className="flex gap-1.5 text-[9px] font-bold">
-                        {update.stats.new > 0 && <span className="text-green-600 dark:text-green-400">+{update.stats.new} Nuovi</span>}
-                        {update.stats.price > 0 && <span className="text-blue-600 dark:text-blue-400">-{update.stats.price} Prezzi</span>}
-                        {update.stats.status > 0 && <span className="text-red-600 dark:text-red-400">-{update.stats.status} Radiati</span>}
+                        {update.stats.new > 0 && <span className="text-green-600 dark:text-green-400">+{update.stats.new} {t('notifications.stats.new')}</span>}
+                        {update.stats.price > 0 && <span className="text-blue-600 dark:text-blue-400">-{update.stats.price} {t('notifications.stats.prices')}</span>}
+                        {update.stats.status > 0 && <span className="text-red-600 dark:text-red-400">-{update.stats.status} {t('notifications.stats.retired')}</span>}
                       </div>
                     )}
                   </div>
@@ -128,7 +130,7 @@ const NotificationsPage: React.FC = () => {
                         handleDeleteNotification(update.id);
                     }}
                     className="p-2 text-neutral-400 hover:text-red-500 dark:hover:text-red-500 transition-colors rounded-full opacity-0 group-hover:opacity-100 focus:opacity-100"
-                    aria-label={`Elimina la notifica: ${update.title}`}
+                    aria-label={t('notifications.aria.deleteSingle', { title: update.title })}
                 >
                     <TrashIcon className="h-5 w-5" />
                 </button>

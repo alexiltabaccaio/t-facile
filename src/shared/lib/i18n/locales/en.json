@@ -267,6 +267,24 @@
     "new": "New",
     "variations": "Variations",
     "retired": "Retired",
-    "noDetails": "No detailed specification available for this record."
+    "noDetails": "No detailed specification available for this record.",
+    "emptyTitle": "No Notifications",
+    "emptySubtitle": "There are no updates to show.",
+    "clearConfirm": "Are you sure you want to clear?",
+    "cancel": "Cancel",
+    "confirmDelete": "Yes, delete",
+    "markAllRead": "Mark all as read",
+    "deleteAll": "Delete all",
+    "noDateDetected": "Date not detected",
+    "stats": {
+      "new": "New",
+      "prices": "Prices",
+      "retired": "Retired"
+    },
+    "aria": {
+      "markAllRead": "Mark all notifications as read",
+      "deleteAll": "Delete all notifications",
+      "deleteSingle": "Delete notification: {{title}}"
+    }
   }
 }

@@ -15,8 +15,8 @@ const UpdateDetailView: React.FC<UpdateDetailViewProps> = ({ update }) => {
             <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm">
                 <h2 className="text-xl font-bold text-light-text dark:text-dark-text-primary text-center mb-1 leading-tight">{update.title}</h2>
                 <p className="text-xs text-neutral-500 dark:text-dark-text-secondary text-center mb-6 italic">
-                    {update.date.includes('non rilevata') 
-                      ? t('notifications.noDate') 
+                    {update.date === "Non disponibile" || update.date.includes('non rilevata') 
+                      ? t('notifications.noDateDetected') 
                       : t('notifications.dated', { date: update.date })}
                 </p>
                 
@@ -24,15 +24,15 @@ const UpdateDetailView: React.FC<UpdateDetailViewProps> = ({ update }) => {
                     <div className="grid grid-cols-3 gap-2 mb-8">
                         <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 p-2 rounded-lg flex flex-col items-center justify-center">
                             <span className="text-sm font-bold text-green-700 dark:text-green-400">{update.stats.new}</span>
-                            <span className="text-[9px] uppercase font-bold text-green-600/60">{t('notifications.new')}</span>
+                            <span className="text-[9px] uppercase font-bold text-green-600/60">{t('notifications.stats.new')}</span>
                         </div>
                         <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 p-2 rounded-lg flex flex-col items-center justify-center">
                             <span className="text-sm font-bold text-blue-700 dark:text-blue-400">{update.stats.price}</span>
-                            <span className="text-[9px] uppercase font-bold text-blue-600/60">{t('notifications.variations')}</span>
+                            <span className="text-[9px] uppercase font-bold text-blue-600/60">{t('notifications.stats.prices')}</span>
                         </div>
                         <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 p-2 rounded-lg flex flex-col items-center justify-center">
                             <span className="text-sm font-bold text-red-700 dark:text-red-400">{update.stats.status}</span>
-                            <span className="text-[9px] uppercase font-bold text-red-600/60">{t('notifications.retired')}</span>
+                            <span className="text-[9px] uppercase font-bold text-red-600/60">{t('notifications.stats.retired')}</span>
                         </div>
                     </div>
                 )}

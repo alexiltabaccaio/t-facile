@@ -267,6 +267,24 @@
     "new": "Nuovi",
     "variations": "Variazioni",
     "retired": "Radiati",
-    "noDetails": "Nessuna specifica dettagliata disponibile per questo record."
+    "noDetails": "Nessuna specifica dettagliata disponibile per questo record.",
+    "emptyTitle": "Nessuna Notifica",
+    "emptySubtitle": "Non ci sono aggiornamenti da mostrare.",
+    "clearConfirm": "Sicuro di voler svuotare?",
+    "cancel": "Annulla",
+    "confirmDelete": "Sì, elimina",
+    "markAllRead": "Segna tutto come letto",
+    "deleteAll": "Elimina tutto",
+    "noDateDetected": "Data non rilevata",
+    "stats": {
+      "new": "Nuovi",
+      "prices": "Prezzi",
+      "retired": "Radiati"
+    },
+    "aria": {
+      "markAllRead": "Segna tutte le notifiche come lette",
+      "deleteAll": "Elimina tutte le notifiche",
+      "deleteSingle": "Elimina la notifica: {{title}}"
+    }
   }
 }
