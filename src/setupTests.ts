@@ -22,7 +22,7 @@ import itTranslations from './shared/lib/i18n/locales/it.json';
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: any) => {
-      // Funzione ricorsiva per navigare l'oggetto delle traduzioni tramite stringa con punti (es. 'layout.header.catalog')
+      // Recursive function to navigate the translations object via dot-notation string (e.g., 'layout.header.catalog')
       const keys = key.split('.');
       let result: any = itTranslations;
       for (const k of keys) {
@@ -30,7 +30,7 @@ vi.mock('react-i18next', () => ({
       }
       
       if (typeof result === 'string') {
-        // Gestione base delle variabili (es. {{version}})
+        // Basic variable handling (e.g., {{version}})
         if (options) {
           Object.keys(options).forEach(optKey => {
             result = result.replace(`{{${optKey}}}`, options[optKey]);

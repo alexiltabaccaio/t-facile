@@ -29,7 +29,7 @@ const NoResults: React.FC = () => (
 
 const ITEM_HEIGHT = 88;
 
-// Rendering riga per la lista singola (mobile)
+// Row rendering for the single list (mobile)
 const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSProperties, data: any }) => {
     const { products, onProductClick, searchKeywords, sortOption } = data;
     const product = products[index];
@@ -45,7 +45,7 @@ const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSP
     );
 });
 
-// Rendering cella per la griglia (desktop)
+// Cell rendering for the grid (desktop)
 const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: number, rowIndex: number, style: React.CSSProperties, data: any }) => {
     const { products, onProductClick, searchKeywords, sortOption, columnCount } = data;
     const index = rowIndex * columnCount + columnIndex;
@@ -57,7 +57,7 @@ const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: nu
         <ProductItem
             style={{
                 ...style,
-                width: Number(style.width) - 20, // Aggiungi padding tra le colonne
+                width: Number(style.width) - 20, // Add padding between columns
                 left: Number(style.left) + 10,
             }}
             product={product}
@@ -126,7 +126,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
             const h = height || cachedContainerHeight;
             const w = width || cachedContainerWidth;
             
-            // Determina il numero di colonne in base alla larghezza
+            // Determine the number of columns based on width
             let columnCount = 1;
             if (w > 800) {
               columnCount = 3;

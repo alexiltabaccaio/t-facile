@@ -29,13 +29,13 @@ vi.mock('firebase/firestore', () => ({
   limit: vi.fn(),
 }));
 
-// Mock di pdfjs-dist
+// Mock for pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
   getDocument: vi.fn(),
 }));
 
-// Mock del modulo virtuale PWA
+// Mock for the PWA virtual module
 vi.mock('virtual:pwa-register/react', () => ({
   useRegisterSW: vi.fn(() => ({
     needRefresh: [false, vi.fn()],

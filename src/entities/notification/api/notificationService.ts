@@ -17,7 +17,7 @@ import { UpdateRecord } from '../model/types';
 
 export const notificationService = {
   /**
-   * Sottoscrizione alle notifiche (le ultime 50)
+   * Subscription to notifications (the last 50)
    */
   subscribeToNotifications: (
     onUpdate: (notifications: UpdateRecord[]) => void,
@@ -43,7 +43,7 @@ export const notificationService = {
   },
 
   /**
-   * Segna una notifica come letta
+   * Marks a notification as read
    */
   markAsRead: async (notificationId: string) => {
     const docRef = doc(db, 'update_history', notificationId);
@@ -51,7 +51,7 @@ export const notificationService = {
   },
 
   /**
-   * Segna tutte le notifiche come lette
+   * Marks all notifications as read
    */
   markAllAsRead: async (notificationIds: string[]) => {
     const batch = writeBatch(db);
@@ -63,7 +63,7 @@ export const notificationService = {
   },
 
   /**
-   * Elimina una notifica
+   * Deletes a notification
    */
   deleteNotification: async (notificationId: string) => {
     const docRef = doc(db, 'update_history', notificationId);
@@ -71,7 +71,7 @@ export const notificationService = {
   },
 
   /**
-   * Elimina tutte le notifiche
+   * Deletes all notifications
    */
   deleteAllNotifications: async () => {
     const q = query(collection(db, 'update_history'));

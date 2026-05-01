@@ -37,15 +37,15 @@ export const analyzePdfChunks = async (
     const file = files[i];
     onStatusUpdate(`Estrazione testo da ${file.name}...`);
     
-    // FASE 1: Estrazione TESTO grezzo tramite PDF.js
+    // PHASE 1: Extract raw TEXT via PDF.js
     const fullText = await extractTextFromPDF(file, (current, total) => {
       onStatusUpdate(`Lettura ${file.name}: pagina ${current} di ${total}...`);
     });
 
     if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
 
-    // FASE 2: Suddivisione in chunk di testo
-    // Aumentare il numero di pagine per blocco a 5 (invece di 1) riduce drasticamente il numero di richieste API (ed evita il 429)
+    // PHASE 2: Split into text chunks
+    // Increasing the number of pages per block to 5 (instead of 1) drastically reduces the number of API requests (and avoids 429)
     const textChunks = splitTextInChunks(fullText, 5);
     
     for (let chunkIdx = 0; chunkIdx < textChunks.length; chunkIdx++) {
@@ -54,17 +54,17 @@ export const analyzePdfChunks = async (
       
       const textData = textChunks[chunkIdx];
 
-      // FASE 3: Generazione prompt
+      // PHASE 3: Prompt generation
       const { systemPrompt, userPrompt } = createPrompts(file.name, textData);
 
-      // FASE 4: Chiamata Gemini SDK (Frontend)
+      // PHASE 4: Call Gemini SDK (Frontend)
       const analysisResult = await analyzeTextWithAI(systemPrompt, userPrompt, aiModel ? aiModel : "gemini-3-flash-preview");
 
       if (analysisResult.products) {
         allProducts.push(...analysisResult.products);
       }
       
-      // Validazione e normalizzazione data
+      // Date validation and normalization
       let normalizedUpdateDate = analysisResult.updateDate;
       if (!normalizedUpdateDate || normalizedUpdateDate === "Non disponibile" || !/^\d{4}-\d{2}-\d{2}$/.test(normalizedUpdateDate)) {
         normalizedUpdateDate = "";
@@ -82,7 +82,7 @@ export const analyzePdfChunks = async (
     throw new Error("L'estrazione non ha prodotto risultati. Verifica il contenuto del PDF.");
   }
 
-  // De-duplicazione e Merge finale
+  // De-duplication and final Merge
   const mergedMap = new Map<string, ParsedProduct>();
   allProducts.forEach(p => {
     const existing = mergedMap.get(p.code);

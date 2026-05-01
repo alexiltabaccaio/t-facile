@@ -7,10 +7,10 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Abilita la lettura dell'IP reale dietro i reverse proxy (es. Google Cloud Run) per il rate limiter
+  // Enables reading real IP behind reverse proxies (e.g., Google Cloud Run) for the rate limiter
   app.set("trust proxy", 1);
 
-  // JSON parsing middleware esteso per consentire parsing testuale lungo proveniente dal PDF
+  // Extended JSON parsing middleware to allow large text parsing from PDFs
   app.use(express.json({ limit: "10mb" }));
 
   // API Routes

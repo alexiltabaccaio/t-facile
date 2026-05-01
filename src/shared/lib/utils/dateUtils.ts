@@ -1,25 +1,25 @@
 /**
- * Utility per la normalizzazione e comparazione delle date
- * provenienti dai listini ADM o salvate nel sistema.
+ * Utilities for normalization and comparison of dates
+ * from ADM price lists or saved in the system.
  */
 
 /**
- * Trasforma una stringa data in un numero YYYYMMDD per comparazioni veloci.
- * Supporta formati: YYYY-MM-DD (ISO) e DD/MM/YYYY (ADM).
+ * Transforms a date string into a YYYYMMDD number for fast comparisons.
+ * Supports formats: YYYY-MM-DD (ISO) and DD/MM/YYYY (ADM).
  */
 export const parseDateToComparableNumber = (dateStr: string): number => {
   if (!dateStr) return 0;
   
-  // Gestione formato YYYY-MM-DD (ISO/Firestore)
+  // Handle YYYY-MM-DD format (ISO/Firestore)
   if (dateStr.includes('-')) {
     return parseInt(dateStr.replace(/-/g, ''));
   }
   
-  // Gestione formato DD/MM/YYYY (Listini ADM)
+  // Handle DD/MM/YYYY format (ADM price lists)
   if (dateStr.includes('/')) {
     const parts = dateStr.split('/');
     if (parts.length !== 3) return 0;
-    // Riordiniamo in YYYYMMDD
+    // Reorder to YYYYMMDD
     return parseInt(`${parts[2]}${parts[1]}${parts[0]}`);
   }
   
@@ -27,26 +27,26 @@ export const parseDateToComparableNumber = (dateStr: string): number => {
 };
 
 /**
- * Verifica se la nuova data è più recente della corrente.
+ * Checks if the new date is newer than the current one.
  */
 export const isDateNewer = (newDate: string, currentDate: string): boolean => {
   return parseDateToComparableNumber(newDate) > parseDateToComparableNumber(currentDate);
 };
 
 /**
- * Converte una stringa data (ISO o ADM) nel formato di visualizzazione DD/MM/YYYY.
+ * Converts a date string (ISO or ADM) to the display format DD/MM/YYYY.
  */
 export const formatToDisplayDate = (dateStr: string | undefined): string => {
   if (!dateStr) return 'N/D';
   
-  // Se è già DD/MM/YYYY
+  // If it is already DD/MM/YYYY
   if (dateStr.includes('/') && dateStr.split('/').length === 3) {
     return dateStr;
   }
   
-  // Se è YYYY-MM-DD
+  // If it is YYYY-MM-DD
   if (dateStr.includes('-')) {
-    const parts = dateStr.split('T')[0].split('-'); // Gestisce anche ISO con tempo
+    const parts = dateStr.split('T')[0].split('-'); // Handles ISO with time as well
     if (parts.length === 3) {
       return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }

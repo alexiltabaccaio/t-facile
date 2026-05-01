@@ -26,7 +26,7 @@ export const useProductSearch = ({
   }, [searchTerm, sortOption.key]);
 
   const displayedProducts = useMemo(() => {
-    // 1. Normalizzazione (Nome in Maiuscolo)
+    // 1. Normalization (Name to Uppercase)
     let processed = initialProducts.map(p => ({
       ...p,
       identity: {
@@ -35,7 +35,7 @@ export const useProductSearch = ({
       }
     }));
 
-    // 2. Filtraggio
+    // 2. Filtering
     processed = filterProducts(processed, {
       isRetiredSearch,
       showRetired,
@@ -44,7 +44,7 @@ export const useProductSearch = ({
       searchKeywords
     });
 
-    // 3. Gestione Match Esatto Codice (priorità assoluta se cercato un solo numero)
+    // 3. Exact Code Match Handling (absolute priority if a single number is searched)
     let exactCodeMatchProduct: Product | null = null;
     if (searchKeywords.length === 1 && /^\d+$/.test(searchKeywords[0])) {
       const codeToFind = searchKeywords[0].toUpperCase();
@@ -54,14 +54,14 @@ export const useProductSearch = ({
       }
     }
 
-    // 4. Ordinamento
+    // 4. Sorting
     sortProducts(processed, sortOption, {
       searchKeywords,
       isRetiredSearch,
       emissionFilters
     });
 
-    // 5. Reinserimento match esatto in cima
+    // 5. Reinsert exact match at the top
     if (exactCodeMatchProduct) {
       processed.unshift(exactCodeMatchProduct);
     }

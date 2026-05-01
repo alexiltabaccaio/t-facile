@@ -46,7 +46,7 @@ export const PDFUploader: React.FC = () => {
     try {
       if (!auth.currentUser) throw new Error(t('admin.manual.unauthenticated'));
 
-      // Chiama il servizio di analisi che astrae PDF.js e l'AI
+      // Calls the analysis service that abstracts PDF.js and the AI
       const result = await analyzePdfChunks(files, setProcessStatus, undefined, aiModel);
       
       setParsedData(result);
@@ -68,14 +68,14 @@ export const PDFUploader: React.FC = () => {
       const products = useCatalogStore.getState().products;
       const { setLastUpdateDate } = useCatalogStore.getState().actions;
       
-      // Chiama il servizio DB di sincronizzazione Firebase
+      // Calls the Firebase sync DB service
       const { finalDate } = await saveParsedDataToFirestore(parsedData, lastUpdateDate, products);
       
       setLastUpdateDate(finalDate);
       setProcessSuccess(true);
       setParsedData(null);
     } catch (err: any) {
-      console.error("Errore salvataggio:", err);
+      console.error("Save error:", err);
       handleFirestoreError(err, 'write', 'system/catalog_chunks');
     } finally {
       setIsProcessing(false);

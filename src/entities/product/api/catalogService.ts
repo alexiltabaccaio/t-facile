@@ -17,7 +17,7 @@ export interface CatalogConfig {
 
 export const catalogService = {
   /**
-   * Sottoscrizione alla configurazione globale del catalogo (data ultimo aggiornamento e syncId)
+   * Subscription to the global catalog configuration (last update date and syncId)
    */
   subscribeToConfig: (
     onUpdate: (config: CatalogConfig) => void,
@@ -42,7 +42,7 @@ export const catalogService = {
   },
 
   /**
-   * Scarica i prodotti dal database divisi per chunk
+   * Downloads the products from the database divided by chunks
    */
   fetchCatalogInChunks: async (totalChunks: number): Promise<Product[]> => {
     const rawArray: any[] = [];

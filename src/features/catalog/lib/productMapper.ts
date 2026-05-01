@@ -2,19 +2,19 @@ import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Product, PackageType, PackageUnit } from '@/entities/product';
 
 /**
- * Parser di emergenza per convertire la vecchia stringa packageInfo in un oggetto strutturato.
- * Molto più flessibile per gestire variati formati legacy.
+ * Emergency parser to convert the old packageInfo string into a structured object.
+ * Much more flexible for handling varied legacy formats.
  */
 export const parseLegacyPackageInfo = (info: string): { type: PackageType; quantity: number; unit: PackageUnit } | undefined => {
   if (!info) return undefined;
 
   const normalized = info.toLowerCase().trim();
   
-  // Regex flessibile: 
-  // 1. Tipo opzionale (astuccio, busta, etc.)
-  // 2. Parola "da" opzionale
-  // 3. Quantità (numero con virgola o punto)
-  // 4. Unità (pezzi, pz, grammi, gr, g, ml)
+  // Flexible Regex: 
+  // 1. Optional type (pack, pouch, etc.)
+  // 2. Optional word "da" (from/of)
+  // 3. Quantity (number with comma or dot)
+  // 4. Unit (pieces, pz, grams, gr, g, ml)
   const regex = /^(?:(\w+)\s+)?(?:da\s+)?([\d.,]+)\s*(\w*)/i;
   const match = normalized.match(regex);
 
@@ -47,8 +47,8 @@ export const parseLegacyPackageInfo = (info: string): { type: PackageType; quant
 };
 
 /**
- * Mappa un documento Firestore in un oggetto Product tipizzato.
- * Gestisce sia il nesting standard che eventuali field appiattiti (es. 'identity.code').
+ * Maps a Firestore document to a typed Product object.
+ * Handles both standard nesting and flattened fields (e.g., 'identity.code').
  */
 export const mapFirestoreDocToProduct = (snapshot: QueryDocumentSnapshot<DocumentData>): Product => {
   const data = snapshot.data();

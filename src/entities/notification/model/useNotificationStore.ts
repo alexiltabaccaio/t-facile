@@ -31,7 +31,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
       const unsubscribe = notificationService.subscribeToNotifications(
         (updates) => {
-          // Calcolo hasUnread basato su localStorage (tracking lineare)
+          // Calculate hasUnread based on localStorage (linear tracking)
           const lastReadId = localStorage.getItem('lastReadUpdateId');
           const lastReadIndex = updates.findIndex(u => u.id === lastReadId);
           

@@ -2,13 +2,13 @@ import { ParsedProduct } from '../api/pdfAnalyzer';
 import { Product } from '@/entities/product';
 
 /**
- * Normalizza il nome della categoria secondo gli standard dell'applicazione.
+ * Normalizes the category name according to application standards.
  */
 export const normalizeCategory = (category: string | undefined): string => {
   if (!category) return 'Altri Tabacchi';
   const c = category.toLowerCase();
   
-  // Priorità ai tipi specifici
+  // Priority for specific types
   if (c.includes('trinciati')) return 'Trinciati';
   if (c.includes('sigaretti')) return 'Sigaretti';
   if (c.includes('sigari')) return 'Sigari';
@@ -20,7 +20,7 @@ export const normalizeCategory = (category: string | undefined): string => {
 };
 
 /**
- * Mappa un prodotto estratto dall'IA nella struttura dati richiesta dal Database Firestore.
+ * Maps a product extracted by the AI into the data structure required by the Firestore Database.
  */
 export const mapParsedProductToFirestore = (product: ParsedProduct, isNew: boolean): any => {
   const isEmissionOnly = product.price === undefined && product.pricePerKg === undefined;
@@ -54,7 +54,7 @@ export const mapParsedProductToFirestore = (product: ParsedProduct, isNew: boole
 };
 
 /**
- * Confronta un prodotto nuovo con uno esistente e restituisce le variazioni trovate.
+ * Compares a new product with an existing one and returns the detected variations found.
  */
 export const detectProductVariations = (
   newDoc: ParsedProduct,
@@ -71,7 +71,7 @@ export const detectProductVariations = (
   const priceChanged = newDoc.price !== undefined && existingDoc.pricing.currentPrice !== undefined && newDoc.price !== existingDoc.pricing.currentPrice;
   const statusChanged = newDoc.status !== undefined && newDoc.status !== existingDoc.lifecycle.status;
   
-  // Rileviamo se i valori delle emissioni sono cambiati
+  // Detect if emission values have changed
   const emissionsChanged = (newDoc.tar !== undefined && newDoc.tar !== existingDoc.emissions?.tar) ||
                           (newDoc.nicotine !== undefined && newDoc.nicotine !== existingDoc.emissions?.nicotine) ||
                           (newDoc.co !== undefined && newDoc.co !== existingDoc.emissions?.co);

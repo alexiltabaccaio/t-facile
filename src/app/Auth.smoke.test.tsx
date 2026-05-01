@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import { SessionProvider } from '@/entities/session';
 
-// 1. Mock delle dipendenze esterne
+// 1. Mock external dependencies
 vi.mock('@vercel/analytics/react', () => ({
   Analytics: () => null,
 }));
@@ -13,7 +13,7 @@ vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(() => ({})),
 }));
 
-// Setup base per Firebase Auth e Firestore
+// Base setup for Firebase Auth and Firestore
 const mockOnAuthStateChanged = vi.fn();
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
@@ -37,7 +37,7 @@ vi.mock('firebase/firestore', () => ({
   limit: vi.fn(),
 }));
 
-// Mock del modulo virtuale PWA
+// Mock the virtual PWA module
 vi.mock('virtual:pwa-register/react', () => ({
   useRegisterSW: vi.fn(() => ({
     needRefresh: [false, vi.fn()],
@@ -46,13 +46,13 @@ vi.mock('virtual:pwa-register/react', () => ({
   })),
 }));
 
-// Mock di pdfjs-dist
+// Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
   getDocument: vi.fn(),
 }));
 
-// Mock del servizio catalogo (per evitare errori nel boot di App)
+// Mock the catalog service (to avoid errors in App boot)
 vi.mock('@/entities/product', async (importOriginal) => {
   const actual = await importOriginal<any>();
   return {
@@ -78,7 +78,7 @@ describe('Auth & Route Protection Smoke Test', () => {
   });
 
   it('denies access to /admin for unauthenticated users', async () => {
-    // Simula utente non loggato
+    // Simulate user not logged in
     mockOnAuthStateChanged.mockImplementation((callback) => callback(null));
 
     render(
@@ -89,7 +89,7 @@ describe('Auth & Route Protection Smoke Test', () => {
       </MemoryRouter>
     );
 
-    // Verifichiamo che appaia il messaggio di Accesso Negato
+    // Verify that the "Access Denied" message appears
     await waitFor(() => {
       expect(screen.getByText(/Accesso Negato/i)).toBeDefined();
       expect(screen.getByText(/riservata agli amministratori/i)).toBeDefined();
@@ -97,9 +97,9 @@ describe('Auth & Route Protection Smoke Test', () => {
   });
 
   it('denies access to /admin for logged-in but non-admin users', async () => {
-    // Simula utente loggato
+    // Simulate user logged in
     mockOnAuthStateChanged.mockImplementation((callback) => callback({ uid: 'user123', email: 'user@test.com' }));
-    // Simula che NON sia admin nel database
+    // Simulate that user is NOT admin in the database
     mockGetDoc.mockResolvedValue({ exists: () => false });
 
     render(
@@ -116,9 +116,9 @@ describe('Auth & Route Protection Smoke Test', () => {
   });
 
   it('grants access to /admin for authorized admins', async () => {
-    // Simula utente loggato
+    // Simulate user logged in
     mockOnAuthStateChanged.mockImplementation((callback) => callback({ uid: 'admin123', email: 'admin@test.com' }));
-    // Simula che SIA admin nel database
+    // Simulate that user IS admin in the database
     mockGetDoc.mockResolvedValue({ exists: () => true });
 
     render(
@@ -129,9 +129,9 @@ describe('Auth & Route Protection Smoke Test', () => {
       </MemoryRouter>
     );
 
-    // Verifichiamo che appaia il titolo del Pannello Admin (e non Accesso Negato)
+    // Verify that the Admin Panel title appears (and not "Access Denied")
     await waitFor(() => {
-      // Usiamo findAll perché il titolo appare nell'Header e nella pagina (Pannello Admin)
+      // Use getAllByText because the title appears in the Header and on the page (Admin Panel)
       expect(screen.queryByText(/Accesso Negato/i)).toBeNull();
       const adminTitles = screen.getAllByText(/Pannello Admin/i);
       expect(adminTitles.length).toBeGreaterThan(0);

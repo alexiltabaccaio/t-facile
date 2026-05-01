@@ -6,7 +6,7 @@ export interface PromptConfig {
 }
 
 /**
- * Analizza il nome del file e il contenuto del testo per determinare categoria e stato forzati
+ * Analyzes the file name and text content to determine forced category and status
  */
 export const getFileMetadata = (fileName: string, textData: string = "") => {
   const fileNameLower = fileName.toLowerCase();
@@ -33,7 +33,7 @@ export const getFileMetadata = (fileName: string, textData: string = "") => {
 }
 
 /**
- * Factory per la generazione dei prompt basata sul tipo di file e sul chunk di testo
+ * Factory for prompt generation based on file type and text chunk
  */
 export const createPrompts = (fileName: string, textData: string): PromptConfig => {
   const { forcedCategory, forcedStatus, type } = getFileMetadata(fileName, textData);

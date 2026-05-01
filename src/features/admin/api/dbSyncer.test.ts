@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { saveParsedDataToFirestore } from './dbSyncer';
 
-// Mock di Firebase Firestore
+// Mock Firebase Firestore
 const mockSet = vi.fn();
 const mockCommit = vi.fn(() => Promise.resolve());
 vi.mock('firebase/firestore', () => ({
@@ -18,7 +18,7 @@ vi.mock('@/shared/api', () => ({
   db: {}
 }));
 
-// Mock dello store di Zustand
+// Mock Zustand store
 vi.mock('@/entities/product', () => ({
   useCatalogStore: {
     getState: vi.fn(() => ({ categoryDates: {} }))
@@ -32,7 +32,7 @@ describe('dbSyncer', () => {
 
   describe('saveParsedDataToFirestore', () => {
     it('should split data into chunks correctly', async () => {
-      // Creiamo un dataset di 2000 prodotti (il CHUNK_SIZE nel codice è 1500)
+      // Create a dataset of 2000 products (CHUNK_SIZE in code is 1500)
       const mockProducts = Array.from({ length: 2000 }, (_, i) => ({
         code: `CODE_${i}`,
         name: `Product ${i}`,
@@ -48,11 +48,11 @@ describe('dbSyncer', () => {
 
       expect(result.finalDate).toBe('10/01/2026');
       
-      // Verifichiamo che siano stati creati 2 chunk (2000 / 1500 = 2)
-      // Uno per catalog_chunk_0 e uno per catalog_chunk_1
+      // Verify that 2 chunks were created (2000 / 1500 = 2)
+      // One for catalog_chunk_0 and one for catalog_chunk_1
       const setCalls = mockSet.mock.calls as any[][];
       
-      // Chiamate previste: 2 chunk + 1 config + 1 history = 4 chiamate set
+      // Expected calls: 2 chunks + 1 config + 1 history = 4 set calls
       expect(setCalls.length).toBe(4);
       
       // Verifica chunk 0
@@ -83,8 +83,8 @@ describe('dbSyncer', () => {
 
       await saveParsedDataToFirestore(mockParsedData, '01/01/2026', []);
       
-      // Solo 1 chiamata per il config (totalChunks: 0)
-      // La history non viene scritta se allVariations è vuota
+      // Only 1 call for config (totalChunks: 0)
+      // History is not written if allVariations is empty
       expect(mockSet).toHaveBeenCalledTimes(1);
       const setCalls = mockSet.mock.calls as any[][];
       expect(setCalls[0][0].id).toBe('config');

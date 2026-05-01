@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import AdminPage from './ui/AdminPage';
 import { SessionProvider } from '@/entities/session';
 
-// 1. Mock delle dipendenze
+// 1. Mock dependencies
 vi.mock('@vercel/analytics/react', () => ({ Analytics: () => null }));
 vi.mock('firebase/app', () => ({ initializeApp: vi.fn(() => ({})) }));
 
@@ -31,7 +31,7 @@ vi.mock('firebase/firestore', () => ({
   limit: vi.fn(),
 }));
 
-// Mock del modulo virtuale PWA
+// Mock the virtual PWA module
 vi.mock('virtual:pwa-register/react', () => ({
   useRegisterSW: vi.fn(() => ({
     needRefresh: [false, vi.fn()],
@@ -40,13 +40,13 @@ vi.mock('virtual:pwa-register/react', () => ({
   })),
 }));
 
-// Mock di pdfjs-dist
+// Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
   getDocument: vi.fn(),
 }));
 
-// Mock della feature admin per evitare side effects complessi
+// Mock the admin feature to avoid complex side effects
 vi.mock('@/features/admin', async (importOriginal) => {
   const actual = await importOriginal<any>();
   return {
@@ -59,7 +59,7 @@ vi.mock('@/features/admin', async (importOriginal) => {
 describe('Admin Page Smoke Test', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Simula utente ADMIN loggato per tutti i test in questo file
+    // Simulate an ADMIN user logged in for all tests in this file
     mockOnAuthStateChanged.mockImplementation((callback) => callback({ uid: 'admin123', email: 'admin@test.com' }));
     mockGetDoc.mockResolvedValue({ exists: () => true });
   });

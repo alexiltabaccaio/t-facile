@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useNotificationStore } from './useNotificationStore';
 import { notificationService } from '../api/notificationService';
 
-// Mock del servizio notifiche
+// Mock notification service
 vi.mock('../api/notificationService', () => ({
   notificationService: {
     subscribeToNotifications: vi.fn(),

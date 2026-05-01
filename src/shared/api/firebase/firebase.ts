@@ -4,7 +4,7 @@ import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
 import firebaseConfig from "../../../../firebase-applet-config.json";
 
 const app = initializeApp(firebaseConfig);
-// Se il database ID è "(default)", non passarlo affatto per evitare problemi di risoluzione su alcuni client
+// If the database ID is "(default)", do not pass it at all to avoid resolution issues on some clients
 export const db = (firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)')
   ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
   : getFirestore(app);
@@ -61,7 +61,7 @@ export async function testConnection() {
       if (error.message.includes('the client is offline')) {
         console.error("Firebase is offline. Please check your configuration and network.");
       } else if (error.message.includes('Missing or insufficient permissions')) {
-        // Nessun problema: significa che Firebase è online e le regole di sicurezza stanno funzionando!
+        // No problem: it means Firebase is online and security rules are working!
         console.log("Firebase connection established securely (permissions active).");
       }
     }

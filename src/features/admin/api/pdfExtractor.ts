@@ -1,6 +1,6 @@
 import * as pdfjs from 'pdfjs-dist';
 
-// Configurazione Worker locale per Vite
+// Local Worker configuration for Vite
 const pdfWorker = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -18,7 +18,7 @@ export const extractTextFromPDF = async (file: File, onProgress?: (page: number,
       .filter((item: any) => 'str' in item)
       .map((item: any) => item.str);
     
-    // Uniamo le stringhe della pagina con spazi
+    // Join the page strings with spaces
     fullText += `\n--- PAGE ${i} ---\n`;
     fullText += strings.join(' ');
     

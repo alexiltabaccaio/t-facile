@@ -57,7 +57,7 @@ export const ADMAutoUpdater: React.FC = () => {
         </button>
       </div>
 
-      {/* Area Status Processing */}
+      {/* Processing Status Area */}
       {isProcessing && (
          <div className="bg-blue-100/50 dark:bg-blue-900/30 rounded p-4 flex flex-col items-center justify-center mt-4 border border-blue-200 dark:border-blue-800">
            <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-3" />
@@ -72,7 +72,7 @@ export const ADMAutoUpdater: React.FC = () => {
          </div>
       )}
 
-      {/* Controllo Staging (Human-in-the-loop) */}
+      {/* Staging Control (Human-in-the-loop) */}
       {processedData && !isProcessing && (
           <PDFPreviewTable 
             parsedData={processedData} 
@@ -89,7 +89,7 @@ export const ADMAutoUpdater: React.FC = () => {
         </div>
       )}
 
-      {/* Errori */}
+      {/* Errors */}
       {error && !isProcessing && (
          <div className="bg-red-100/50 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-xl p-4 flex flex-col gap-2 mt-4 border border-red-200/50 dark:border-red-800/20 relative group">
            <div className="flex items-start gap-2 pr-8">
@@ -114,7 +114,7 @@ export const ADMAutoUpdater: React.FC = () => {
          </div>
       )}
 
-      {/* Lista aggiornamenti trovati */}
+      {/* List of found updates */}
       {availableUpdates.length > 0 && !isProcessing && !processedData && (
         <div className="mt-4 flex flex-col">
           <div className="mb-3 space-y-4">

@@ -1,7 +1,7 @@
 import { auth } from "@/shared/api";
 
 /**
- * Analizza il testo estratto da un PDF ADM utilizzando l'IA Gemini sul server.
+ * Analyzes the text extracted from an ADM PDF using Gemini AI on the server.
  */
 export async function analyzeTextWithAI(
   systemPrompt: string,

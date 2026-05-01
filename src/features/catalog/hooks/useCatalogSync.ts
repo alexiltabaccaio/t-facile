@@ -4,9 +4,9 @@ import { useCatalogStore, useCatalogActions, catalogService } from '@/entities/p
 import { useShallow } from 'zustand/react/shallow';
 
 /**
- * Hook dedicato alla sincronizzazione intelligente del catalogo prodotti.
- * Sfrutta il Caching (Zustand persist) e 1 singola lettura globale
- * per minimizzare il consumo della quota di Firestore.
+ * Hook dedicated to the intelligent synchronization of the product catalog.
+ * Leverages Caching (Zustand persist) and 1 single global read
+ * to minimize Firestore quota consumption.
  */
 export const useCatalogSync = () => {
   const { 
@@ -40,16 +40,16 @@ export const useCatalogSync = () => {
   }, [persistedDate, persistedSyncId, persistedProducts]);
 
   useEffect(() => {
-    // 1. Test iniziale di connessione
+    // 1. Initial connection test
     testConnection();
 
-    // Se abbiamo già dati in locale all'avvio, l'interfaccia può sbloccarsi immediatamente
+    // If we already have local data at startup, the interface can unlock immediately
     if (persistedProducts && persistedProducts.length > 0) {
       setIsInitialLoading(false);
       setIsOnline(true);
     }
 
-    // 2. Sincronizzazione Leggera usando il servizio
+    // 2. Lightweight Synchronization using the service
     const unsubscribeConfig = catalogService.subscribeToConfig(
       async (config) => {
         setIsOnline(true);
@@ -75,28 +75,28 @@ export const useCatalogSync = () => {
             setIsInitialLoading(true);
 
             try {
-              console.log("[useCatalogSync] Rilevato aggiornamento. Scaricamento tramite servizio...");
+              console.log("[useCatalogSync] Update detected. Downloading via service...");
               const products = await catalogService.fetchCatalogInChunks(totalChunks);
               
               if (products.length > 0) {
-                console.log(`[useCatalogSync] Sincronizzazione completata: ${products.length} prodotti.`);
+                console.log(`[useCatalogSync] Synchronization complete: ${products.length} products.`);
                 setLastSyncId(serverSyncId);
                 setProducts(products);
                 setIsOnline(true);
                 setSyncError(null);
               } else {
-                console.error("[useCatalogSync] Nessun prodotto trovato nei chunk scaricati.");
+                console.error("[useCatalogSync] No products found in downloaded chunks.");
                 setSyncError("Errore integrità dati: i cataloghi risultano vuoti.");
               }
             } catch (error: any) {
-              console.error("[useCatalogSync] Errore durante il fetch dei chunk:", error);
+              console.error("[useCatalogSync] Error during chunk fetch:", error);
               setSyncError("Errore di sincronizzazione dati.");
             } finally {
                setIsInitialLoading(false);
                isFetchingRef.current = false;
             }
           } else {
-            console.log("[useCatalogSync] Cache Locale già aggiornata.");
+            console.log("[useCatalogSync] Local Cache already up to date.");
             setIsInitialLoading(false);
             setIsOnline(true);
           }
@@ -106,7 +106,7 @@ export const useCatalogSync = () => {
         }
       },
       (err) => {
-        console.error("[useCatalogSync] Errore connessione Firestore:", err);
+        console.error("[useCatalogSync] Firestore connection error:", err);
         setIsOnline(false);
         setIsInitialLoading(false);
         setSyncError("Connessione assente o limitata.");

@@ -41,7 +41,7 @@ export const ProductCatalog: React.FC = () => {
 
   const activeProduct = id ? products.find(p => p.identity.code === id) : null;
 
-  // Sincronizza il prodotto selezionato dall'URL
+  // Synchronize the selected product from the URL
   useEffect(() => {
     if (activeProduct) {
       setSelectedProduct(activeProduct);

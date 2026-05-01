@@ -19,7 +19,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Gestione del risultato del redirect (per PWA/Mobile)
+    // Handle redirect result (for PWA/Mobile)
     handleRedirectResult().catch(console.error);
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {

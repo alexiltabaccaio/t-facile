@@ -3,7 +3,7 @@ import { db } from '@/shared/api';
 import { PackageType, PackageUnit } from '@/entities/product';
 
 /**
- * Parser identico a quello del Mapper per coerenza
+ * Parser identical to the Mapper one for consistency
  */
 const parseLegacyPackageInfo = (info: string): { type: PackageType; quantity: number; unit: PackageUnit } | undefined => {
   if (!info) return undefined;

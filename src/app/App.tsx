@@ -42,7 +42,7 @@ const App: React.FC = () => {
   const isCatalogRoute = location.pathname === '/' || location.pathname.startsWith('/catalog');
 
   if (!isHydrated) {
-    return null; // Evita il flash dell'interfaccia prima del caricamento da IndexedDB
+    return null; // Prevents UI flicker before loading from IndexedDB
   }
 
   return (

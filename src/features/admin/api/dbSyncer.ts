@@ -16,14 +16,14 @@ export const saveParsedDataToFirestore = async (
 
   const batch = writeBatch(db);
   
-  // Prepariamo le statistiche e lo storico
+  // Prepare statistics and history
   const stats = { new: 0, price: 0, status: 0, emissions: 0 };
   const allVariations: string[] = [];
   
-  // Utilizziamo una Map per unire i prodotti vecchi con i nuovi senza perdere quello che non stiamo aggiornando
+  // Use a Map to merge old products with new ones without losing what we are not updating
   const mergedCatalogMap = new Map<string, any>();
   
-  // 1. Identifichiamo le categorie interessate e se abbiamo prezzi o solo emissioni
+  // 1. Identify the relevant categories and whether we have prices or only emissions
   const updatedCategories = new Set<string>();
   const categoriesWithPrices = new Set<string>();
   const categoriesWithActiveProducts = new Set<string>();
@@ -31,7 +31,7 @@ export const saveParsedDataToFirestore = async (
   parsedData.products.forEach(p => {
     if (p.category) {
       updatedCategories.add(p.category);
-      // Se il prodotto ha un prezzo definito, allora stiamo caricando un listino PREZZI per questa categoria
+      // If the product has a defined price, then we are loading a PRICE list for this category
       if (p.price !== undefined) {
         categoriesWithPrices.add(p.category);
       }
@@ -41,13 +41,13 @@ export const saveParsedDataToFirestore = async (
     }
   });
 
-  // 2. Inseriamo prima TUTTI i prodotti esistenti nella Map
+  // 2. Insert ALL existing products into the Map first
   existingProducts.forEach(p => {
-    // Segniamo come "Fuori Catalogo" solo se:
-    // 1. Appartiene a una categoria che stiamo aggiornando
-    // 2. Stiamo caricando un listino PREZZI (non solo emissioni)
-    // 3. Il listino contiene prodotti attivi (non è un listino solo radiati)
-    // 4. Il prodotto non è già radiato
+    // Mark as "Out of Catalog" only if:
+    // 1. It belongs to a category we are updating
+    // 2. We are loading a PRICE list (not just emissions)
+    // 3. The list contains active products (not just a retired list)
+    // 4. The product is not already retired
     const isInCategoryBeingUpdated = updatedCategories.has(p.identity.category);
     const hasFullPriceListInSession = categoriesWithPrices.has(p.identity.category) && categoriesWithActiveProducts.has(p.identity.category);
     
@@ -56,7 +56,7 @@ export const saveParsedDataToFirestore = async (
          ...p,
          lifecycle: {
            ...p.lifecycle,
-           status: 'Fuori Catalogo' // Verrà sovrascritto se presente nel PDF
+           status: 'Fuori Catalogo' // Will be overwritten if present in the PDF
          }
        });
     } else {
@@ -64,7 +64,7 @@ export const saveParsedDataToFirestore = async (
     }
   });
   
-  // 3. Rileviamo le variazioni e sovrascriviamo/aggiungiamo nella Map i prodotti aggiornati
+  // 3. Detect variations and overwrite/add the updated products in the Map
   parsedData.products.forEach((product) => {
     const existing = existingProducts.find(p => p.identity.code === product.code);
     
@@ -82,35 +82,35 @@ export const saveParsedDataToFirestore = async (
     const mapped = mapParsedProductToFirestore(product, !existing);
 
     if (existing) {
-      // Se è un aggiornamento di sole emissioni (prezzi mancanti nel sorgente)
+      // If it is an update of emissions only (missing prices in the source)
       const isEmissionOnlyUpdate = product.price === undefined && product.pricePerKg === undefined && mapped.emissions;
       
       if (isEmissionOnlyUpdate) {
-        // AGGIORNAMENTO INCREMENTALE: Preserviamo l'identità e i prezzi esistenti
+        // INCREMENTAL UPDATE: Preserve existing identity and prices
         mergedCatalogMap.set(product.code, {
           ...existing,
-          emissions: mapped.emissions // Aggiorna solo catrame/nicotina/co
+          emissions: mapped.emissions // Updates only tar/nicotine/co
         });
       } else {
-        // AGGIORNAMENTO STANDARD (Listino Prezzi)
+        // STANDARD UPDATE (Price List)
         mergedCatalogMap.set(product.code, {
           ...mapped,
-          // Se nel nuovo listino mancano le emissioni (comune), preserviamo quelle che avevamo già
+          // If the new list is missing emissions (common), preserve what we already had
           emissions: mapped.emissions || existing.emissions
         });
       }
     } else {
-      // Prodotto totalmente nuovo
+      // Completely new product
       mergedCatalogMap.set(product.code, mapped);
     }
   });
 
-  // Convertiamo la Map finale nel nostro nuovo array globale
+  // Convert the final Map into our new global array
   const dataToSaveArray = Array.from(mergedCatalogMap.values());
 
-  // 3. Salvataggio dell'intero catalogo spezzettato in "Chunks" di sicurezza
-  // Il limite documentale Firestore è 1MB. 5000 prodotti pesano ~1.3MB stringificati.
-  // Suddividendo array in pacchetti da 1500 ci teniamo sotto i 400KB per documento!
+  // 3. Save the entire catalog split into security "Chunks"
+  // The Firestore document limit is 1MB. 5000 products weigh ~1.3MB stringified.
+  // By splitting the array into 1500-item chunks, we keep each document under 400KB!
   const CHUNK_SIZE = 1500;
   const totalChunks = Math.ceil(dataToSaveArray.length / CHUNK_SIZE);
   
@@ -123,15 +123,15 @@ export const saveParsedDataToFirestore = async (
     });
   }
 
-  // 3. Aggiorniamo la configurazione globale
+  // 3. Update global configuration
   const configRef = doc(db, 'system', 'config');
   
-  // Prepariamo l'aggiornamento delle date per categoria
+  // Prepare category dates update
   const { categoryDates: existingCategoryDates } = useCatalogStore.getState();
   const nextCategoryDates = { ...existingCategoryDates };
   
   updatedCategories.forEach(cat => {
-    // Troviamo la data del listino appena processato per questa categoria
+    // Find the date of the listino just processed for this category
     const listinoDate = parsedData.products.find(p => p.category === cat)?.listinoDate || parsedData.updateDate;
     
     if (!nextCategoryDates[cat] || isDateNewer(listinoDate, nextCategoryDates[cat])) {
@@ -141,25 +141,25 @@ export const saveParsedDataToFirestore = async (
 
   const syncPayload: any = { 
     totalChunks: totalChunks,
-    syncId: Date.now(), // Forza sempre il refresh del client
-    lastUpdateDate: finalDateToSave, // Assicuriamo che la data sia sempre presente nel doc config
+    syncId: Date.now(), // Always force client refresh
+    lastUpdateDate: finalDateToSave, // Ensure the date is always present in the config doc
     categoryDates: nextCategoryDates
   };
 
   batch.set(configRef, syncPayload, { merge: true });
 
-  // 4. Salvataggio record storico notifiche (invariato)
+  // 4. Save update history record (unchanged)
   if (allVariations.length > 0) {
     const historyRef = doc(collection(db, 'update_history'));
     
-    // Normalizziamo la data per la visualizzazione
-    const displayDate = parsedData.updateDate && parsedData.updateDate !== "Non disponibile" 
+    // Normalize date for display
+    const displayDate = parsedData.updateDate && parsedData.updateDate !== "Not available" 
       ? parsedData.updateDate 
-      : "recente (data non rilevata)";
+      : "recent (date not detected)";
 
     batch.set(historyRef, {
       id: historyRef.id,
-      title: `Aggiornamento Listino ADM (${displayDate})`,
+      title: `ADM Price List Update (${displayDate})`,
       date: displayDate,
       timestamp: serverTimestamp(),
       stats,

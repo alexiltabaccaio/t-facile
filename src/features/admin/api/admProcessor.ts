@@ -24,7 +24,7 @@ export async function processListiniBatch(
       if (!latestDate || listino.date > latestDate) latestDate = listino.date;
     } catch (err: any) {
       console.warn(`Salto listino ${listino.title} per errore:`, err.message);
-      // Non blocchiamo tutto il batch se un singolo download fallisce, a meno che non sia un abort
+      // Do not block the entire batch if a single download fails, unless it's an abort
       if (err.name === 'AbortError') throw err;
     }
   }
@@ -40,7 +40,7 @@ export async function processListiniBatch(
     aiModel
   );
   
-  // Arricchimento dati: assegniamo la data del listino specifica ad ogni prodotto per categoria
+  // Data enrichment: assign the specific listino date to each product by category
   combinedParsedData.products.forEach(p => {
     const foundListino = selectedListini.find(s => s.category === p.category);
     if (foundListino) {

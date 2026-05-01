@@ -76,9 +76,9 @@ const Header: React.FC = () => {
 
   const formatUpdateDate = (dateStr: string) => {
     if (!dateStr) return '';
-    // Gestione formato DD/MM/YYYY (già corretto)
+    // Handle DD/MM/YYYY format (already correct)
     if (dateStr.includes('/') && dateStr.split('/').length === 3) return dateStr;
-    // Gestione formato YYYY-MM-DD
+    // Handle YYYY-MM-DD format
     if (dateStr.includes('-')) {
       const parts = dateStr.split('-');
       if (parts.length >= 3) {
@@ -151,7 +151,7 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Slot: Data Aggiornamento + Notification Icon */}
+        {/* Right Slot: Update Date + Notification Icon */}
         <div className="relative z-10 flex items-center flex-1 justify-end h-full">
           {isCatalog && (
             <div className="flex-1 flex items-center justify-center gap-1.5 overflow-hidden h-full">

@@ -78,7 +78,7 @@ const AdminPage: React.FC = () => {
           </button>
         </div>
  
-        {/* Strumenti */}
+        {/* Tools */}
         <section className="space-y-3 pt-2 lg:pt-0">
           <div className={`${activeTab === 'manual' ? 'lg:bg-white lg:dark:bg-neutral-900 lg:p-8 lg:rounded-3xl lg:shadow-xl lg:border lg:border-neutral-100 lg:dark:border-neutral-800' : 'w-full'}`}>
             {activeTab === 'auto' && <ADMAutoUpdater />}

@@ -1,22 +1,22 @@
 /**
- * Utility per la gestione del testo estratto dai PDF.
- * Si occupa di dividere il testo in blocchi (chunk) gestibili dai modelli LLM.
+ * Utility for managing text extracted from PDFs.
+ * It handles dividing the text into blocks (chunks) manageable by LLM models.
  */
 
 /**
- * Divide il testo in chunk logici basati sulle pagine per non sovraccaricare il context window
- * e mantenere alta la precisione semantica.
+ * Divides the text into logical chunks based on pages to not overload the context window
+ * and maintain high semantic precision.
  * 
- * @param text Il testo completo estratto dal PDF (con marcatori di pagina)
- * @param pagesPerChunk Numero di pagine da includere in ogni blocco (default 8)
+ * @param text The complete text extracted from the PDF (with page markers)
+ * @param pagesPerChunk Number of pages to include in each block (default 8)
  */
 export const splitTextInChunks = (text: string, pagesPerChunk: number = 3): string[] => {
-  // Usiamo una regex più flessibile per intercettare i marcatori di pagina
+  // Use a more flexible regex to intercept page markers
   const pages = text.split(/---\s*PAGE\s*\d+\s*---/i).filter(p => p.trim().length > 0);
   
   if (pages.length <= 1) {
-    // Se lo split non ha funzionato o c'è una sola pagina, ma il testo è lungo,
-    // usiamo un fallback basato sulla lunghezza dei caratteri (circa 4000 caratteri per chunk)
+    // If the split did not work or there is only one page, but the text is long,
+    // we use a fallback based on character length (approx 4000 characters per chunk)
     if (text.length > 6000) {
       const chunks: string[] = [];
       const chunkSize = 5000;

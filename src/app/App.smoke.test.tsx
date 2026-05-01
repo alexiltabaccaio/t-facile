@@ -4,12 +4,12 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import { SessionProvider } from '@/entities/session';
 
-// 1. Mock delle dipendenze esterne "rumorose"
+// 1. Mock "noisy" external dependencies
 vi.mock('@vercel/analytics/react', () => ({
   Analytics: () => null,
 }));
 
-// Mock di Firebase per evitare inizializzazioni reali
+// Mock Firebase to avoid real initializations
 vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(() => ({})),
 }));
@@ -17,14 +17,14 @@ vi.mock('firebase/app', () => ({
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
   onAuthStateChanged: vi.fn((_auth, callback) => {
-    // Simula un utente non loggato inizialmente
+    // Simulate a user not logged in initially
     callback(null);
     return () => {};
   }),
   getRedirectResult: vi.fn(() => Promise.resolve(null)),
 }));
 
-// Mock scrollTo per JSDOM che non lo supporta
+// Mock scrollTo for JSDOM which does not support it
 if (typeof window !== 'undefined') {
   Element.prototype.scrollTo = vi.fn();
 }
@@ -40,13 +40,13 @@ vi.mock('firebase/firestore', () => ({
   orderBy: vi.fn(),
 }));
 
-// Mock di pdfjs-dist
+// Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
   getDocument: vi.fn(),
 }));
 
-// Mock del modulo virtuale PWA
+// Mock the virtual PWA module
 vi.mock('virtual:pwa-register/react', () => ({
   useRegisterSW: vi.fn(() => ({
     needRefresh: [false, vi.fn()],
@@ -55,7 +55,7 @@ vi.mock('virtual:pwa-register/react', () => ({
   })),
 }));
 
-// Mock del servizio catalogo per evitare chiamate reali a Firestore
+// Mock the catalog service to avoid real calls to Firestore
 vi.mock('@/entities/product', async (importOriginal) => {
   const actual = await importOriginal<any>();
   return {
@@ -74,7 +74,7 @@ vi.mock('@/entities/product', async (importOriginal) => {
   };
 });
 
-// Mock delle notifiche
+// Mock notifications
 vi.mock('@/features/notifications', () => ({
   useNotificationInit: vi.fn(),
 }));
@@ -93,11 +93,11 @@ describe('App Smoke Test', () => {
       </MemoryRouter>
     );
 
-    // Verifichiamo che venga renderizzato il titolo (Header o Sidebar)
+    // Verify that the title is rendered (Header or Sidebar)
     const titles = await screen.findAllByText(/T-Facile/i);
     expect(titles.length).toBeGreaterThan(0);
 
-    // Verifichiamo che il contenitore principale sia presente
+    // Verify that the main container is present
     expect(screen.getByRole('main')).toBeDefined();
   });
 
@@ -110,7 +110,7 @@ describe('App Smoke Test', () => {
       </MemoryRouter>
     );
 
-    // Verifichiamo che il titolo della pagina o il menu mostrino "Impostazioni"
+    // Verify that the page title or menu shows "Settings"
     const settingsTitles = await screen.findAllByText(/Impostazioni/i);
     expect(settingsTitles.length).toBeGreaterThan(0);
   });

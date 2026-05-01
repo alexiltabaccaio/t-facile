@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { catalogService } from './catalogService';
 import { getDoc, onSnapshot } from 'firebase/firestore';
 
-// Mock di Firebase Firestore
+// Mock Firebase Firestore
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn((_db: any, _collection: string, id: string) => ({ id })),
   getDoc: vi.fn(),
