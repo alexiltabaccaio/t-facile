@@ -1,7 +1,6 @@
 import { extractTextFromPDF } from './pdfExtractor';
 import { splitTextInChunks } from './textChunker';
 import { analyzeTextWithAI } from './aiService';
-import { createPrompts } from '../lib/pdfPromptFactory';
 
 export interface ParsedProduct {
   code: string;
@@ -54,11 +53,8 @@ export const analyzePdfChunks = async (
       
       const textData = textChunks[chunkIdx];
 
-      // PHASE 3: Prompt generation
-      const { systemPrompt, userPrompt } = createPrompts(file.name, textData);
-
-      // PHASE 4: Call Gemini SDK (Frontend)
-      const analysisResult = await analyzeTextWithAI(systemPrompt, userPrompt, aiModel ? aiModel : "gemini-3-flash-preview");
+      // PHASE 4: Call Gemini SDK (Frontend calls Backend)
+      const analysisResult = await analyzeTextWithAI(file.name, textData, aiModel ? aiModel : "gemini-3-flash-preview");
 
       if (analysisResult.products) {
         allProducts.push(...analysisResult.products);

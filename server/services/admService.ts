@@ -144,10 +144,20 @@ function parseHTML(html: string, type: string) {
 
 /**
  * Scarica un file PDF dal sito ADM e lo converte in stringa Base64
+ * Previene SSRF forzando l'hostname
  */
-export async function downloadADMPdfAsBase64(pdfUrl: string) {
+export async function downloadADMPdfAsBase64(path: string) {
   try {
-    const response = await fetch(pdfUrl, {
+    const baseUrl = 'https://www.adm.gov.it';
+    const fullUrl = path.startsWith('http') ? path : `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+    
+    // Ulteriore controllo di sicurezza: se per qualche motivo è rimasto un hostname diverso
+    const finalUrl = new URL(fullUrl);
+    if (finalUrl.hostname !== 'www.adm.gov.it') {
+        throw new Error("Hostname non autorizzato nel servizio di download.");
+    }
+
+    const response = await fetch(finalUrl.toString(), {
       headers: {
         'User-Agent': 'Mozilla/5.0'
       }

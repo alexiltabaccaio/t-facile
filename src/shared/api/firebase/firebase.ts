@@ -16,13 +16,6 @@ export interface FirestoreErrorInfo {
   error: string;
   operationType: 'create' | 'update' | 'delete' | 'list' | 'get' | 'write';
   path: string | null;
-  authInfo: {
-    userId: string;
-    email: string;
-    emailVerified: boolean;
-    isAnonymous: boolean;
-    providerInfo: { providerId: string; displayName: string; email: string; }[];
-  }
 }
 
 /**
@@ -30,22 +23,10 @@ export interface FirestoreErrorInfo {
  */
 export function handleFirestoreError(error: any, operation: FirestoreErrorInfo['operationType'], path: string | null = null): never {
   if (error?.message?.includes('Missing or insufficient permissions')) {
-    const user = auth.currentUser;
     const errorInfo: FirestoreErrorInfo = {
       error: error.message,
       operationType: operation,
-      path: path,
-      authInfo: {
-        userId: user?.uid || 'unauthenticated',
-        email: user?.email || 'none',
-        emailVerified: user?.emailVerified || false,
-        isAnonymous: user?.isAnonymous || false,
-        providerInfo: user?.providerData.map(p => ({
-          providerId: p.providerId,
-          displayName: p.displayName || '',
-          email: p.email || ''
-        })) || []
-      }
+      path: path
     };
     throw new Error(JSON.stringify(errorInfo));
   }

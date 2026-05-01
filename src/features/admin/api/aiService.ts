@@ -4,8 +4,8 @@ import { auth } from "@/shared/api";
  * Analyzes the text extracted from an ADM PDF using Gemini AI on the server.
  */
 export async function analyzeTextWithAI(
-  systemPrompt: string,
-  userPrompt: string,
+  fileName: string,
+  textData: string,
   aiModel: string = "gemini-3-flash-preview"
 ) {
   const token = await auth.currentUser?.getIdToken();
@@ -19,7 +19,7 @@ export async function analyzeTextWithAI(
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ systemPrompt, userPrompt, aiModel })
+    body: JSON.stringify({ fileName, textData, aiModel })
   });
 
   const data = await response.json();

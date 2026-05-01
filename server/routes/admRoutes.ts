@@ -31,7 +31,7 @@ router.get("/listini", requireAdmin, async (_req, res) => {
 
 /**
  * GET /api/adm/download
- * Scarica un PDF dal sito ADM e lo restituisce in Base64 (Protatto da SSRF e richiedenti non admin)
+ * Scarica un PDF dal sito ADM e lo restituisce in Base64 (Protetto da SSRF)
  */
 router.get("/download", requireAdmin, async (req, res) => {
   try {
@@ -40,20 +40,21 @@ router.get("/download", requireAdmin, async (req, res) => {
       return res.status(400).json({ error: "URL obbligatorio" });
     }
     
-    // SSRF Prevention: Robust URL Parsing to prevent bypass via '@' or other tricks
+    // SSRF Prevention: Estraiamo solo il PATH e forziamo l'hostname autorizzato nel servizio
+    let pathOnly: string;
     try {
       const parsedUrl = new URL(url);
+      // Consentiamo solo l'hostname ADM se è un URL completo
       if (parsedUrl.hostname !== 'www.adm.gov.it') {
-         return res.status(400).json({ error: "Accesso negato: Hostname non autorizzato. Sono permessi solo download diretti dal server ADM." });
+         return res.status(400).json({ error: "Accesso negato: Hostname non autorizzato." });
       }
-      if (parsedUrl.protocol !== 'https:') {
-         return res.status(400).json({ error: "Accesso negato: Richiesto protocollo sicuro HTTPS." });
-      }
+      pathOnly = parsedUrl.pathname + parsedUrl.search;
     } catch (e) {
-      return res.status(400).json({ error: "Formato URL malformato o non valido." });
+      // Se non è un URL valido, potrebbe essere già un path relativo
+      pathOnly = url.startsWith('/') ? url : `/${url}`;
     }
     
-    const base64 = await downloadADMPdfAsBase64(url);
+    const base64 = await downloadADMPdfAsBase64(pathOnly);
     res.json({ success: true, base64 });
   } catch (err: any) {
     console.error("Error in /api/adm/download:", err);
@@ -67,11 +68,12 @@ router.get("/download", requireAdmin, async (req, res) => {
  */
 router.post("/analyze", requireAdmin, async (req, res) => {
   try {
-    const { systemPrompt, userPrompt, aiModel } = req.body;
-    if (!systemPrompt || !userPrompt) {
-        return res.status(400).json({ error: "Parametri mancanti" });
+    console.log("Analyze request body keys:", Object.keys(req.body || {}));
+    const { fileName, textData, aiModel } = req.body;
+    if (!fileName || !textData) {
+        return res.status(400).json({ error: "Parametri mancanti: fileName e textData sono obbligatori." });
     }
-    const result = await analyzeTextWithAI(systemPrompt, userPrompt, aiModel, req.headers.authorization as string);
+    const result = await analyzeTextWithAI(fileName, textData, aiModel);
     res.json({ success: true, result });
   } catch (err: any) {
     console.error("Error in /api/adm/analyze:", err);

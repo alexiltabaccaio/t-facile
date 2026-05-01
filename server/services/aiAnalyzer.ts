@@ -1,39 +1,93 @@
 import { GoogleGenAI } from "@google/genai";
+import { getDb } from '../firebaseAdmin.js';
 import { getFirebaseConfig } from '../utils/config.js';
+// Pre-defined categories for the AI
+const CATEGORY_INSTRUCTION = `
+CATEGORIE AMMESSE (USA ESATTAMENTE QUESTE):
+- Sigarette
+- Sigari
+- Sigaretti
+- Trinciati
+- Fiuto e Mastico
+- Prodotti da inalazione senza combustione
+- Altri Tabacchi
+`;
 
-export async function analyzeTextWithAI(
-  systemPrompt: string,
-  userPrompt: string,
-  aiModel: string = "gemini-3-flash-preview",
-  authHeader?: string
-) {
-  let apiKey = null;
+function getFileMetadata(fileName: string, textData: string = "") {
+  const fileNameLower = fileName.toLowerCase();
+  const textLower = textData.toLowerCase();
   
-  if (authHeader) {
-      const { projectId, firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
-      
-      const firestoreRestUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents/secrets/gemini`;
-      try {
-        const response = await fetch(firestoreRestUrl, {
-          headers: { Authorization: authHeader }
-        });
-        if (response.ok) {
-           const data = await response.json();
-           apiKey = data?.fields?.key?.stringValue?.trim();
-           console.log("Successfully fetched API key from Firestore", !!apiKey);
-        } else {
-           console.log("Failed to fetch API key from Firestore, HTTP status:", response.status);
-        }
-      } catch (e) {
-        console.error("Failed to fetch api key from firestore", e);
-      }
+  const isRadiato = fileNameLower.startsWith('rad_') || textLower.includes('tabacchi radiati');
+  const isAttivo = fileNameLower.startsWith('att_') || textLower.includes('listino aggiornato al');
+  const isEmissione = fileNameLower.startsWith('emi_') || textLower.includes('livelli di emissione');
+  
+  let forcedCategory = "";
+  const combinedText = fileNameLower + " " + textLower;
+
+  if (combinedText.includes('trinciati')) forcedCategory = "Trinciati";
+  else if (combinedText.includes('sigaretti')) forcedCategory = "Sigaretti";
+  else if (combinedText.includes('sigari')) forcedCategory = "Sigari";
+  else if (combinedText.includes('sigarette')) forcedCategory = "Sigarette";
+  else if (combinedText.includes('fiuto') || combinedText.includes('mastico')) forcedCategory = "Fiuto e Mastico";
+  else if (combinedText.includes('inalazione') || combinedText.includes('liquidi') || combinedText.includes('senza combustione')) forcedCategory = "Prodotti da inalazione senza combustione";
+
+  const forcedStatus: 'Attivo' | 'Radiato' | '' = isRadiato ? 'Radiato' : ((isAttivo || isEmissione) ? 'Attivo' : '');
+  const type = isEmissione ? 'Emissione' : (isRadiato ? 'Radiato' : 'Attivo');
+
+  return { forcedCategory, forcedStatus, type };
+}
+
+function createBackendPrompts(fileName: string, textData: string) {
+  const { forcedCategory, forcedStatus, type } = getFileMetadata(fileName, textData);
+
+  if (type === 'Emissione') {
+    return {
+      systemPrompt: `Sei un esperto estrattore dati per listini EMISSIONI ADM (Nicotina, Catrame, Monossido). ${CATEGORY_INSTRUCTION}`,
+      userPrompt: `Analizza questo testo estratto da un listino EMISSIONI SIGARETTE ADM. Testo: ${textData}`
+    };
   }
 
+  if (type === 'Radiato') {
+    return {
+      systemPrompt: `Sei un esperto estrattore dati specializzato in listini ADM di prodotti RADIATI. ${CATEGORY_INSTRUCTION}`,
+      userPrompt: `Analizza questo testo di prodotti RADIATI ADM. Categoria suggerita: ${forcedCategory || 'Auto-detect'}. Testo: ${textData}`
+    };
+  }
+
+  return {
+    systemPrompt: `Sei un esperto estrattore dati per listini prezzi ADM Tabacchi. ${CATEGORY_INSTRUCTION}`,
+    userPrompt: `Analizza questo testo estratto da un listino prezzi ADM. Categoria: ${forcedCategory || 'Auto-detect'}. Stato: ${forcedStatus || 'Attivo'}. Testo: ${textData}`
+  };
+}
+
+
+export async function analyzeTextWithAI(
+  fileName: string,
+  textData: string,
+  aiModel: string = "gemini-3-flash-preview"
+) {
+  let apiKey = process.env.GEMINI_API_KEY;
+  
+  // Se non c'è in .env, proviamo a leggerla in modo sicuro dal database Firestore usando l'Admin SDK
   if (!apiKey) {
-    throw new Error("API Key mancante nel database. Configurala in /secrets/gemini.");
+    try {
+      const { firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
+      const db = getDb(databaseId);
+      const secretDoc = await db.collection('secrets').doc('gemini').get();
+      if (secretDoc.exists) {
+        apiKey = secretDoc.data()?.key;
+      }
+    } catch (e) {
+      console.error("Errore nel recupero della chiave Gemini da Firestore tramite Admin SDK:", e);
+    }
+  }
+  
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY non configurata sul server (né in .env né in Firestore /secrets/gemini).");
   }
     
   const ai = new GoogleGenAI({ apiKey });
+  const { systemPrompt, userPrompt } = createBackendPrompts(fileName, textData);
 
   try {
     const modelId = aiModel;
