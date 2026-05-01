@@ -79,17 +79,23 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
   React.useLayoutEffect(() => {
     if (containerRef.current) {
       const el = containerRef.current;
-      setContainerSize({
-        width: el.clientWidth,
-        height: el.clientHeight
-      });
+      
+      if (el.clientWidth > 0 && el.clientHeight > 0) {
+        setContainerSize({
+          width: el.clientWidth,
+          height: el.clientHeight
+        });
+      }
 
       const observer = new ResizeObserver((entries) => {
         for (let entry of entries) {
-          setContainerSize({
-            width: entry.contentRect.width,
-            height: entry.contentRect.height
-          });
+          const { width, height } = entry.contentRect;
+          if (width > 0 && height > 0) {
+            setContainerSize(prev => {
+              if (prev.width === width && prev.height === height) return prev;
+              return { width, height };
+            });
+          }
         }
       });
       observer.observe(el);
