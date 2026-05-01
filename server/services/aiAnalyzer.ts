@@ -1,17 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { getDb } from '../firebaseAdmin.js';
 import { getFirebaseConfig } from '../utils/config.js';
-// Pre-defined categories for the AI
-const CATEGORY_INSTRUCTION = `
-CATEGORIE AMMESSE (USA ESATTAMENTE QUESTE):
-- Sigarette
-- Sigari
-- Sigaretti
-- Trinciati
-- Fiuto e Mastico
-- Prodotti da inalazione senza combustione
-- Altri Tabacchi
-`;
+
+interface PromptTemplate {
+  systemPrompt: string;
+  userPromptTemplate: string;
+}
+
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const promptCache: Record<string, { data: PromptTemplate; timestamp: number }> = {};
 
 function getFileMetadata(fileName: string, textData: string = "") {
   const fileNameLower = fileName.toLowerCase();
@@ -37,26 +34,46 @@ function getFileMetadata(fileName: string, textData: string = "") {
   return { forcedCategory, forcedStatus, type };
 }
 
-function createBackendPrompts(fileName: string, textData: string) {
+async function getPromptsFromDb(type: string): Promise<PromptTemplate> {
+  const now = Date.now();
+  if (promptCache[type] && (now - promptCache[type].timestamp < CACHE_TTL_MS)) {
+    return promptCache[type].data;
+  }
+
+  try {
+    const { firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
+    const db = getDb(databaseId);
+    const docId = type.toLowerCase();
+    const promptDoc = await db.collection('prompts').doc(docId).get();
+
+    if (promptDoc.exists) {
+      const data = promptDoc.data() as PromptTemplate;
+      promptCache[type] = { data, timestamp: now };
+      return data;
+    } else {
+      throw new Error(`Documento prompt "${docId}" non trovato nella collezione 'prompts' su Firestore.`);
+    }
+  } catch (error: any) {
+    console.error(`[AI-Analyzer] Error fetching prompt for ${type} from Firestore:`, error);
+    throw new Error(`Impossibile recuperare le istruzioni AI per i listini di tipo "${type}". Verifica la collezione 'prompts' su Firebase. Dettagli: ${error.message}`);
+  }
+}
+
+async function createBackendPrompts(fileName: string, textData: string) {
   const { forcedCategory, forcedStatus, type } = getFileMetadata(fileName, textData);
+  
+  // Fetch the actual template from DB. Will throw an error if it doesn't exist.
+  const template = await getPromptsFromDb(type);
 
-  if (type === 'Emissione') {
-    return {
-      systemPrompt: `Sei un esperto estrattore dati per listini EMISSIONI ADM (Nicotina, Catrame, Monossido). ${CATEGORY_INSTRUCTION}`,
-      userPrompt: `Analizza questo testo estratto da un listino EMISSIONI SIGARETTE ADM. Testo: ${textData}`
-    };
-  }
-
-  if (type === 'Radiato') {
-    return {
-      systemPrompt: `Sei un esperto estrattore dati specializzato in listini ADM di prodotti RADIATI. ${CATEGORY_INSTRUCTION}`,
-      userPrompt: `Analizza questo testo di prodotti RADIATI ADM. Categoria suggerita: ${forcedCategory || 'Auto-detect'}. Testo: ${textData}`
-    };
-  }
+  // Apply template replacements
+  const finalUserPrompt = template.userPromptTemplate
+    .replace(/{{textData}}/g, textData)
+    .replace(/{{forcedCategory}}/g, forcedCategory || 'Deduci dal contesto')
+    .replace(/{{forcedStatus}}/g, forcedStatus || 'Attivo');
 
   return {
-    systemPrompt: `Sei un esperto estrattore dati per listini prezzi ADM Tabacchi. ${CATEGORY_INSTRUCTION}`,
-    userPrompt: `Analizza questo testo estratto da un listino prezzi ADM. Categoria: ${forcedCategory || 'Auto-detect'}. Stato: ${forcedStatus || 'Attivo'}. Testo: ${textData}`
+    systemPrompt: template.systemPrompt,
+    userPrompt: finalUserPrompt
   };
 }
 
@@ -87,7 +104,7 @@ export async function analyzeTextWithAI(
   }
     
   const ai = new GoogleGenAI({ apiKey });
-  const { systemPrompt, userPrompt } = createBackendPrompts(fileName, textData);
+  const { systemPrompt, userPrompt } = await createBackendPrompts(fileName, textData);
 
   try {
     const modelId = aiModel;
@@ -141,3 +158,4 @@ export async function analyzeTextWithAI(
     throw new Error(`Errore durante l'interpretazione dei dati (${aiModel}): ${error.message}`);
   }
 }
+
