@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/entities/session';
-import { db } from '@/shared/api';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { userRepository } from '@/shared/api';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
@@ -24,12 +23,10 @@ const ReportProblemPage: React.FC = () => {
     setError(null);
 
     try {
-      await addDoc(collection(db, 'support_tickets'), {
+      await userRepository.reportProblem({
         userId: user?.uid || 'anonymous',
         userEmail: user?.email || 'anonymous',
         message: message.trim(),
-        createdAt: serverTimestamp(),
-        status: 'new'
       });
       setIsSuccess(true);
       setMessage('');

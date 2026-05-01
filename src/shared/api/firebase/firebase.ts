@@ -1,7 +1,9 @@
 /* eslint-disable feature-sliced/layers-slices */
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
+import { getFirestore, doc, getDocFromServer, FirestoreError } from "firebase/firestore";
+
+export type DbError = FirestoreError;
 import firebaseConfig from "../../../../firebase-applet-config.json";
 
 const app = initializeApp(firebaseConfig);

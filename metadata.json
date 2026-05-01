@@ -1,5 +1,5 @@
 {
   "name": "T-Facile",
-  "description": "Un'applicazione web mobile-first progettata per tabaccai, per cercare e visualizzare rapidamente prezzi e informazioni sui prodotti.",
+  "description": "A mobile-first web application designed for tobacconists to quickly search and view prices and product information.",
   "requestFramePermissions": []
 }

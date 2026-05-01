@@ -40,7 +40,6 @@ export default [
         alias: '@',
         ignoreImportPatterns: [
           '**/store/**',
-          'firebase/**',
         ],
       }],
       'feature-sliced/absolute-relative': ['error', {
@@ -49,6 +48,18 @@ export default [
       'feature-sliced/public-api': ['error', {
         alias: '@',
       }],
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['firebase', 'firebase/*'],
+          message: 'Violazione FSD: I moduli Firebase non possono essere importati direttamente nei layer superiori. Usa @/shared/api/firebase'
+        }]
+      }],
+    },
+  },
+  {
+    files: ['src/shared/api/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': 'off',
     },
   },
 ];

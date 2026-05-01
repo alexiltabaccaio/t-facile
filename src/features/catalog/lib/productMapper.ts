@@ -1,4 +1,3 @@
-import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Product, parseLegacyPackageInfo } from '@/entities/product';
 
 
@@ -6,7 +5,7 @@ import { Product, parseLegacyPackageInfo } from '@/entities/product';
  * Maps a Firestore document to a typed Product object.
  * Handles both standard nesting and flattened fields (e.g., 'identity.code').
  */
-export const mapFirestoreDocToProduct = (snapshot: QueryDocumentSnapshot<DocumentData>): Product => {
+export const mapFirestoreDocToProduct = (snapshot: { id: string, data: () => any }): Product => {
   const data = snapshot.data();
   
   const packageInfo = data.identity?.packageInfo || data['identity.packageInfo'] || '';

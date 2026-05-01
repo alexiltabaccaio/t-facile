@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { fetchADMListini, downloadADMPdfAsBase64 } from '../services/admService.js';
 import { analyzeTextWithAI } from '../services/aiAnalyzer.js';
 import { requireAdmin } from '../middleware/authMiddleware.js';
+import { validateADMUrl } from '../middleware/urlValidator.js';
 
 const admLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -33,28 +34,10 @@ router.get("/listini", requireAdmin, async (_req, res) => {
  * GET /api/adm/download
  * Downloads a PDF from the ADM website and returns it in Base64 (Protected against SSRF)
  */
-router.get("/download", requireAdmin, async (req, res) => {
+router.get("/download", requireAdmin, validateADMUrl, async (req, res) => {
   try {
-    const { url } = req.query;
-    if (!url || typeof url !== 'string') {
-      return res.status(400).json({ error: "URL obbligatorio" });
-    }
-    
-    // SSRF Prevention: Extract only the PATH and force authorized hostname in service
-    let pathOnly: string;
-    try {
-      const parsedUrl = new URL(url);
-      // Only allow ADM hostname if it's a complete URL
-      if (parsedUrl.hostname !== 'www.adm.gov.it') {
-         return res.status(400).json({ error: "Accesso negato: Hostname non autorizzato." });
-      }
-      pathOnly = parsedUrl.pathname + parsedUrl.search;
-    } catch (e) {
-      // If it's not a valid URL, it might already be a relative path
-      pathOnly = url.startsWith('/') ? url : `/${url}`;
-    }
-    
-    const base64 = await downloadADMPdfAsBase64(pathOnly);
+    const path = (req as any).validatedPath;
+    const base64 = await downloadADMPdfAsBase64(path);
     res.json({ success: true, base64 });
   } catch (err: any) {
     console.error("Error in /api/adm/download:", err);

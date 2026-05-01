@@ -1,22 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { saveParsedDataToFirestore } from './dbSyncer';
-
-// Mock Firebase Firestore
-const mockSet = vi.fn();
-const mockCommit = vi.fn(() => Promise.resolve());
-vi.mock('firebase/firestore', () => ({
-  doc: vi.fn((_db: any, _coll: string, id: string) => ({ id })),
-  collection: vi.fn((_db: any, coll: string) => ({ coll })),
-  writeBatch: vi.fn(() => ({
-    set: mockSet,
-    commit: mockCommit
-  })),
-  serverTimestamp: vi.fn(() => 'mock-timestamp')
-}));
+import * as api from '@/shared/api';
 
 vi.mock('@/shared/api', () => ({
+  productRepository: {
+    saveCatalogSync: vi.fn()
+  },
   db: {}
 }));
+
+const mockProductRepository = vi.mocked(api.productRepository);
 
 // Mock Zustand store
 vi.mock('@/entities/product', () => ({
@@ -48,31 +41,19 @@ describe('dbSyncer', () => {
 
       expect(result.finalDate).toBe('10/01/2026');
       
-      // Verify that 2 chunks were created (2000 / 1500 = 2)
-      // One for catalog_chunk_0 and one for catalog_chunk_1
-      const setCalls = mockSet.mock.calls as any[][];
+      expect(mockProductRepository.saveCatalogSync).toHaveBeenCalledTimes(1);
+      const callArgs = (mockProductRepository.saveCatalogSync as any).mock.calls[0][0];
       
-      // Expected calls: 2 chunks + 1 config + 1 history = 4 set calls
-      expect(setCalls.length).toBe(4);
-      
-      // Verifica chunk 0
-      const chunk0Call = setCalls.find(call => call[0].id === 'catalog_chunk_0');
-      expect(chunk0Call).toBeDefined();
-      const chunk0Data = JSON.parse(chunk0Call![1].data);
+      // Chunks
+      expect(callArgs.chunks.length).toBe(2);
+      const chunk0Data = JSON.parse(callArgs.chunks[0]);
       expect(chunk0Data.length).toBe(1500);
-
-      // Verifica chunk 1
-      const chunk1Call = setCalls.find(call => call[0].id === 'catalog_chunk_1');
-      expect(chunk1Call).toBeDefined();
-      const chunk1Data = JSON.parse(chunk1Call![1].data);
+      const chunk1Data = JSON.parse(callArgs.chunks[1]);
       expect(chunk1Data.length).toBe(500);
 
-      // Verifica config
-      const configCall = setCalls.find(call => call[0].id === 'config');
-      expect(configCall).toBeDefined();
-      expect(configCall![1].totalChunks).toBe(2);
-
-      expect(mockCommit).toHaveBeenCalledTimes(1);
+      // Config
+      expect(callArgs.config.totalChunks).toBe(2);
+      expect(callArgs.config.lastUpdateDate).toBe('10/01/2026');
     });
 
     it('should handle case with no changes (no history entry)', async () => {
@@ -83,12 +64,10 @@ describe('dbSyncer', () => {
 
       await saveParsedDataToFirestore(mockParsedData, '01/01/2026', []);
       
-      // Only 1 call for config (totalChunks: 0)
-      // History is not written if allVariations is empty
-      expect(mockSet).toHaveBeenCalledTimes(1);
-      const setCalls = mockSet.mock.calls as any[][];
-      expect(setCalls[0][0].id).toBe('config');
+      expect(mockProductRepository.saveCatalogSync).toHaveBeenCalledTimes(1);
+      const callArgs = (mockProductRepository.saveCatalogSync as any).mock.calls[0][0];
+      expect(callArgs.historyEntry).toBeUndefined();
+      expect(callArgs.config.totalChunks).toBe(0);
     });
   });
 });
-

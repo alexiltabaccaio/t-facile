@@ -1,17 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { catalogService } from './catalogService';
-import { getDoc, onSnapshot } from 'firebase/firestore';
-
-// Mock Firebase Firestore
-vi.mock('firebase/firestore', () => ({
-  doc: vi.fn((_db: any, _collection: string, id: string) => ({ id })),
-  getDoc: vi.fn(),
-  onSnapshot: vi.fn(),
-}));
+import * as api from '@/shared/api';
 
 vi.mock('@/shared/api', () => ({
+  productRepository: {
+    subscribeToConfig: vi.fn(),
+    fetchCatalogChunk: vi.fn(),
+  },
   db: {}
 }));
+
+const mockProductRepository = vi.mocked(api.productRepository);
 
 describe('catalogService', () => {
   beforeEach(() => {
@@ -28,20 +27,10 @@ describe('catalogService', () => {
         { identity: { code: '3', name: 'Product 3' }, pricing: { currentPrice: 30 } }
       ];
 
-      (getDoc as any).mockImplementation((ref: any) => {
-        if (ref.id === 'catalog_chunk_0') {
-          return Promise.resolve({
-            exists: () => true,
-            data: () => ({ data: JSON.stringify(mockProductsChunk0) })
-          });
-        }
-        if (ref.id === 'catalog_chunk_1') {
-          return Promise.resolve({
-            exists: () => true,
-            data: () => ({ data: JSON.stringify(mockProductsChunk1) })
-          });
-        }
-        return Promise.resolve({ exists: () => false });
+      mockProductRepository.fetchCatalogChunk.mockImplementation((index: number) => {
+        if (index === 0) return Promise.resolve(JSON.stringify(mockProductsChunk0));
+        if (index === 1) return Promise.resolve(JSON.stringify(mockProductsChunk1));
+        return Promise.resolve(null);
       });
 
       const products = await catalogService.fetchCatalogInChunks(2);
@@ -49,13 +38,11 @@ describe('catalogService', () => {
       expect(products).toHaveLength(3);
       expect(products[0].identity.code).toBe('1');
       expect(products[2].identity.code).toBe('3');
-      expect(getDoc).toHaveBeenCalledTimes(2);
+      expect(mockProductRepository.fetchCatalogChunk).toHaveBeenCalledTimes(2);
     });
 
     it('should handle missing chunks gracefully', async () => {
-      (getDoc as any).mockResolvedValue({
-        exists: () => false
-      });
+      mockProductRepository.fetchCatalogChunk.mockResolvedValue(null);
 
       const products = await catalogService.fetchCatalogInChunks(1);
       expect(products).toHaveLength(0);
@@ -63,11 +50,7 @@ describe('catalogService', () => {
 
     it('should handle malformed JSON in chunks', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
-       (getDoc as any).mockResolvedValue({
-        exists: () => true,
-        data: () => ({ data: 'invalid-json' })
-      });
+      mockProductRepository.fetchCatalogChunk.mockResolvedValue('invalid-json');
 
       const products = await catalogService.fetchCatalogInChunks(1);
       expect(products).toHaveLength(0);
@@ -77,20 +60,20 @@ describe('catalogService', () => {
   });
 
   describe('subscribeToConfig', () => {
-    it('should attach onSnapshot listener and handle updates', () => {
+    it('should attach subscription and handle updates', () => {
       const onUpdate = vi.fn();
       const onError = vi.fn();
       const mockUnsubscribe = vi.fn();
       
-      (onSnapshot as any).mockReturnValue(mockUnsubscribe);
+      mockProductRepository.subscribeToConfig.mockReturnValue(mockUnsubscribe);
 
       const unsubscribe = catalogService.subscribeToConfig(onUpdate, onError);
 
-      expect(onSnapshot).toHaveBeenCalled();
+      expect(mockProductRepository.subscribeToConfig).toHaveBeenCalled();
       expect(unsubscribe).toBe(mockUnsubscribe);
 
-      // Simulate a snapshot update
-      const snapshotCallback = (onSnapshot as any).mock.calls[0][1];
+      // Simulate an update
+      const updateCallback = mockProductRepository.subscribeToConfig.mock.calls[0][0];
       const mockData = {
         lastUpdateDate: '2024-05-01',
         syncId: 123,
@@ -98,27 +81,19 @@ describe('catalogService', () => {
         categoryDates: { 'Cat': 'Date' }
       };
 
-      snapshotCallback({
-        exists: () => true,
-        data: () => mockData
-      });
+      updateCallback(mockData);
 
-      expect(onUpdate).toHaveBeenCalledWith({
-        lastUpdateDate: '2024-05-01',
-        syncId: 123,
-        totalChunks: 5,
-        categoryDates: { 'Cat': 'Date' }
-      });
+      expect(onUpdate).toHaveBeenCalledWith(mockData);
     });
 
-    it('should handle Firestore errors', () => {
+    it('should handle errors', () => {
       const onUpdate = vi.fn();
       const onError = vi.fn();
       
       catalogService.subscribeToConfig(onUpdate, onError);
 
-      const errorCallback = (onSnapshot as any).mock.calls[0][2];
-      const mockError = new Error('Firestore Error');
+      const errorCallback = mockProductRepository.subscribeToConfig.mock.calls[0][1];
+      const mockError = new Error('Database Error') as api.DbError;
       
       errorCallback(mockError);
       expect(onError).toHaveBeenCalledWith(mockError);

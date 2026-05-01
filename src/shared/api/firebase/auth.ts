@@ -2,9 +2,29 @@ import {
   GoogleAuthProvider, 
   signInWithPopup,
   getRedirectResult,
-  signOut as firebaseSignOut 
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  type User
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
+
+export type { User };
+
+export const subscribeToAuth = (callback: (user: User | null) => void) => {
+  return onAuthStateChanged(auth, callback);
+};
+
+export const checkAdminStatus = async (uid: string): Promise<boolean> => {
+  try {
+    const adminDocRef = doc(db, 'admins', uid);
+    const adminDoc = await getDoc(adminDocRef);
+    return adminDoc.exists();
+  } catch (error) {
+    console.error("Errore verifica stato admin:", error);
+    return false;
+  }
+};
 
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();

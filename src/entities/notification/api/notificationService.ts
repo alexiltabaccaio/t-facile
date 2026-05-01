@@ -1,18 +1,4 @@
-
-import { 
-  collection, 
-  onSnapshot, 
-  query, 
-  orderBy, 
-  limit, 
-  doc, 
-  updateDoc,
-  deleteDoc,
-  writeBatch,
-  getDocs,
-  FirestoreError
-} from 'firebase/firestore';
-import { db } from '@/shared/api';
+import { notificationRepository, DbError } from '@/shared/api';
 import { UpdateRecord } from '../model/types';
 
 export const notificationService = {
@@ -21,23 +7,10 @@ export const notificationService = {
    */
   subscribeToNotifications: (
     onUpdate: (notifications: UpdateRecord[]) => void,
-    onError: (error: FirestoreError) => void
+    onError: (error: DbError) => void
   ) => {
-    const q = query(
-      collection(db, 'update_history'),
-      orderBy('timestamp', 'desc'),
-      limit(100)
-    );
-
-    return onSnapshot(
-      q, 
-      (snapshot) => {
-        const notifications = snapshot.docs.map(doc => ({
-          ...doc.data(),
-          id: doc.id
-        })) as UpdateRecord[];
-        onUpdate(notifications);
-      },
+    return notificationRepository.subscribeToNotifications(
+      (data) => onUpdate(data as UpdateRecord[]),
       onError
     );
   },
@@ -46,41 +19,28 @@ export const notificationService = {
    * Marks a notification as read
    */
   markAsRead: async (notificationId: string) => {
-    const docRef = doc(db, 'update_history', notificationId);
-    await updateDoc(docRef, { read: true });
+    await notificationRepository.markAsRead(notificationId);
   },
 
   /**
    * Marks all notifications as read
    */
   markAllAsRead: async (notificationIds: string[]) => {
-    const batch = writeBatch(db);
-    notificationIds.forEach(id => {
-      const docRef = doc(db, 'update_history', id);
-      batch.update(docRef, { read: true });
-    });
-    await batch.commit();
+    await notificationRepository.markAllAsRead(notificationIds);
   },
 
   /**
    * Deletes a notification
    */
   deleteNotification: async (notificationId: string) => {
-    const docRef = doc(db, 'update_history', notificationId);
-    await deleteDoc(docRef);
+    await notificationRepository.deleteNotification(notificationId);
   },
 
   /**
    * Deletes all notifications
    */
   deleteAllNotifications: async () => {
-    const q = query(collection(db, 'update_history'));
-    const snapshot = await getDocs(q);
-    const batch = writeBatch(db);
-    snapshot.docs.forEach(d => {
-      batch.delete(d.ref);
-    });
-    await batch.commit();
+    await notificationRepository.deleteAllNotifications();
   }
 };
 

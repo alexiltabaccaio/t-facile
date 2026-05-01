@@ -3,19 +3,19 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from './app';
 
-// Mock Firebase Admin to avoid real network calls
+const { mockDoc, mockDb } = vi.hoisted(() => {
+  const mDoc = { get: vi.fn() };
+  const mCollection = { doc: vi.fn(() => mDoc) };
+  const mDb = { collection: vi.fn(() => mCollection) };
+  return { mockDoc: mDoc, mockDb: mDb };
+});
+
 vi.mock('./firebaseAdmin', () => ({
   adminAuth: {
     verifyIdToken: vi.fn()
   },
-  getDb: vi.fn(() => ({
-    collection: vi.fn(() => ({
-      doc: vi.fn(() => ({
-        get: vi.fn()
-      }))
-    }))
-  })),
-  adminDb: {}
+  getDb: vi.fn(() => mockDb),
+  adminDb: mockDb
 }));
 
 describe('Security Tests', () => {
@@ -44,9 +44,9 @@ describe('Security Tests', () => {
     });
 
     it('should reject non-admin users (403)', async () => {
-      const { adminAuth, getDb } = await import('./firebaseAdmin');
+      const { adminAuth } = await import('./firebaseAdmin');
       (adminAuth.verifyIdToken as any).mockResolvedValue({ uid: 'user123' });
-      (getDb as any)().collection().doc().get.mockResolvedValue({ exists: false });
+      mockDoc.get.mockResolvedValue({ exists: false });
 
       const response = await request(app)
         .get('/api/adm/listini')
@@ -59,24 +59,26 @@ describe('Security Tests', () => {
   describe('SSRF Protection (admRoutes)', () => {
     beforeEach(async () => {
        // Mock success auth for SSRF tests
-       const { adminAuth, getDb } = await import('./firebaseAdmin');
+       const { adminAuth } = await import('./firebaseAdmin');
        (adminAuth.verifyIdToken as any).mockResolvedValue({ uid: 'admin123' });
-       (getDb as any)().collection().doc().get.mockResolvedValue({ exists: true });
+       mockDoc.get.mockResolvedValue({ exists: true });
     });
 
     it('should reject downloads from unauthorized hostnames', async () => {
       const response = await request(app)
         .get('/api/adm/download')
+        .set('Authorization', 'Bearer admin-token')
         .query({ url: 'https://evil.com/malicious.pdf' });
       
       expect(response.status).toBe(400);
-      expect(response.body.error).toContain('Hostname non autorizzato');
+      expect(response.body.error).toContain('non autorizzato');
     });
 
     it('should extract path from valid ADM URLs', async () => {
       // This test checks if it reaches the service (which we might mock or let fail on fetch)
       const response = await request(app)
         .get('/api/adm/download')
+        .set('Authorization', 'Bearer admin-token')
         .query({ url: 'https://www.adm.gov.it/test.pdf' });
       
       // If it reaches the service and fetch fails (no network in vitest or wrong path), it might be 500

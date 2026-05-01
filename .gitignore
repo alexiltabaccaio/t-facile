@@ -30,3 +30,6 @@ dist-ssr
 
 # Firebase Service Account
 service-account.json
+
+# Antigravity Rules
+.antigravityrules

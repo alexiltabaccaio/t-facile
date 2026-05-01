@@ -1,19 +1,7 @@
-import { 
-  doc, 
-  getDoc, 
-  onSnapshot, 
-  FirestoreError
-} from 'firebase/firestore';
-import { db } from '@/shared/api';
+import { productRepository, CatalogConfig, DbError } from '@/shared/api';
 import { Product } from '../model/types';
 import { parseLegacyPackageInfo } from '../lib/productParser';
 
-export interface CatalogConfig {
-  lastUpdateDate: string;
-  categoryDates?: Record<string, string>;
-  syncId: number;
-  totalChunks: number;
-}
 
 export const catalogService = {
   /**
@@ -21,24 +9,9 @@ export const catalogService = {
    */
   subscribeToConfig: (
     onUpdate: (config: CatalogConfig) => void,
-    onError: (error: FirestoreError) => void
+    onError: (error: DbError) => void
   ) => {
-    const configRef = doc(db, 'system', 'config');
-    return onSnapshot(
-      configRef, 
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          onUpdate({
-            lastUpdateDate: data.lastUpdateDate || '',
-            categoryDates: data.categoryDates || {},
-            syncId: data.syncId || 0,
-            totalChunks: data.totalChunks || 0
-          });
-        }
-      },
-      onError
-    );
+    return productRepository.subscribeToConfig(onUpdate, onError);
   },
 
   /**
@@ -48,18 +21,14 @@ export const catalogService = {
     const rawArray: any[] = [];
     
     for (let i = 0; i < totalChunks; i++) {
-      const chunkPath = `catalog_chunk_${i}`;
-      const chunkDoc = await getDoc(doc(db, 'system', chunkPath));
+      const chunkData = await productRepository.fetchCatalogChunk(i);
       
-      if (chunkDoc.exists()) {
-        const chunkData = chunkDoc.data();
-        if (chunkData.data) {
-          try {
-            const parsedChunk = JSON.parse(chunkData.data) as any[];
-            rawArray.push(...parsedChunk);
-          } catch (parseErr) {
-            console.error(`Error parsing JSON in chunk ${i}:`, parseErr);
-          }
+      if (chunkData) {
+        try {
+          const parsedChunk = JSON.parse(chunkData) as any[];
+          rawArray.push(...parsedChunk);
+        } catch (parseErr) {
+          console.error(`Error parsing JSON in chunk ${i}:`, parseErr);
         }
       }
     }

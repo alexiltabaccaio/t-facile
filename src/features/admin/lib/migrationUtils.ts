@@ -1,5 +1,4 @@
-import { doc, getDoc, updateDoc, collection, getDocs, writeBatch } from 'firebase/firestore';
-import { db } from '@/shared/api';
+import { productRepository } from '@/shared/api';
 import { PackageType, PackageUnit } from '@/entities/product';
 
 /**
@@ -40,32 +39,26 @@ const parseLegacyPackageInfo = (info: string): { type: PackageType; quantity: nu
 
 export const migratePackageData = async (): Promise<{ success: boolean; migratedCount: number; error?: string }> => {
   try {
-    const configRef = doc(db, 'system', 'config');
-    const configDoc = await getDoc(configRef);
-    const configData = configDoc.data();
-    
-    if (!configDoc.exists() || !configData) return { success: false, migratedCount: 0, error: 'Config not found' };
+    const configData = await productRepository.getGlobalConfig();
+    if (!configData) return { success: false, migratedCount: 0, error: 'Config not found' };
     
     const totalChunks = configData.totalChunks || 0;
     let migratedCount = 0;
-    const batch = writeBatch(db);
 
-    for (let i = 0; i < totalChunks; i++) {
-      const chunkRef = doc(db, 'system', `catalog_chunk_${i}`);
-      const chunkDoc = await getDoc(chunkRef);
-      const chunkData = chunkDoc.data();
-      
-      if (chunkDoc.exists() && chunkData) {
-        const rawData = chunkData.data;
+    await productRepository.executeBatch(async (batch) => {
+      for (let i = 0; i < totalChunks; i++) {
+        const rawData = await productRepository.fetchCatalogChunk(i);
         if (!rawData) continue;
         
         const products = JSON.parse(rawData);
+        let chunkChanged = false;
         
         const updatedProducts = products.map((p: any) => {
           if (p.identity && p.identity.packageInfo && !p.identity.package) {
             const parsed = parseLegacyPackageInfo(p.identity.packageInfo);
             if (parsed) {
               migratedCount++;
+              chunkChanged = true;
               return {
                 ...p,
                 identity: {
@@ -78,14 +71,15 @@ export const migratePackageData = async (): Promise<{ success: boolean; migrated
           return p;
         });
         
-        batch.update(chunkRef, { data: JSON.stringify(updatedProducts) });
+        if (chunkChanged) {
+          batch.update(['system', `catalog_chunk_${i}`], { data: JSON.stringify(updatedProducts) });
+        }
       }
-    }
 
-    // Force a sync update
-    batch.update(configRef, { syncId: Date.now() });
+      // Force a sync update
+      batch.update(['system', 'config'], { syncId: Date.now() });
+    });
 
-    await batch.commit();
     return { success: true, migratedCount };
   } catch (e: any) {
     console.error('Migration failed:', e);

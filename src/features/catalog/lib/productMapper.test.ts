@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { mapFirestoreDocToProduct } from './productMapper';
-import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 describe('productMapper', () => {
   it('should map standard nested firestore data', () => {
@@ -27,8 +26,8 @@ describe('productMapper', () => {
     
     const mockSnapshot = {
       id: 'doc123',
-      data: () => mockData as DocumentData
-    } as QueryDocumentSnapshot<DocumentData>;
+      data: () => mockData
+    };
 
     const product = mapFirestoreDocToProduct(mockSnapshot);
     
@@ -48,8 +47,8 @@ describe('productMapper', () => {
     
     const mockSnapshot = {
       id: 'doc456',
-      data: () => mockData as DocumentData
-    } as QueryDocumentSnapshot<DocumentData>;
+      data: () => mockData
+    };
 
     const product = mapFirestoreDocToProduct(mockSnapshot);
     
@@ -63,7 +62,7 @@ describe('productMapper', () => {
     const mockSnapshot = {
       id: 'default-id',
       data: () => ({})
-    } as QueryDocumentSnapshot<DocumentData>;
+    };
 
     const product = mapFirestoreDocToProduct(mockSnapshot);
     

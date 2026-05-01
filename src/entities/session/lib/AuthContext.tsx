@@ -1,8 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/shared/api';
-import { handleRedirectResult } from '@/shared/api';
+import { subscribeToAuth, checkAdminStatus, handleRedirectResult, User } from '@/shared/api';
 import { AuthContextType } from '../model/types';
 
 const AuthContext = createContext<AuthContextType>({ 
@@ -22,18 +19,12 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Handle redirect result (for PWA/Mobile)
     handleRedirectResult().catch(console.error);
 
-    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribeAuth = subscribeToAuth(async (currentUser) => {
       setUser(currentUser);
       
       let adminStatus = false;
       if (currentUser) {
-        try {
-          const adminDocRef = doc(db, 'admins', currentUser.uid);
-          const adminDoc = await getDoc(adminDocRef);
-          adminStatus = adminDoc.exists();
-        } catch (error) {
-          console.error("Errore verifica stato admin:", error);
-        }
+        adminStatus = await checkAdminStatus(currentUser.uid);
       }
       setIsAdmin(adminStatus);
       setLoading(false);

@@ -3,10 +3,9 @@ import { describe, it, expect, vi } from 'vitest';
 import ProductList from './ProductList';
 import { Product } from '../model/types';
 
-// Mock AutoSizer to render children immediately with fixed dimensions
-vi.mock('react-virtualized-auto-sizer', () => ({
-  AutoSizer: ({ renderProp }: any) => renderProp({ height: 800, width: 400 }),
-}));
+// Mock AutoSizer or similar if needed, but here we need to mock HTMLElement properties
+Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 1000 });
+Object.defineProperty(HTMLElement.prototype, 'clientHeight', { configurable: true, value: 800 });
 
 describe('ProductList', () => {
   const mockProducts: Product[] = [

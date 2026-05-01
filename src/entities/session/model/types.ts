@@ -1,4 +1,4 @@
-import { User } from 'firebase/auth';
+import { User } from '@/shared/api';
 
 export interface AuthContextType {
   user: User | null;
