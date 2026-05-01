@@ -7,7 +7,13 @@ import path from 'path';
 const serviceAccountPath = path.resolve(process.cwd(), 'service-account.json');
 let serviceAccount = null;
 
-if (fs.existsSync(serviceAccountPath)) {
+if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    try {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+    } catch (e) {
+        console.error("Errore nel parsing di FIREBASE_SERVICE_ACCOUNT_KEY da variabile d'ambiente", e);
+    }
+} else if (fs.existsSync(serviceAccountPath)) {
     serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 }
 
