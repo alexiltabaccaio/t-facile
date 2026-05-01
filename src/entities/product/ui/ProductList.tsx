@@ -4,7 +4,6 @@ import React, { memo, useRef, useEffect } from 'react';
 import { Product, SortOption } from '../model/types';
 import ProductItem from './ProductItem';
 import { FixedSizeList as List, FixedSizeGrid as Grid } from 'react-window';
-import { AutoSizer } from 'react-virtualized-auto-sizer';
 
 interface ProductListProps {
   products: Product[];
@@ -68,26 +67,35 @@ const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: nu
     );
 });
 
-let cachedContainerWidth = 400;
-let cachedContainerHeight = 800;
-if (typeof window !== 'undefined') {
-  const innerW = window.innerWidth;
-  const innerH = window.innerHeight;
-  
-  if (innerW >= 1024) { // Desktop
-    const mainAreaWidth = innerW - 288;
-    cachedContainerWidth = Math.floor(innerW >= 1280 ? mainAreaWidth * 0.70 : mainAreaWidth * 0.65);
-    cachedContainerHeight = innerH - 120; // Subtract estimated SearchBar height
-  } else { // Mobile
-    cachedContainerWidth = innerW;
-    cachedContainerHeight = innerH;
-  }
-}
+// We will use a custom hook to measure the container size synchronously before paint
 
 const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, searchKeywords, sortOption, initialOffset = 0, onScrollUpdate }) => {
   const listRef = useRef<any>(null);
   const scrollUpdateRef = useRef(onScrollUpdate);
   const searchKey = searchKeywords.join(' ');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = React.useState({ width: 0, height: 0 });
+
+  React.useLayoutEffect(() => {
+    if (containerRef.current) {
+      const el = containerRef.current;
+      setContainerSize({
+        width: el.clientWidth,
+        height: el.clientHeight
+      });
+
+      const observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          setContainerSize({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height
+          });
+        }
+      });
+      observer.observe(el);
+      return () => observer.disconnect();
+    }
+  }, []);
 
   useEffect(() => {
     scrollUpdateRef.current = onScrollUpdate;
@@ -118,13 +126,10 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
   };
 
   return (
-    <div className="h-full w-full">
-        <AutoSizer renderProp={( { height, width }: { height: number | undefined; width: number | undefined } ) => {
-            if (width && width > 0) cachedContainerWidth = width;
-            if (height && height > 0) cachedContainerHeight = height;
-
-            const h = height || cachedContainerHeight;
-            const w = width || cachedContainerWidth;
+    <div className="h-full w-full overflow-hidden" ref={containerRef}>
+        {containerSize.width > 0 && containerSize.height > 0 && (() => {
+            const h = containerSize.height;
+            const w = containerSize.width;
             
             // Determine the number of columns based on width
             let columnCount = 1;
@@ -170,7 +175,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
                 </Grid>
               );
             }
-          }} />
+        })()}
     </div>
   );
 };

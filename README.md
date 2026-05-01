@@ -1,37 +1,37 @@
 # T-Facile
 
-Un'applicazione web mobile-first progettata per i tabaccai, per cercare e visualizzare rapidamente prezzi e informazioni sui prodotti e listini ADM.
+A mobile-first web application designed for tobacconists to quickly search and view prices and information on products and ADM price lists.
 
-🌐 **Demo Live:** [https://t-facile.vercel.app/](https://t-facile.vercel.app/)
+🌐 **Live Demo:** [https://t-facile.vercel.app/](https://t-facile.vercel.app/)
 
-## Caratteristiche
-- 📱 **Design Mobile First**: Interfaccia ottimizzata per l'uso rapido da smartphone, fluida e reattiva.
-- 🔍 **Ricerca Intelligente**: Ricerca istantanea per nome o codice all'interno dei listini ufficiali.
-- ⚡ **Dati Aggiornati**: Sincronizzazione in tempo reale con il catalogo prodotti.
-- 🔔 **Notifiche**: Resta aggiornato sulle ultime variazioni di prezzo e nuovi inserimenti.
+## Features
+- 📱 **Mobile First Design**: Interface optimized for fast smartphone use, fluid and responsive.
+- 🔍 **Smart Search**: Instant search by name or code within the official price lists.
+- ⚡ **Updated Data**: Real-time synchronization with the product catalog.
+- 🔔 **Notifications**: Stay up-to-date with the latest price changes and new entries.
 
-## 🛠️ Stack Tecnologico
+## 🛠️ Technology Stack
 - **Frontend:** React, TypeScript, Tailwind CSS
 - **Backend:** Firebase (Firestore)
-- **Animazioni:** Framer Motion
+- **Animations:** Framer Motion
 
-## 🚀 Installazione (Ambiente Locale)
+## 🚀 Installation (Local Environment)
 
-Se desideri testare l'app in locale:
+If you want to test the app locally:
 
-1. **Installa le dipendenze:**
+1. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. **Avvia l'ambiente di sviluppo:**
+2. **Start the development environment:**
    ```bash
    npm run dev
    ```
 
-## Licenza
-Distribuito sotto Licenza MIT. Vedi il file `LICENSE` per ulteriori dettagli.
+## License
+Distributed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
-🛠️ *Prototipo sviluppato da [Alex Giustizieri](https://www.linkedin.com/in/alexgiustizieri/)*
+🛠️ *Prototype developed by [Alex Giustizieri](https://www.linkedin.com/in/alexgiustizieri/)*

@@ -3,10 +3,10 @@ import admRoutes from '../server/routes/admRoutes.js';
 
 const app = express();
 
-// Abilita la lettura dell'IP reale dietro i reverse proxy per il rate limiter
+// Enable reading the real IP behind reverse proxies for the rate limiter
 app.set("trust proxy", 1);
 
-// JSON parsing middleware esteso per consentire parsing testuale lungo proveniente dal PDF
+// Extended JSON parsing middleware to allow parsing of long text from PDFs
 app.use(express.json({ limit: "10mb" }));
 
 // API Routes
@@ -16,5 +16,5 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", environment: "vercel-serverless" });
 });
 
-// Su Vercel, questo file esporta l'app come funzione serverless handler
+// On Vercel, this file exports the app as a serverless handler function
 export default app;

@@ -85,7 +85,7 @@ export async function analyzeTextWithAI(
 ) {
   let apiKey = process.env.GEMINI_API_KEY;
   
-  // Se non c'è in .env, proviamo a leggerla in modo sicuro dal database Firestore usando l'Admin SDK
+  // If not in .env, try to read it securely from Firestore database using Admin SDK
   if (!apiKey) {
     try {
       const { firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
@@ -147,7 +147,7 @@ export async function analyzeTextWithAI(
     
     const result = JSON.parse(text);
 
-    // Validazione data aggiornamento
+    // Update date validation
     if (result.updateDate && !/^\d{4}-\d{2}-\d{2}$/.test(result.updateDate)) {
       delete result.updateDate;
     }

@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 
 /**
- * Servizio per interagire con il sito ADM (Agenzia Dogane e Monopoli)
+ * Service to interact with the ADM (Agenzia Dogane e Monopoli) website
  */
 export async function fetchADMListini() {
   const urls = [
@@ -35,7 +35,7 @@ export async function fetchADMListini() {
   
   await Promise.all(fetchPromises);
 
-  // Ordina per categoria: Prezzi, Emissioni, Radiati, e per rilevanza (Sigarette e Trinciati per primi)
+  // Sort by category: Prezzi, Emissioni, Radiati, and by relevance (Sigarette and Trinciati first)
   return listini.sort((a, b) => {
     const typeOrder: Record<string, number> = {
       'Prezzi': 0,
@@ -55,7 +55,7 @@ export async function fetchADMListini() {
 function getCategoryFromTitle(title: string): string {
   const t = title.toLowerCase();
   
-  // Priorità ai tipi specifici prima di "sigarette" generico
+  // Priority to specific types before generic "sigarette"
   if (t.includes('trinciati')) return 'Trinciati';
   if (t.includes('sigaretti')) return 'Sigaretti';
   if (t.includes('sigari')) return 'Sigari';
@@ -70,46 +70,46 @@ function parseHTML(html: string, type: string) {
   const $ = cheerio.load(html);
   const listini: any[] = [];
 
-  // Regex per cercare una data gg/mm/aaaa o gg.mm.aaaa o gg-mm-aaaa
+  // Regex to find a date dd/mm/yyyy or dd.mm.yyyy or dd-mm-yyyy
   const dateRegex = /(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/;
 
-  // Scansione di tutti i link PDF
+  // Scan all PDF links
   $('a[href*=".pdf"]').each((_, el) => {
     let title = $(el).parent().text().trim().replace(/\s+/g, ' ');
     if (!title || title.length < 5) {
       title = $(el).text().trim().replace(/\s+/g, ' ');
     }
     
-    // Cerchiamo una data nel testo del nodo, o nei nodi vicini
+    // Look for a date in the node's text, or in nearby nodes
     let date = 'Non disponibile';
     const textAround = $(el).parent().parent().text();
     const dateMatch = title.match(dateRegex) || textAround.match(dateRegex);
     if (dateMatch) {
       date = `${dateMatch[1]}/${dateMatch[2]}/${dateMatch[3]}`;
-      // se l'anno ha due cifre, aggiungiamo 20 (es 24 -> 2024)
+      // if the year has two digits, add 20 (e.g. 24 -> 2024)
       if (dateMatch[3].length === 2) {
         date = `${dateMatch[1]}/${dateMatch[2]}/20${dateMatch[3]}`;
       }
     }
     
-    // Rimuoviamo il testo inutile " - pdf"
+    // Remove useless text " - pdf"
     title = title.replace(/\s*-\s*pdf/i, '');
     
-    // Aggiungiamo il tipo se non è già chiaro
+    // Add the type if not already clear
     if (type === 'Radiati' && !title.toLowerCase().includes('radiati')) {
       title = `${title} (Radiati)`;
     }
     
     const href = $(el).attr('href');
     
-    // Filtro per listini rilevanti (assicuriamoci che sia un link sensato)
+    // Filter for relevant price lists (ensure it's a valid link)
     const isRelevant = /sigarette|sigari|sigaretti|trinciati|fiuto|mastico|radiati|emissioni|prezzi|altri tabacchi|inalazione|combustione/i.test(title);
     
     if (href && isRelevant) {
       const fullUrl = href.startsWith('http') ? href : `https://www.adm.gov.it${href}`;
       const category = getCategoryFromTitle(title);
       
-      // Evitiamo duplicati
+      // Avoid duplicates
       if (!listini.some(l => l.url === fullUrl)) {
         listini.push({
           title,
@@ -123,7 +123,7 @@ function parseHTML(html: string, type: string) {
     }
   });
 
-  // Ordinamento RIGIDO richiesto dall'utente
+  // STRICT sorting required by the user
   const categoryOrder: Record<string, number> = {
     'Sigarette': 1,
     'Sigari': 2,
@@ -143,15 +143,15 @@ function parseHTML(html: string, type: string) {
 }
 
 /**
- * Scarica un file PDF dal sito ADM e lo converte in stringa Base64
- * Previene SSRF forzando l'hostname
+ * Downloads a PDF file from the ADM site and converts it to a Base64 string
+ * Prevents SSRF by forcing the hostname
  */
 export async function downloadADMPdfAsBase64(path: string) {
   try {
     const baseUrl = 'https://www.adm.gov.it';
     const fullUrl = path.startsWith('http') ? path : `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
     
-    // Ulteriore controllo di sicurezza: se per qualche motivo è rimasto un hostname diverso
+    // Additional security check: if for some reason a different hostname remains
     const finalUrl = new URL(fullUrl);
     if (finalUrl.hostname !== 'www.adm.gov.it') {
         throw new Error("Hostname non autorizzato nel servizio di download.");
@@ -167,7 +167,7 @@ export async function downloadADMPdfAsBase64(path: string) {
       throw new Error(`Download fallito con status ${response.status}`);
     }
 
-    // Usiamo arrayBuffer per gestire dati binari sui server Cloud Run
+    // Use arrayBuffer to handle binary data on Cloud Run servers
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer).toString('base64');
   } catch (error: any) {

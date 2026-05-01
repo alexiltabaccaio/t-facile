@@ -12,12 +12,12 @@ const admLimiter = rateLimit({
 
 const router = Router();
 
-// Applica rate limiter su tutte le rotte ADM
+// Apply rate limiter on all ADM routes
 router.use(admLimiter);
 
 /**
  * GET /api/adm/listini
- * Recupera l'elenco dei listini disponibili sul sito ADM
+ * Retrieve the list of available price lists on the ADM website
  */
 router.get("/listini", requireAdmin, async (_req, res) => {
   try {
@@ -31,7 +31,7 @@ router.get("/listini", requireAdmin, async (_req, res) => {
 
 /**
  * GET /api/adm/download
- * Scarica un PDF dal sito ADM e lo restituisce in Base64 (Protetto da SSRF)
+ * Downloads a PDF from the ADM website and returns it in Base64 (Protected against SSRF)
  */
 router.get("/download", requireAdmin, async (req, res) => {
   try {
@@ -40,17 +40,17 @@ router.get("/download", requireAdmin, async (req, res) => {
       return res.status(400).json({ error: "URL obbligatorio" });
     }
     
-    // SSRF Prevention: Estraiamo solo il PATH e forziamo l'hostname autorizzato nel servizio
+    // SSRF Prevention: Extract only the PATH and force authorized hostname in service
     let pathOnly: string;
     try {
       const parsedUrl = new URL(url);
-      // Consentiamo solo l'hostname ADM se è un URL completo
+      // Only allow ADM hostname if it's a complete URL
       if (parsedUrl.hostname !== 'www.adm.gov.it') {
          return res.status(400).json({ error: "Accesso negato: Hostname non autorizzato." });
       }
       pathOnly = parsedUrl.pathname + parsedUrl.search;
     } catch (e) {
-      // Se non è un URL valido, potrebbe essere già un path relativo
+      // If it's not a valid URL, it might already be a relative path
       pathOnly = url.startsWith('/') ? url : `/${url}`;
     }
     
@@ -64,7 +64,7 @@ router.get("/download", requireAdmin, async (req, res) => {
 
 /**
  * POST /api/adm/analyze
- * Analizza testo estratto dal PDF tramite Gemini AI protetto nel Backend
+ * Analyze text extracted from PDF via Gemini AI protected in the Backend
  */
 router.post("/analyze", requireAdmin, async (req, res) => {
   try {

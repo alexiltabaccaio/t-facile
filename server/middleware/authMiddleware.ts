@@ -10,11 +10,11 @@ export const requireAdmin = async (req: any, res: any, next: any) => {
 
   const token = authHeader.split('Bearer ')[1].trim();
   try {
-    // 1. Veridica crittografica del token (Firma, Scadenza, Audience)
+    // 1. Cryptographic verification of the token (Signature, Expiration, Audience)
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
     
-    // 2. Controllo privilegi admin nel database Firestore
+    // 2. Check admin privileges in Firestore database
     const db = getDb(databaseId);
     const adminDoc = await db.collection('admins').doc(uid).get();
     
