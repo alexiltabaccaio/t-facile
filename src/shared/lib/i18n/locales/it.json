@@ -49,7 +49,7 @@
     },
     "header": {
       "catalog": "T-Facile",
-      "updatedAt": "Agg: {{date}}",
+      "updatedAt": "{{date}}",
       "refresh": "Aggiorna",
       "notifications": "Notifiche",
       "online": "ONLINE",

@@ -1,6 +1,7 @@
 
 
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Product, SortOption } from '@/entities/product';
 import { parseSearchQuery } from '../lib/searchParser';
 import { filterProducts } from '../lib/productFilters';
@@ -21,6 +22,7 @@ export const useProductSearch = ({
   showRetired,
   showOutOfCatalog,
 }: UseProductSearchProps) => {
+  const { t } = useTranslation();
   const { isRetiredSearch, searchKeywords, emissionFilters } = useMemo(() => {
     return parseSearchQuery(searchTerm, sortOption.key);
   }, [searchTerm, sortOption.key]);
@@ -41,7 +43,8 @@ export const useProductSearch = ({
       showRetired,
       showOutOfCatalog,
       emissionFilters,
-      searchKeywords
+      searchKeywords,
+      t
     });
 
     // 3. Exact Code Match Handling (absolute priority if a single number is searched)
@@ -67,7 +70,7 @@ export const useProductSearch = ({
     }
     
     return processed;
-  }, [initialProducts, showRetired, showOutOfCatalog, sortOption, isRetiredSearch, searchKeywords, emissionFilters]);
+  }, [initialProducts, showRetired, showOutOfCatalog, sortOption, isRetiredSearch, searchKeywords, emissionFilters, t]);
 
   return { displayedProducts, searchKeywords };
 };

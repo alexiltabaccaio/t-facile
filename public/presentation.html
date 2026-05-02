@@ -114,8 +114,18 @@
                     <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="1.5" width="20" height="9" rx="2" stroke="white" stroke-opacity="0.35"/><path d="M22 4V8" stroke="white" stroke-opacity="0.35" stroke-linecap="round"/><rect x="2.5" y="3.5" width="16" height="5" rx="1" fill="white"/></svg>
                 </div>
             </div>
-            <iframe src="/?presentation=true" title="App Presentation"></iframe>
+            <iframe id="app-frame" title="App Presentation"></iframe>
         </div>
     </div>
+    <script>
+        // If the file is opened by double-clicking (file:///), point to the local dev server.
+        // Otherwise, if served by the server, use the standard relative path.
+        const iframe = document.getElementById('app-frame');
+        if (window.location.protocol === 'file:') {
+            iframe.src = 'http://localhost:3000/?presentation=true';
+        } else {
+            iframe.src = '/?presentation=true';
+        }
+    </script>
 </body>
 </html>

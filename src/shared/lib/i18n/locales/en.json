@@ -49,7 +49,7 @@
     },
     "header": {
       "catalog": "T-Facile",
-      "updatedAt": "Upd: {{date}}",
+      "updatedAt": "{{date}}",
       "refresh": "Refresh",
       "notifications": "Notifications",
       "online": "ONLINE",
@@ -88,7 +88,7 @@
       "Trinciati": "Rolling Tobacco",
       "Fiuto e Mastico": "Snuff & Chewing Tobacco",
       "Altri Tabacchi": "Other Tobacco Products",
-      "Prodotti da inalazione senza combustione": "Heated Tobacco / E-liquids"
+      "Prodotti da inalazione senza combustione": "Heated Tobacco"
     },
     "packageTypes": {
       "ASTUCCIO": "Box",

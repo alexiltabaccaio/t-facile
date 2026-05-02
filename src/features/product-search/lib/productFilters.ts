@@ -3,14 +3,29 @@ import { Product } from '@/entities/product';
 import { SYNONYM_MAP, escapeRegExp, createWordStartRegex } from '@/shared/lib';
 import { EmissionFilter } from './searchParser';
 
-export const checkTextMatch = (p: Product, keyword: string): boolean => {
+export const checkTextMatch = (p: Product, keyword: string, t?: any): boolean => {
   const regex = createWordStartRegex(keyword);
   const inName = regex.test(p.identity.name);
   const inCode = p.identity.code.startsWith(keyword);
 
   const pluralForm = SYNONYM_MAP[keyword.toLowerCase()]?.[0] || '';
   const categoryRegex = new RegExp(`\\b(${escapeRegExp(keyword)}${pluralForm ? '|' + escapeRegExp(pluralForm) : ''})`, 'i');
-  const inCategory = categoryRegex.test(p.identity.category);
+  
+  let inCategory = categoryRegex.test(p.identity.category);
+  
+  // Language aware search for categories and package types
+  if (t) {
+    const translatedCategory = t(`catalog.categories.${p.identity.category}`, { defaultValue: p.identity.category });
+    inCategory = inCategory || categoryRegex.test(translatedCategory);
+
+    if (p.identity.package?.type) {
+      const translatedPackage = t(`catalog.packageTypes.${p.identity.package.type}`, { defaultValue: '' });
+      if (translatedPackage && categoryRegex.test(translatedPackage)) {
+        return true;
+      }
+    }
+  }
+
   const inBrand = !!p.identity.brand && regex.test(p.identity.brand);
   const inPackageInfo = regex.test(p.identity.packageInfo);
   
@@ -25,10 +40,11 @@ export const filterProducts = (
     showOutOfCatalog: boolean;
     emissionFilters: EmissionFilter[];
     searchKeywords: string[];
+    t?: any;
   }
 ) => {
   let filtered = products;
-  const { isRetiredSearch, showRetired, showOutOfCatalog, emissionFilters, searchKeywords } = options;
+  const { isRetiredSearch, showRetired, showOutOfCatalog, emissionFilters, searchKeywords, t } = options;
 
   // 1. Status Filter
   if (isRetiredSearch) {
@@ -70,7 +86,7 @@ export const filterProducts = (
       });
 
       filtered = filtered.filter(p => {
-        const textMatch = textValues.every(kw => checkTextMatch(p, kw));
+        const textMatch = textValues.every(kw => checkTextMatch(p, kw, t));
         if (!textMatch) return false;
 
         if (priceValues.length > 0) {
@@ -82,7 +98,7 @@ export const filterProducts = (
     } else {
       filtered = filtered.filter(p => {
         return searchKeywords.every(kw => {
-          const textMatch = checkTextMatch(p, kw);
+          const textMatch = checkTextMatch(p, kw, t);
           if (/^\d+[,.]?\d*$/.test(kw)) {
             const priceStr = p.pricing.currentPrice.toFixed(2);
             return textMatch || priceStr.startsWith(kw.replace(',', '.'));

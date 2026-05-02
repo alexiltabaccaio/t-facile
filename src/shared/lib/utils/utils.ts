@@ -16,4 +16,11 @@ export const SYNONYM_MAP: { [key: string]: string[] } = {
   trinciati: ['trinciato'],
   tabacco: ['tabacchi'],
   tabacchi: ['tabacco'],
+  cigarette: ['cigarettes'],
+  cigarettes: ['cigarette'],
+  cigar: ['cigars'],
+  cigars: ['cigar'],
+  cigarillo: ['cigarillos'],
+  cigarillos: ['cigarillo'],
+  tobacco: ['tabacco'],
 };
