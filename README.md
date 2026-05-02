@@ -1,15 +1,30 @@
 <div align="center">
-  <h1>🚬 T-Facile</h1>
-  <p><strong>The smart, automated solution for tobacconists to manage ADM price lists & products.</strong></p>
-  
-  [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg?style=for-the-badge)](https://t-facile.vercel.app/)
-  [![React](https://img.shields.io/badge/React-19-blue.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-  [![Firebase](https://img.shields.io/badge/Firebase-Powered-orange.svg?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
-  [![AI](https://img.shields.io/badge/AI-Gemini_Integrated-purple.svg?style=for-the-badge&logo=google)](https://ai.google.dev/)
+  <table>
+    <tr>
+      <td width="350" align="center" valign="top">
+        <br />
+        <img src="https://github.com/user-attachments/assets/d0766d13-a918-44a0-86b5-eabfe5b656c1" alt="T-Facile Preview" width="300" />
+      </td>
+      <td width="450" align="left" valign="middle">
+        <h3>🚬 T-Facile</h3>
+        <p><strong>The smart, automated solution for tobacconists to manage ADM price lists & products.</strong></p>
+        <br />
+        <a href="https://t-facile.vercel.app/">
+          <img src="https://img.shields.io/badge/LIVE_DEMO_➜-2ea44f?style=for-the-badge" alt="Live Demo" />
+        </a>
+        <br /><br />
+        <img src="https://img.shields.io/badge/React_19-20232a.svg?style=flat-square&logo=react" alt="React" /><br />
+        <img src="https://img.shields.io/badge/TypeScript-3178c6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /><br />
+        <img src="https://img.shields.io/badge/Firebase-ffca28.svg?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" /><br />
+        <img src="https://img.shields.io/badge/AI_Gemini-8e44ad.svg?style=flat-square&logo=google" alt="AI" />
+        <br />
+      </td>
+    </tr>
+  </table>
 </div>
 
 <br />
+
 
 ## 🚨 The Problem
 For tobacconists, keeping track of product emissions and price changes is a daily struggle. The official **ADM (Agenzia delle Dogane e dei Monopoli)** documentation is scattered, hard to navigate, and buried inside complex PDFs. Many colleagues waste valuable time searching for crucial information manually, often without knowing exactly where to look or missing important updates. 
@@ -68,11 +83,6 @@ Want to explore the code and see how it works under the hood?
    # Starts both the Vite frontend and the Express backend API
    npm run dev
    ```
-
-## 📸 Sneak Peek
-*(Add a GIF or screenshot of the app in action here to show off the UI!)*
-<br/>
-<img src="https://via.placeholder.com/800x400.png?text=T-Facile+App+Screenshot" alt="T-Facile Screenshot" width="100%" />
 
 ---
 
