@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { saveParsedDataToFirestore } from '../api/dbSyncer';
-import { useCatalogStore } from '@/entities/product';
+import { Product } from '@/entities/product';
 import { Listino, fetchListini } from '../api/admApiService';
 import { processListiniBatch } from '../api/admProcessor';
 
@@ -32,7 +32,11 @@ interface ADMSyncState {
     checkUpdates: () => Promise<void>;
     processSelectedListini: () => Promise<void>;
     cancelProcessing: () => void;
-    finalSaveToDatabase: () => Promise<void>;
+    finalSaveToDatabase: (params: { 
+      lastUpdateDate: string; 
+      products: Product[];
+      onSuccess: (finalDate: string) => void;
+    }) => Promise<void>;
     cancelStaging: () => void;
   };
 }
@@ -132,16 +136,13 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       set({ isProcessing: false, statusMsg: "Operazione annullata.", abortController: null });
     },
 
-    finalSaveToDatabase: async () => {
+    finalSaveToDatabase: async ({ lastUpdateDate, products, onSuccess }) => {
       const { processedData } = get();
       if (!processedData) return;
       set({ isProcessing: true, statusMsg: "Salvataggio definitivo nel Database cloud..." });
       try {
-        const lastUpdateDate = useCatalogStore.getState().lastUpdateDate;
-        const products = useCatalogStore.getState().products;
-        const { setLastUpdateDate } = useCatalogStore.getState().actions;
         const { finalDate } = await saveParsedDataToFirestore(processedData, lastUpdateDate, products);
-        setLastUpdateDate(finalDate);
+        onSuccess(finalDate);
         set({ success: true, processedData: null });
         setTimeout(() => set({ success: false }), 5000);
       } catch (err: any) {

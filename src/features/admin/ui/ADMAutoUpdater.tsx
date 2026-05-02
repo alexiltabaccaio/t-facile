@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle } from 'lucide-react';
 import { useADMSyncStore, useADMSyncActions } from '../model/useADMSyncStore';
-import { useCatalogStore } from '@/entities/product';
+import { useCatalogStore, useCatalogActions } from '@/entities/product';
 import { PDFPreviewTable } from './PDFPreviewTable';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +38,21 @@ export const ADMAutoUpdater: React.FC = () => {
     cancelProcessing
   } = useADMSyncActions();
 
-  const categoryDates = useCatalogStore(state => state.categoryDates);
+  // Selected from Catalog Store to decouple it from ADM Sync Store logic
+  const { lastUpdateDate, products, categoryDates } = useCatalogStore(useShallow(state => ({
+    lastUpdateDate: state.lastUpdateDate,
+    products: state.products,
+    categoryDates: state.categoryDates
+  })));
+  const { setLastUpdateDate } = useCatalogActions();
+
+  const handleFinalSave = async () => {
+    await finalSaveToDatabase({
+      lastUpdateDate,
+      products,
+      onSuccess: (finalDate) => setLastUpdateDate(finalDate)
+    });
+  };
 
   return (
     <div className="bg-blue-50 dark:bg-blue-900/5 border border-blue-100 dark:border-blue-900/20 rounded-2xl p-4 lg:p-6 shadow-sm w-full mb-2 transition-all">
@@ -77,7 +91,7 @@ export const ADMAutoUpdater: React.FC = () => {
           <PDFPreviewTable 
             parsedData={processedData} 
             onCancel={cancelStaging}
-            onSave={finalSaveToDatabase}
+            onSave={handleFinalSave}
           />
       )}
 

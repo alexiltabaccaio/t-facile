@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Theme } from '../../types';
 
 interface ThemeState {
@@ -33,35 +34,28 @@ const applyTheme = (t: Theme) => {
   }
 };
 
-export const useThemeStore = create<ThemeState>((set) => {
-  const getInitialTheme = (): Theme => {
-    if (typeof window === 'undefined') return 'system';
-    try {
-      const saved = localStorage.getItem('theme') as Theme | null;
-      if (saved && ['light', 'dark', 'system'].includes(saved)) return saved;
-    } catch (e) {
-      console.error('Failed to read theme from localStorage', e);
-    }
-    return 'system';
-  };
-
-  const initialTheme = getInitialTheme();
-  applyTheme(initialTheme);
-
-  return {
-    theme: initialTheme,
-    actions: {
-      setTheme: (theme) => {
-        set({ theme });
-        try {
-          localStorage.setItem('theme', theme);
-        } catch (e) {
-          console.error('Failed to save theme to localStorage', e);
+export const useThemeStore = create<ThemeState>()(
+  persist(
+    (set) => ({
+      theme: 'system',
+      actions: {
+        setTheme: (theme) => {
+          set({ theme });
+          applyTheme(theme);
+        },
+      }
+    }),
+    {
+      name: 'theme-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          applyTheme(state.theme);
         }
-        applyTheme(theme);
       },
+      // Only persist the theme string, not the actions object
+      partialize: (state) => ({ theme: state.theme }),
     }
-  };
-});
+  )
+);
 
 export const useThemeActions = () => useThemeStore((state) => state.actions);

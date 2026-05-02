@@ -10,7 +10,7 @@ interface ADMUpdateItemProps {
 export const ADMUpdateItem: React.FC<ADMUpdateItemProps> = ({ listino, categoryDate, onToggle }) => {
   const dTitle = listino.category;
 
-  // Colori badge
+  // Badge colors
   let badgeColor = 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300';
   if (listino.status.toLowerCase() === 'attivo') {
     badgeColor = 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400';

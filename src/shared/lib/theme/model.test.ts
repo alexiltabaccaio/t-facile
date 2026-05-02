@@ -15,7 +15,11 @@ describe('useThemeStore', () => {
     
     setTheme('dark');
     expect(useThemeStore.getState().theme).toBe('dark');
-    expect(localStorage.getItem('theme')).toBe('dark');
+    
+    // Check persist storage (Zustand persist format)
+    const stored = JSON.parse(localStorage.getItem('theme-storage') || '{}');
+    expect(stored.state.theme).toBe('dark');
+    
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
