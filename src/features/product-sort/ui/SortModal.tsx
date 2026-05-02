@@ -1,17 +1,16 @@
-
 import React from 'react';
 import { SortKey, useCatalogStore, useCatalogActions } from '@/entities/product';
 import { ArrowsUpDownIcon } from '@/shared/ui';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
-const ToggleSwitch: React.FC<{ checked: boolean; onChange: () => void; label: string; id: string }> = ({ checked, onChange, label, id }) => (
-    <label htmlFor={id} className="flex items-center justify-between cursor-pointer p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 active:bg-neutral-200 dark:active:bg-neutral-800">
-        <span className="text-light-text dark:text-dark-text-primary font-medium">{label}</span>
+const ToggleSwitch: React.FC<{ checked: boolean; onChange: () => void; label: string; id: string; className?: string }> = ({ checked, onChange, label, id, className = '' }) => (
+    <label htmlFor={id} className={`flex items-center justify-between cursor-pointer py-3 px-4 active:bg-neutral-200/50 dark:active:bg-neutral-800/50 transition-colors ${className}`}>
+        <span className="text-light-text dark:text-dark-text-primary text-sm font-medium">{label}</span>
         <div className="relative">
             <input id={id} type="checkbox" className="sr-only" checked={checked} onChange={onChange} />
-            <div className={`w-12 h-7 rounded-full transition-colors ${checked ? 'bg-blue-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}></div>
-            <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full shadow-sm transition-transform ${checked ? 'translate-x-5' : ''}`}></div>
+            <div className={`w-10 h-6 rounded-full transition-colors ${checked ? 'bg-blue-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}></div>
+            <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform ${checked ? 'translate-x-4' : ''}`}></div>
         </div>
     </label>
 );
@@ -23,9 +22,9 @@ const SortKeyButton: React.FC<{
 }> = ({ label, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex-1 text-center py-3 px-2 rounded-lg text-sm font-semibold ${
+    className={`flex-1 text-center py-2 px-2 rounded-md text-sm font-medium transition-colors ${
       active
-        ? 'bg-blue-600 text-white shadow-lg'
+        ? 'bg-blue-600 text-white shadow-md'
         : 'bg-neutral-200 hover:bg-neutral-300 text-light-text dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-dark-text-primary'
     }`}
   >
@@ -82,14 +81,14 @@ const SortModal: React.FC<SortModalProps> = ({
       >
         {/* Drag Handle & Header */}
         <div className="flex flex-col items-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mb-4" />
-          <div className="w-full flex justify-between items-center px-6 mb-2">
-            <h2 className="text-xl font-bold text-light-text dark:text-dark-text-primary">
+          <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mb-3" />
+          <div className="w-full flex justify-between items-center px-5 mb-1">
+            <h2 className="text-lg font-bold text-light-text dark:text-dark-text-primary">
               {t('catalog.sort.title')}
             </h2>
             <button 
               onClick={onClose} 
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900 text-neutral-500"
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
             >
               &times;
             </button>
@@ -97,36 +96,37 @@ const SortModal: React.FC<SortModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="px-4 pb-8 overflow-y-auto space-y-8">
+        <div className="px-5 pb-6 overflow-y-auto space-y-5">
           <section>
-            <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-3 px-1">
+            <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-2 px-1">
               {t('catalog.sort.visibility')}
             </h3>
-            <ToggleSwitch
-                id="retired-toggle"
-                label={t('catalog.sort.showRetired')}
-                checked={showRetired}
-                onChange={() => setShowRetired(!showRetired)}
-            />
-            <div className="mt-2">
-              <ToggleSwitch
-                  id="out-of-catalog-toggle"
-                  label={t('catalog.sort.showOutOfCatalog')}
-                  checked={showOutOfCatalog}
-                  onChange={() => setShowOutOfCatalog(!showOutOfCatalog)}
-              />
+            <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50">
+                <ToggleSwitch
+                    id="retired-toggle"
+                    label={t('catalog.sort.showRetired')}
+                    checked={showRetired}
+                    onChange={() => setShowRetired(!showRetired)}
+                    className="border-b border-neutral-200/50 dark:border-neutral-800/50"
+                />
+                <ToggleSwitch
+                    id="out-of-catalog-toggle"
+                    label={t('catalog.sort.showOutOfCatalog')}
+                    checked={showOutOfCatalog}
+                    onChange={() => setShowOutOfCatalog(!showOutOfCatalog)}
+                />
             </div>
           </section>
           
           <section>
-            <div className="flex justify-between items-center mb-3 px-1">
+            <div className="flex justify-between items-center mb-2 px-1">
                  <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px]">
                    {t('catalog.sort.sortBy')}
                  </h3>
                  <button
                     onClick={handleToggleOrder}
                     disabled={isSmartSort}
-                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 disabled:opacity-40"
+                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 disabled:opacity-40"
                  >
                      <ArrowsUpDownIcon size={14} />
                      {sortOption.order === 'asc' ? t('catalog.sort.orderAsc') : t('catalog.sort.orderDesc')}
@@ -141,10 +141,10 @@ const SortModal: React.FC<SortModalProps> = ({
           </section>
           
           <section>
-             <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-3 px-1">
+             <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-2 px-1">
                {t('catalog.sort.emissions')}
              </h3>
-             <div className="flex gap-2 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
+             <div className="flex gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
                 <SortKeyButton label={t('catalog.sort.nicotine')} active={sortOption.key === 'nicotine'} onClick={() => handleSortKeyChange('nicotine')} />
                 <SortKeyButton label={t('catalog.sort.tar')} active={sortOption.key === 'tar'} onClick={() => handleSortKeyChange('tar')} />
                 <SortKeyButton label={t('catalog.sort.co')} active={sortOption.key === 'co'} onClick={() => handleSortKeyChange('co')} />
@@ -157,4 +157,3 @@ const SortModal: React.FC<SortModalProps> = ({
 };
 
 export default SortModal;
-
