@@ -27,7 +27,10 @@ const StatusRow: React.FC<{ label: string; value: string | undefined }> = ({ lab
   if (isRetired) statusColor = 'text-red-600 dark:text-red-500';
   if (isOutOfCatalog) statusColor = 'text-yellow-600 dark:text-yellow-500';
 
-  const localizedStatus = value === 'Attivo' ? t('product.status.active') : value;
+  let localizedStatus = value;
+  if (value === 'Attivo') localizedStatus = t('product.status.active');
+  else if (value === 'Radiato') localizedStatus = t('product.status.retired');
+  else if (value === 'Fuori Catalogo') localizedStatus = t('product.status.outOfCatalog');
 
   return (
       <div className="flex justify-between py-3 border-b border-neutral-200 dark:border-dark-border">
@@ -54,7 +57,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         product.lifecycle.radiationDate ||
         product.identity.brand ||
         product.identity.manufacturer) && (
-        <div className="mt-6 p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
+        <div className="mt-6 lg:p-4 lg:rounded-lg lg:bg-white lg:dark:bg-dark-card-bg lg:border lg:border-neutral-200 lg:dark:border-neutral-700">
           <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.advancedInfo')}</h3>
           <dl>
               {product.lifecycle.status && product.lifecycle.status !== 'Attivo' && (
@@ -72,7 +75,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       )}
 
       {product.emissions && (
-        <div className="mt-4 p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
+        <div className="mt-4 lg:p-4 lg:rounded-lg lg:bg-white lg:dark:bg-dark-card-bg lg:border lg:border-neutral-200 lg:dark:border-neutral-700">
           <h3 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.emissions')}</h3>
            <dl>
               <DetailRow label={t('productDetail.nicotine')} value={product.emissions.nicotine} />
@@ -87,7 +90,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   return (
     <div className="p-4 w-full">
       <div className="mb-4 text-center">
-        <h1 className="text-2xl font-bold text-light-text dark:text-dark-text-primary break-words mb-3">{product.identity.name}</h1>
+        <h1 className="hidden lg:block text-2xl font-bold text-light-text dark:text-dark-text-primary break-words mb-3">{product.identity.name}</h1>
         
         {product.lifecycle.status === 'Radiato' && (
           <div className="inline-block px-4 py-2 mb-2 text-center bg-red-100 dark:bg-red-900/40 border border-red-200 dark:border-red-700/50 rounded-lg">
@@ -101,8 +104,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         )}
       </div>
 
-      <div className="p-4 rounded-lg bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-700">
-        <h2 className="text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.basicInfo')}</h2>
+      <div className="lg:p-4 lg:rounded-lg lg:bg-white lg:dark:bg-dark-card-bg lg:border lg:border-neutral-200 lg:dark:border-neutral-700">
+        <h2 className="hidden lg:block text-lg font-semibold mb-3 text-light-text dark:text-dark-text-primary">{t('productDetail.basicInfo')}</h2>
         <dl>
           <DetailRow label={t('productDetail.price')} value={formattedPrice} />
           <DetailRow label={t('productDetail.code')} value={product.identity.code} />

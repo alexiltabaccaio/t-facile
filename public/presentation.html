@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Presentation Mockup</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Modern IDE Grey (VS Code style) */
+            background-color: #1e1e1e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .phone-mockup {
+            position: relative;
+            /* Increased width to prevent UI compression */
+            width: 450px;
+            height: 950px;
+            background-color: #000;
+            border-radius: 50px;
+            box-shadow: 
+                0 0 0 10px #121212,
+                0 0 0 11px #2a2a2a,
+                0 40px 80px rgba(0,0,0,0.6);
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        /* Notch / Dynamic Island */
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 30px;
+            background-color: #000;
+            border-radius: 20px;
+            z-index: 20;
+        }
+
+        /* Physical buttons (left side only) */
+        .phone-mockup::after {
+            content: '';
+            position: absolute;
+            top: 150px;
+            left: -14px;
+            width: 4px;
+            height: 60px;
+            background-color: #222;
+            border-radius: 4px 0 0 4px;
+            box-shadow: 0 80px 0 0 #222;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 38px;
+            overflow: hidden;
+            background-color: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Realistic Status Bar */
+        .status-bar {
+            height: 44px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 15; /* Top layer */
+            background-color: transparent;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            display: block;
+            /* Optional: slightly round the top of the iframe to match the screen */
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-mockup">
+        <div class="screen">
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="icons">
+                    <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 10H3V11H1V10ZM5 7H7V11H5V7ZM9 4H11V11H9V4ZM13 1H15V11H13V1Z" fill="white"/></svg>
+                    <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="1.5" width="20" height="9" rx="2" stroke="white" stroke-opacity="0.35"/><path d="M22 4V8" stroke="white" stroke-opacity="0.35" stroke-linecap="round"/><rect x="2.5" y="3.5" width="16" height="5" rx="1" fill="white"/></svg>
+                </div>
+            </div>
+            <iframe src="/?presentation=true" title="App Presentation"></iframe>
+        </div>
+    </div>
+</body>
+</html>

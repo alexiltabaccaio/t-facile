@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SettingsIcon, BellIcon, RefreshIcon } from '@/shared/ui';
 import { useNotificationStore } from '@/entities/notification';
 import { useCatalogStore } from '@/entities/product';
@@ -23,6 +23,7 @@ const Header: React.FC = () => {
   const { hasUnread: hasUnreadNotifications } = useNotificationStore();
   const isOnline = useCatalogStore(state => state.isOnline);
   const lastUpdateDate = useCatalogStore(state => state.lastUpdateDate);
+  const products = useCatalogStore(state => state.products);
   const aiModel = useADMSyncStore(s => s.aiModel);
   const { setAiModel } = useADMSyncActions();
   const location = useLocation();
@@ -31,6 +32,19 @@ const Header: React.FC = () => {
   
   const isCatalog = location.pathname === '/catalog' || location.pathname === '/';
   const showBackButton = !isCatalog;
+  
+  // Persist presentation mode in sessionStorage to survive route changes
+  const [isPresentation, setIsPresentation] = useState(() => {
+    return sessionStorage.getItem('isPresentation') === 'true' || 
+           new URLSearchParams(window.location.search).get('presentation') === 'true';
+  });
+
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('presentation') === 'true') {
+      sessionStorage.setItem('isPresentation', 'true');
+      setIsPresentation(true);
+    }
+  }, [location.search]);
 
   const handleManualRefresh = () => {
     setIsRefreshing(true);
@@ -41,7 +55,19 @@ const Header: React.FC = () => {
 
   const getTitle = () => {
     const path = location.pathname;
-    if (path.startsWith('/catalog/')) return t('common.details');
+    if (path.startsWith('/catalog/')) {
+      const id = path.replace('/catalog/', '');
+      const product = products.find(p => p.identity.code === id);
+      if (product) {
+        return (
+          <>
+            <span className="lg:hidden block line-clamp-2 max-w-[50vw] sm:max-w-[60vw] text-balance">{product.identity.name}</span>
+            <span className="hidden lg:inline">{t('common.details')}</span>
+          </>
+        );
+      }
+      return t('common.details');
+    }
     if (path === '/notifications') return t('layout.sidebar.updates');
     if (path.startsWith('/notifications/')) return t('common.details');
     if (path === '/settings') return t('layout.sidebar.settings');
@@ -125,10 +151,10 @@ const Header: React.FC = () => {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative flex items-center justify-center pointer-events-auto">
             <div className="relative flex items-center justify-center">
-              <h1 className="text-lg font-display font-black text-light-text dark:text-dark-text-primary tracking-tighter uppercase truncate lg:text-2xl leading-tight">
+              <h1 className="text-[15px] sm:text-lg font-display font-black text-light-text dark:text-dark-text-primary tracking-tighter uppercase lg:truncate lg:text-2xl leading-tight text-center">
                 {getTitle()}
               </h1>
-              {(import.meta.env.DEV || import.meta.env.VITE_GIT_BRANCH === 'dev') && (
+              {(import.meta.env.DEV || import.meta.env.VITE_GIT_BRANCH === 'dev') && !isPresentation && (
                 <span className="absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 text-[9px] font-bold text-orange-500 dark:text-orange-400 uppercase tracking-widest leading-none">
                   (dev)
                 </span>
