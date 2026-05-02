@@ -60,7 +60,7 @@ export const ProductCatalog: React.FC = () => {
     <div className="h-full flex flex-col lg:flex-row relative overflow-hidden min-h-0">
       {/* List Section: Visible on mobile only if not in detail, always on desktop */}
       <div 
-        className={`h-full flex-grow flex flex-col min-h-0 min-w-0 overflow-hidden ${
+        className={`h-full flex-grow flex flex-col min-h-0 min-w-0 overflow-hidden relative ${
           isDetailView ? 'hidden lg:flex lg:w-[65%] xl:w-[70%]' : 'w-full lg:w-[65%] xl:w-[70%]'
         }`}
       >
@@ -75,6 +75,9 @@ export const ProductCatalog: React.FC = () => {
           />
         </div>
         <SearchBar />
+        {showSortModal && (
+          <SortModal onClose={() => setShowSortModal(false)} />
+        )}
       </div>
 
       {/* Detail Section */}
@@ -98,10 +101,6 @@ export const ProductCatalog: React.FC = () => {
           </div>
         )}
       </div>
-
-      {showSortModal && (
-        <SortModal onClose={() => setShowSortModal(false)} />
-      )}
     </div>
   );
 };

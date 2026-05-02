@@ -67,7 +67,7 @@ const SortModal: React.FC<SortModalProps> = ({
   const isSmartSort = sortOption.key === 'smart';
 
   return (
-    <div className="absolute inset-x-0 top-0 bottom-[80px] z-40 flex items-end justify-center pointer-events-none">
+    <div className="absolute inset-x-0 top-0 bottom-[80px] lg:bottom-[104px] z-40 flex items-end justify-center pointer-events-none">
       {/* Backdrop */}
       <div
         onClick={onClose}
