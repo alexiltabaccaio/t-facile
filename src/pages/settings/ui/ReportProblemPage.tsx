@@ -40,7 +40,7 @@ const ReportProblemPage: React.FC = () => {
 
   if (isSuccess) {
     return (
-      <div className="flex-grow flex flex-col items-center justify-center bg-white dark:bg-neutral-900/40 min-h-full p-6 text-center space-y-4">
+      <div className="flex-grow flex flex-col items-center justify-center min-h-full p-6 text-center space-y-4">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -65,7 +65,7 @@ const ReportProblemPage: React.FC = () => {
   }
 
   return (
-    <div className="flex-grow overflow-y-auto bg-white dark:bg-neutral-900/40 min-h-full">
+    <div className="flex-grow overflow-y-auto min-h-full">
       <div className="p-6 max-w-lg mx-auto space-y-8 flex flex-col items-center">
         
         {/* Header */}

@@ -13,7 +13,7 @@ const AdminPage: React.FC = () => {
 
   if (!isAdmin) {
     return (
-      <div className="flex-grow flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-neutral-900/40">
+      <div className="flex-grow flex flex-col items-center justify-center p-8 text-center">
         <ShieldAlert className="w-12 h-12 text-red-500 mb-4" />
         <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100">{t('admin.denied')}</h2>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
@@ -24,7 +24,7 @@ const AdminPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900/40 pb-20 lg:pb-10 min-h-full">
+    <div className="pb-20 lg:pb-10 min-h-full">
       <div className="p-3 lg:p-6 space-y-4 w-full max-w-5xl mx-auto">
         
         {/* Desktop Header for Admin */}

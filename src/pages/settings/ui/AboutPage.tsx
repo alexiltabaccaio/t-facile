@@ -7,7 +7,7 @@ const AboutPage: React.FC = () => {
   const { t } = useTranslation();
   
   return (
-    <div className="flex-grow overflow-y-auto bg-white dark:bg-neutral-900/40 min-h-full">
+    <div className="flex-grow overflow-y-auto min-h-full">
       <div className="p-6 max-w-lg mx-auto space-y-8 flex flex-col items-center">
         
         {/* Logo/Icon */}

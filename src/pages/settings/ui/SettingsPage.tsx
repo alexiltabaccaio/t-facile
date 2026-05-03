@@ -46,7 +46,7 @@ const SettingsPage: React.FC = () => {
   const currentLanguage = i18n.resolvedLanguage || 'it';
 
   return (
-    <div className="flex-grow overflow-y-auto bg-white dark:bg-neutral-900/40 min-h-full">
+    <div className="flex-grow overflow-y-auto min-h-full">
         <div className="p-4 lg:p-8 space-y-8 w-full max-w-3xl mx-auto">
           {/* Theme Section */}
           <section>
