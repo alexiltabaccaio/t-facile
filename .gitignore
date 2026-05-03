@@ -31,5 +31,11 @@ dist-ssr
 # Firebase Service Account
 service-account.json
 
+# Playwright artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
 # Antigravity Rules
 .antigravityrules
