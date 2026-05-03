@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 const DesktopSidebar: React.FC = () => {
   const { t } = useTranslation();
   const hasUnreadNotifications = useNotificationStore(state => state.hasUnread);
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -101,17 +101,22 @@ const DesktopSidebar: React.FC = () => {
         {[
           { label: t('layout.sidebar.info'), path: '/settings/about', icon: Info },
           { label: t('layout.sidebar.legal'), path: '/settings/legal', icon: Shield },
-          { label: t('layout.sidebar.report'), path: '/settings/report', icon: Flag },
+          { label: t('layout.sidebar.report'), path: '/settings/report', icon: Flag, requiresAuth: true },
         ].map((item) => {
           const isActive = location.pathname === item.path;
+          const isDisabled = item.requiresAuth && !user;
+
           return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl group ${
+              onClick={() => !isDisabled && navigate(item.path)}
+              disabled={isDisabled}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl group transition-all ${
                 isActive
                   ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-lg shadow-neutral-200 dark:shadow-none'
-                  : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
+                  : isDisabled
+                    ? 'opacity-40 cursor-not-allowed text-neutral-400 dark:text-neutral-600'
+                    : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3">

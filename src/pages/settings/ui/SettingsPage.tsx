@@ -20,13 +20,18 @@ const SegmentedButton: React.FC<{ label: string; active: boolean; onClick: () =>
     </button>
 );
 
-const InfoRow: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
+const InfoRow: React.FC<{ label: string; onClick: () => void; disabled?: boolean }> = ({ label, onClick, disabled }) => (
     <button 
-        onClick={onClick}
-        className="flex items-center justify-between w-full text-left px-4 py-3.5 border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-900/30"
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        className={`flex items-center justify-between w-full text-left px-4 py-3.5 border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 transition-all ${
+            disabled 
+                ? 'opacity-40 cursor-not-allowed' 
+                : 'hover:bg-neutral-50 dark:hover:bg-neutral-900/30'
+        }`}
     >
-        <span className="text-sm font-semibold text-light-text dark:text-dark-text-primary">{label}</span>
-        <ChevronRightIcon className="h-4 w-4 text-neutral-400 dark:text-neutral-600" />
+        <span className={`text-sm font-semibold ${disabled ? 'text-neutral-400 dark:text-neutral-600' : 'text-light-text dark:text-dark-text-primary'}`}>{label}</span>
+        <ChevronRightIcon className={`h-4 w-4 ${disabled ? 'text-neutral-300 dark:text-neutral-700' : 'text-neutral-400 dark:text-neutral-600'}`} />
     </button>
 );
 
@@ -76,7 +81,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex flex-col bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden shadow-sm">
               <InfoRow label={t('settings.info.about')} onClick={() => navigate('/settings/about')} />
               <InfoRow label={t('settings.info.legal')} onClick={() => navigate('/settings/legal')} />
-              <InfoRow label={t('settings.info.report')} onClick={() => navigate('/settings/report')} />
+              <InfoRow label={t('settings.info.report')} onClick={() => navigate('/settings/report')} disabled={!user} />
             </div>
 
             {globalIsAdmin && (

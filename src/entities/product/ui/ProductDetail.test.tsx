@@ -74,7 +74,7 @@ describe('ProductDetail', () => {
     
     expect(screen.getByText('Prodotto non più in commercio')).toBeDefined();
     expect(screen.getByText('Stato')).toBeDefined();
-    expect(screen.getByText('Radiato')).toBeDefined();
+    expect(screen.getByText(/Radiato/i)).toBeDefined();
     expect(screen.getByText('Data Radiazione')).toBeDefined();
   });
 

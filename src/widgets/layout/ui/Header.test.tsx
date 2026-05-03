@@ -41,7 +41,7 @@ describe('Header Component', () => {
     
     // Default store implementations
     (useNotificationStore as any).mockImplementation((selector: any) => selector ? selector({ hasUnread: false }) : { hasUnread: false });
-    (useCatalogStore as any).mockImplementation((selector: any) => selector ? selector({ isOnline: true, lastUpdateDate: '01/01/2026' }) : { isOnline: true, lastUpdateDate: '01/01/2026' });
+    (useCatalogStore as any).mockImplementation((selector: any) => selector ? selector({ isOnline: true, lastUpdateDate: '01/01/2026', products: [] }) : { isOnline: true, lastUpdateDate: '01/01/2026', products: [] });
     (useADMSyncStore as any).mockImplementation((selector: any) => selector ? selector({ aiModel: 'gemini-3-flash-preview' }) : { aiModel: 'gemini-3-flash-preview' });
     (useADMSyncActions as any).mockReturnValue({ setAiModel: vi.fn() });
   });

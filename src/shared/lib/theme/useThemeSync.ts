@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useThemeStore } from './model';
+import { useThemeStore } from './useThemeStore';
 
 /**
  * Hook to synchronize the application theme with the system theme.
