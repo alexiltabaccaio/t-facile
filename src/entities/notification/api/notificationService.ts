@@ -22,25 +22,8 @@ export const notificationService = {
     await notificationRepository.markAsRead(notificationId);
   },
 
-  /**
-   * Marks all notifications as read
-   */
   markAllAsRead: async (notificationIds: string[]) => {
     await notificationRepository.markAllAsRead(notificationIds);
-  },
-
-  /**
-   * Deletes a notification
-   */
-  deleteNotification: async (notificationId: string) => {
-    await notificationRepository.deleteNotification(notificationId);
-  },
-
-  /**
-   * Deletes all notifications
-   */
-  deleteAllNotifications: async () => {
-    await notificationRepository.deleteAllNotifications();
   }
 };
 

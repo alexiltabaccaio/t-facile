@@ -29,8 +29,40 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     init: () => {
       if (get().isInitialized) return () => {};
 
+      set({ isInitialized: true });
+
+      // Initialize install date if not present
+      let installDateStr = localStorage.getItem('appInstallDate');
+      if (!installDateStr) {
+        installDateStr = Date.now().toString();
+        localStorage.setItem('appInstallDate', installDateStr);
+      }
+      const installDate = parseInt(installDateStr);
+
       const unsubscribe = notificationService.subscribeToNotifications(
-        (updates) => {
+        (allUpdates) => {
+          // Get deleted notification IDs
+          const deletedIdsJson = localStorage.getItem('deletedNotificationIds');
+          const deletedIds: string[] = deletedIdsJson ? JSON.parse(deletedIdsJson) : [];
+
+          // Filter by install date and deleted IDs
+          const updates = (allUpdates as any[]).filter(u => {
+            const isDeleted = deletedIds.includes(u.id);
+            // Handle Firestore Timestamp or numeric timestamp
+            const timestamp = u.timestamp?.toMillis ? u.timestamp.toMillis() : 
+                            (u.timestamp?.seconds ? u.timestamp.seconds * 1000 : 0);
+            
+            // If timestamp is missing, we might want to show it or filter it. 
+            // Given the requirement, we filter out if it's before install.
+            const isAfterInstall = timestamp >= installDate;
+            return !isDeleted && isAfterInstall;
+          });
+
+          if (updates.length === 0) {
+            set({ updates: [], hasUnread: false, isInitialized: true });
+            return;
+          }
+
           // Calculate hasUnread based on localStorage (linear tracking)
           const lastReadId = localStorage.getItem('lastReadUpdateId');
           const lastReadIndex = updates.findIndex(u => u.id === lastReadId);
@@ -86,19 +118,31 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     },
 
     handleDeleteNotification: async (id: string) => {
-      try {
-        await notificationService.deleteNotification(id);
-      } catch (err) {
-        console.error("Errore eliminazione notifica:", err);
+      const deletedIdsJson = localStorage.getItem('deletedNotificationIds');
+      const deletedIds: string[] = deletedIdsJson ? JSON.parse(deletedIdsJson) : [];
+      
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        localStorage.setItem('deletedNotificationIds', JSON.stringify(deletedIds));
+        
+        // Update local state immediately
+        const { updates } = get();
+        const filteredUpdates = updates.filter(u => u.id !== id);
+        set({ updates: filteredUpdates });
       }
     },
 
     handleDeleteAllNotifications: async () => {
-      try {
-        await notificationService.deleteAllNotifications();
-      } catch (err) {
-        console.error("Errore eliminazione totale notifiche:", err);
-      }
+      const { updates } = get();
+      const idsToDelete = updates.map(u => u.id);
+      
+      const deletedIdsJson = localStorage.getItem('deletedNotificationIds');
+      const deletedIds: string[] = deletedIdsJson ? JSON.parse(deletedIdsJson) : [];
+      
+      const newDeletedIds = Array.from(new Set([...deletedIds, ...idsToDelete]));
+      localStorage.setItem('deletedNotificationIds', JSON.stringify(newDeletedIds));
+      
+      set({ updates: [], hasUnread: false, selectedUpdate: null });
     },
   }
 }));
