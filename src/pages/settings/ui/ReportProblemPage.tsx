@@ -40,7 +40,7 @@ const ReportProblemPage: React.FC = () => {
 
   if (isSuccess) {
     return (
-      <div className="flex-grow flex flex-col items-center justify-center p-6 text-center space-y-4">
+      <div className="flex-grow flex flex-col items-center justify-center bg-white dark:bg-neutral-900/40 min-h-full p-6 text-center space-y-4">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -66,14 +66,23 @@ const ReportProblemPage: React.FC = () => {
 
   return (
     <div className="flex-grow overflow-y-auto bg-white dark:bg-neutral-900/40 min-h-full">
-      <div className="p-6 max-w-lg mx-auto space-y-6">
-        <div className="space-y-2">
-          <p className="text-sm text-neutral-500 leading-relaxed">
+      <div className="p-6 max-w-lg mx-auto space-y-8 flex flex-col items-center">
+        
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4 text-neutral-900 dark:text-white" strokeWidth={1.5} />
+          <h2 className="text-2xl font-black tracking-tight">{t('settings.info.report')}</h2>
+        </div>
+
+        <div className="w-full space-y-6 text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
+          <p>
             {t('reportPage.formDesc')}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800" />
+
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
           <div className="relative">
             <textarea
               value={message}
@@ -121,7 +130,7 @@ const ReportProblemPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="pt-4 flex items-center gap-2 text-[10px] text-neutral-400 dark:text-neutral-600">
+        <div className="pt-8 w-full flex items-center justify-center gap-2 text-[10px] text-neutral-400 dark:text-neutral-600 uppercase tracking-widest font-bold">
           <CheckCircle2 className="w-3 h-3" />
           <span>{t('reportPage.footerNote')}</span>
         </div>

@@ -85,10 +85,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
           <main 
             ref={mainRef} 
-            className={`flex-grow relative min-h-0 ${isListView ? 'overflow-hidden' : 'overflow-y-auto scroll-smooth'} overscroll-none`} 
+            className={`flex-grow relative min-h-0 flex flex-col ${isListView ? 'overflow-hidden' : 'overflow-y-auto scroll-smooth'} overscroll-none`} 
             id="main-content"
           >
-            <div className={`w-full min-h-0 ${isListView ? 'h-full absolute inset-0 flex flex-col' : 'min-h-full relative'}`}>
+            <div className={`w-full min-h-0 flex flex-col flex-grow ${isListView ? 'h-full absolute inset-0' : 'relative'}`}>
               {children}
             </div>
           </main>
