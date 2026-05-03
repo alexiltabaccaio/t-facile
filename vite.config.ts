@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import pkg from './package.json';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -11,6 +12,7 @@ export default defineConfig(() => {
     return {
       define: {
         'import.meta.env.VITE_GIT_BRANCH': JSON.stringify(process.env.VERCEL_GIT_COMMIT_REF || ''),
+        'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version),
       },
       plugins: [
         tailwindcss(),

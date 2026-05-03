@@ -15,7 +15,7 @@ const AboutPage: React.FC = () => {
 
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-black tracking-tight">T-Facile</h2>
-          <p className="text-neutral-400 text-xs uppercase tracking-[0.3em] font-bold">{t('about.version', { version: '1.0.0' })}</p>
+          <p className="text-neutral-400 text-xs uppercase tracking-[0.3em] font-bold">{t('about.version', { version: import.meta.env.VITE_APP_VERSION })}</p>
         </div>
 
         <div className="w-full space-y-6 text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">

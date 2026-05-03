@@ -43,7 +43,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   };
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-950 h-dvh lg:flex lg:items-stretch p-0 text-sm overflow-hidden">
+    <div className="bg-neutral-50 dark:bg-neutral-950 fixed inset-0 lg:static lg:h-screen lg:flex lg:items-stretch p-0 text-sm overflow-hidden">
       {/* Desktop Sidebar */}
       <DesktopSidebar />
 

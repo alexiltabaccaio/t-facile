@@ -17,13 +17,13 @@
 
 @layer base {
   html, body {
-    @apply min-h-dvh w-full antialiased;
+    @apply h-dvh w-full antialiased;
     overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
   }
 
   #root {
-    @apply min-h-dvh w-full flex flex-col;
+    @apply h-dvh w-full flex flex-col;
   }
 }
 
