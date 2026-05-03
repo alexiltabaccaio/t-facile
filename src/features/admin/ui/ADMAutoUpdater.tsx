@@ -50,6 +50,7 @@ export const ADMAutoUpdater: React.FC = () => {
     await finalSaveToDatabase({
       lastUpdateDate,
       products,
+      categoryDates,
       onSuccess: (finalDate) => setLastUpdateDate(finalDate)
     });
   };

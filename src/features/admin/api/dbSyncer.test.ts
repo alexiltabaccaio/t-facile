@@ -11,12 +11,7 @@ vi.mock('@/shared/api', () => ({
 
 const mockProductRepository = vi.mocked(api.productRepository);
 
-// Mock Zustand store
-vi.mock('@/entities/product', () => ({
-  useCatalogStore: {
-    getState: vi.fn(() => ({ categoryDates: {} }))
-  }
-}));
+// No longer needed: store is decoupled
 
 describe('dbSyncer', () => {
   beforeEach(() => {
@@ -37,7 +32,7 @@ describe('dbSyncer', () => {
         products: mockProducts
       };
 
-      const result = await saveParsedDataToFirestore(mockParsedData, '01/01/2026', []);
+      const result = await saveParsedDataToFirestore(mockParsedData, '01/01/2026', [], {});
 
       expect(result.finalDate).toBe('10/01/2026');
       
@@ -62,7 +57,7 @@ describe('dbSyncer', () => {
         products: []
       };
 
-      await saveParsedDataToFirestore(mockParsedData, '01/01/2026', []);
+      await saveParsedDataToFirestore(mockParsedData, '01/01/2026', [], {});
       
       expect(mockProductRepository.saveCatalogSync).toHaveBeenCalledTimes(1);
       const callArgs = (mockProductRepository.saveCatalogSync as any).mock.calls[0][0];

@@ -35,6 +35,7 @@ interface ADMSyncState {
     finalSaveToDatabase: (params: { 
       lastUpdateDate: string; 
       products: Product[];
+      categoryDates: Record<string, string>;
       onSuccess: (finalDate: string) => void;
     }) => Promise<void>;
     cancelStaging: () => void;
@@ -136,12 +137,17 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       set({ isProcessing: false, statusMsg: "Operazione annullata.", abortController: null });
     },
 
-    finalSaveToDatabase: async ({ lastUpdateDate, products, onSuccess }) => {
+    finalSaveToDatabase: async ({ lastUpdateDate, products, categoryDates, onSuccess }) => {
       const { processedData } = get();
       if (!processedData) return;
       set({ isProcessing: true, statusMsg: "Salvataggio definitivo nel Database cloud..." });
       try {
-        const { finalDate } = await saveParsedDataToFirestore(processedData, lastUpdateDate, products);
+        const { finalDate } = await saveParsedDataToFirestore(
+          processedData, 
+          lastUpdateDate, 
+          products, 
+          categoryDates
+        );
         onSuccess(finalDate);
         set({ success: true, processedData: null });
         setTimeout(() => set({ success: false }), 5000);
