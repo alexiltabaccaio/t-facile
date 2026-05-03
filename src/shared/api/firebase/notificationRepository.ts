@@ -24,7 +24,7 @@ export const notificationRepository = {
     const q = query(
       collection(db, 'update_history'),
       orderBy('timestamp', 'desc'),
-      limit(100)
+      limit(10)
     );
 
     return onSnapshot(
