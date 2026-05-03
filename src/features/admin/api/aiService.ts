@@ -6,7 +6,8 @@ import { auth } from "@/shared/api";
 export async function analyzeTextWithAI(
   fileName: string,
   textData: string,
-  aiModel: string = "gemini-3-flash-preview"
+  aiModel: string = "gemini-3-flash-preview",
+  signal?: AbortSignal
 ) {
   const token = await auth.currentUser?.getIdToken();
   if (!token) {
@@ -19,7 +20,8 @@ export async function analyzeTextWithAI(
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ fileName, textData, aiModel })
+    body: JSON.stringify({ fileName, textData, aiModel }),
+    signal
   });
 
   const data = await response.json();

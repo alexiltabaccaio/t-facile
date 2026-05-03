@@ -120,7 +120,8 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       } catch(err: any) {
         console.error(err);
         if (err.name === 'AbortError' || err.message === 'Operazione annullata dall\'utente.') {
-           set({ error: 'Operazione annullata.' });
+           // Silently cancel without showing error message
+           set({ error: null });
         } else {
            set({ error: err.message || "Errore sincronizzazione IA" });
         }
@@ -134,7 +135,6 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       if (abortController) {
         abortController.abort();
       }
-      set({ isProcessing: false, statusMsg: "Operazione annullata.", abortController: null });
     },
 
     finalSaveToDatabase: async ({ lastUpdateDate, products, categoryDates, onSuccess }) => {

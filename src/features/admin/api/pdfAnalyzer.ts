@@ -39,7 +39,7 @@ export const analyzePdfChunks = async (
     // PHASE 1: Extract raw TEXT via PDF.js
     const fullText = await extractTextFromPDF(file, (current, total) => {
       onStatusUpdate(`Lettura ${file.name}: pagina ${current} di ${total}...`);
-    });
+    }, signal);
 
     if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
 
@@ -54,7 +54,7 @@ export const analyzePdfChunks = async (
       const textData = textChunks[chunkIdx];
 
       // PHASE 4: Call Gemini SDK (Frontend calls Backend)
-      const analysisResult = await analyzeTextWithAI(file.name, textData, aiModel ? aiModel : "gemini-3-flash-preview");
+      const analysisResult = await analyzeTextWithAI(file.name, textData, aiModel ? aiModel : "gemini-3-flash-preview", signal);
 
       if (analysisResult.products) {
         allProducts.push(...analysisResult.products);

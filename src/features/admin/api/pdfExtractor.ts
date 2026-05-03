@@ -4,7 +4,7 @@ import * as pdfjs from 'pdfjs-dist';
 const pdfWorker = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-export const extractTextFromPDF = async (file: File, onProgress?: (page: number, total: number) => void): Promise<string> => {
+export const extractTextFromPDF = async (file: File, onProgress?: (page: number, total: number) => void, signal?: AbortSignal): Promise<string> => {
   const arrayBuffer = await file.arrayBuffer();
   const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
   const pdf = await loadingTask.promise;
@@ -12,6 +12,8 @@ export const extractTextFromPDF = async (file: File, onProgress?: (page: number,
   let fullText = '';
 
   for (let i = 1; i <= numPages; i++) {
+    if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
+
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
     const strings = content.items
