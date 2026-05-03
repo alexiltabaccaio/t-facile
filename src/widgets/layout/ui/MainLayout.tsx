@@ -5,6 +5,7 @@ import DesktopSidebar from './DesktopSidebar';
 import { useCatalogStore } from '@/entities/product';
 import { useLocation } from 'react-router-dom';
 import { AlertTriangle, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const isOnline = useCatalogStore(state => state.isOnline);
   const syncError = useCatalogStore(state => state.syncError);
   const location = useLocation();
+  const { t } = useTranslation();
 
   const isCatalogRoute = location.pathname === '/' || location.pathname.startsWith('/catalog');
   const isListView = isCatalogRoute;
@@ -69,14 +71,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   <AlertTriangle size={14} className="text-amber-600 dark:text-amber-500" />
                 </div>
                 <span className="leading-relaxed">
-                  <strong className="font-medium text-amber-900 dark:text-amber-300">App in fase sperimentale.</strong>{' '}
-                  <span className="opacity-90">Verifica sempre la fonte delle informazioni.</span>
+                  <strong className="font-medium text-amber-900 dark:text-amber-300">{t('layout.banner.experimental')}</strong>{' '}
+                  <span className="opacity-90">{t('layout.banner.verify')}</span>
                 </span>
               </div>
               <button 
                 onClick={dismissBanner} 
                 className="p-1.5 -mr-1.5 hover:bg-amber-200/50 dark:hover:bg-amber-900/40 rounded-full shrink-0 flex-none text-amber-600 dark:text-amber-400 transition-colors"
-                aria-label="Chiudi avviso"
+                aria-label={t('layout.banner.close')}
               >
                 <X size={14} />
               </button>

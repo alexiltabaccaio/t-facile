@@ -54,6 +54,11 @@
       "notifications": "Notifiche",
       "online": "ONLINE",
       "offline": "OFFLINE"
+    },
+    "banner": {
+      "experimental": "App in fase sperimentale.",
+      "verify": "Verifica sempre la fonte delle informazioni.",
+      "close": "Chiudi avviso"
     }
   },
   "catalog": {
