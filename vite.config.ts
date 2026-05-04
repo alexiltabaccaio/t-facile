@@ -13,6 +13,7 @@ export default defineConfig(() => {
       define: {
         'import.meta.env.VITE_GIT_BRANCH': JSON.stringify(process.env.VERCEL_GIT_COMMIT_REF || ''),
         'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version),
+        'import.meta.env.VITE_APP_BUILD': JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA?.substring(0, 7) || 'dev'),
       },
       plugins: [
         tailwindcss(),

@@ -101,7 +101,7 @@ const SettingsPage: React.FC = () => {
                   onClick={() => setBuildClickCount(c => c + 1)}
                   className="text-[10px] text-neutral-400 dark:text-neutral-600 font-medium uppercase tracking-widest cursor-default"
                 >
-                  {t('settings.version', { version: import.meta.env.VITE_APP_VERSION, build: '1' })}
+                  {t('settings.version', { version: import.meta.env.VITE_APP_VERSION, build: import.meta.env.VITE_APP_BUILD })}
                 </button>
                 
                 {(buildClickCount >= 5 || user) && (

@@ -4,6 +4,7 @@
 interface ImportMetaEnv {
   readonly VITE_GIT_BRANCH: string;
   readonly VITE_APP_VERSION: string;
+  readonly VITE_APP_BUILD: string;
 }
 
 interface ImportMeta {
