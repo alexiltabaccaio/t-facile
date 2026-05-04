@@ -29,6 +29,7 @@ export const useCatalogSync = () => {
   } = useCatalogActions();
 
   const isFetchingRef = useRef(false);
+  const hasLoggedBotRef = useRef(false);
   const stateRef = useRef({ persistedDate, persistedSyncId, productsCount: persistedProducts?.length || 0 });
   
   useEffect(() => {
@@ -61,6 +62,9 @@ export const useCatalogSync = () => {
         
         const { persistedDate: pDate, persistedSyncId: pSyncId, productsCount } = stateRef.current;
 
+
+        const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+
         if (serverUpdateDate || totalChunks > 0) {
           if (serverUpdateDate) setLastUpdateDate(serverUpdateDate);
           if (config.categoryDates) setCategoryDates(config.categoryDates);
@@ -70,6 +74,17 @@ export const useCatalogSync = () => {
                              productsCount === 0;
 
           if (shouldSync && totalChunks > 0) {
+            if (isBot) {
+              if (!hasLoggedBotRef.current) {
+                hasLoggedBotRef.current = true;
+                console.info("[useCatalogSync] Bot detected, skipping heavy sync to save quota.");
+                catalogService.logBotActivity(navigator.userAgent);
+              }
+              setIsInitialLoading(false);
+              setIsOnline(true);
+              return;
+            }
+
             if (isFetchingRef.current) return;
             isFetchingRef.current = true;
             setIsInitialLoading(true);

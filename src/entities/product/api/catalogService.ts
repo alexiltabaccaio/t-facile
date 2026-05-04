@@ -64,7 +64,14 @@ export const catalogService = {
         co: raw.emissions.co,
       } : undefined
     };
-  });
+    });
+  },
+
+  /**
+   * Logs bot activity for auditing
+   */
+  logBotActivity: async (userAgent: string) => {
+    return productRepository.logBotActivity(userAgent);
   }
 };
 

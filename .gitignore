@@ -39,3 +39,6 @@ playwright/.cache/
 
 # Antigravity Rules
 .antigravityrules
+
+# Notes
+TECHNICAL_DEBT_NOTES.md

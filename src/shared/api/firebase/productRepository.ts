@@ -132,5 +132,21 @@ export const productRepository = {
       }
     });
     await batch.commit();
+  },
+
+  /**
+   * Logs bot/crawler detection activity for monitoring
+   */
+  logBotActivity: async (userAgent: string) => {
+    try {
+      const logRef = doc(collection(db, 'bot_logs'));
+      await writeBatch(db).set(logRef, {
+        userAgent,
+        timestamp: serverTimestamp(),
+        path: window.location.pathname
+      }).commit();
+    } catch (err) {
+      console.error("Failed to log bot activity:", err);
+    }
   }
 };
