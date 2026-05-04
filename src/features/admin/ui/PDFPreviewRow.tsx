@@ -2,8 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatPackage } from '@/entities/product';
 import { DiffItem } from '../model/types';
-import { DiffStatusBadge } from './components/DiffStatusBadge';
-import { DiffDetails } from './components/DiffDetails';
+import { DiffStatusBadge } from './DiffStatusBadge';
+import { DiffDetails } from './DiffDetails';
 
 interface PDFPreviewRowProps {
   item: DiffItem;

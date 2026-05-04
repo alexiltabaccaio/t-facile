@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatToDisplayDate } from '@/shared/lib';
-import { DiffItem } from '../../model/types';
+import { DiffItem } from '../model/types';
 
 interface DiffDetailsProps {
   item: DiffItem;

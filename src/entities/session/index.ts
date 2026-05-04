@@ -1,2 +1,2 @@
-export { useAuth, SessionProvider } from './lib/AuthContext';
+export { useAuth, SessionProvider } from './ui/AuthContext';
 export type { AuthContextType } from './model/types';
