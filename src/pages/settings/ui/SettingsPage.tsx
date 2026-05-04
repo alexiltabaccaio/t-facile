@@ -40,7 +40,7 @@ const SettingsPage: React.FC = () => {
   const currentTheme = useThemeStore((state) => state.theme);
   const { setTheme: onThemeChange } = useThemeActions();
   const navigate = useNavigate();
-  const { user, isAdmin: globalIsAdmin } = useAuth();
+  const { isAdmin: globalIsAdmin } = useAuth();
 
   const currentLanguage = i18n.resolvedLanguage || 'it';
 
@@ -94,7 +94,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex flex-col bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden shadow-sm">
               <InfoRow label={t('settings.info.about')} onClick={() => navigate('/settings/about')} />
               <InfoRow label={t('settings.info.legal')} onClick={() => navigate('/settings/legal')} />
-              <InfoRow label={t('settings.info.report')} onClick={() => navigate('/settings/report')} disabled={!user} />
+              <InfoRow label={t('settings.info.report')} onClick={() => navigate('/settings/report')} />
             </div>
 
 

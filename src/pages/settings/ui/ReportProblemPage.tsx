@@ -83,13 +83,19 @@ const ReportProblemPage: React.FC = () => {
         <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800" />
 
         <form onSubmit={handleSubmit} className="space-y-4 w-full">
+          {!user && (
+            <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 rounded-xl flex items-start gap-3 text-sm text-orange-800 dark:text-orange-400 mb-2">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+              <p>{t('reportPage.loginRequired')}</p>
+            </div>
+          )}
           <div className="relative">
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={t('reportPage.placeholder')}
-              className="w-full h-48 p-4 bg-neutral-50 dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-neutral-400"
-              disabled={isSubmitting}
+              className="w-full h-48 p-4 bg-neutral-50 dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting || !user}
               maxLength={2000}
             />
             <div className="absolute bottom-3 right-3 text-[10px] text-neutral-400">
@@ -113,7 +119,7 @@ const ReportProblemPage: React.FC = () => {
 
           <button
             type="submit"
-            disabled={isSubmitting || !message.trim()}
+            disabled={isSubmitting || !message.trim() || !user}
             className="w-full flex items-center justify-center gap-2 py-4 bg-neutral-900 dark:bg-white text-white dark:text-black font-bold rounded-2xl text-sm transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
           >
             {isSubmitting ? (

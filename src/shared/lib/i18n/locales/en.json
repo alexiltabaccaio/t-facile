@@ -228,7 +228,8 @@
     "submit": "Send report",
     "submitting": "Sending...",
     "footerNote": "Your report will help improve the app for all tobacconists.",
-    "error": "An error occurred during submission. Please try again later."
+    "error": "An error occurred during submission. Please try again later.",
+    "loginRequired": "You must be logged in to send a report."
   },
   "productDetail": {
     "advancedInfo": "Advanced Information",

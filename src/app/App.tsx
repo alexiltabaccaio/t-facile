@@ -23,7 +23,7 @@ import { useAuth } from '@/entities/session';
 const App: React.FC = () => {
   const mainContentRef = useRef<HTMLElement>(null);
   const location = useLocation();
-  const { user } = useAuth();
+
   const [isHydrated, setIsHydrated] = React.useState(false);
 
   React.useEffect(() => {
@@ -63,10 +63,7 @@ const App: React.FC = () => {
           <Route path="/notifications/:id" element={<NotificationDetailPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/legal" element={<LegalPage />} />
-          <Route 
-            path="/settings/report" 
-            element={user ? <ReportProblemPage /> : <Navigate to="/settings" replace />} 
-          />
+          <Route path="/settings/report" element={<ReportProblemPage />} />
           <Route path="/settings/about" element={<AboutPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/catalog" replace />} />

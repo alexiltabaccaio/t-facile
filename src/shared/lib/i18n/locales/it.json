@@ -228,7 +228,8 @@
     "submit": "Invia segnalazione",
     "submitting": "Invio in corso...",
     "footerNote": "La tua segnalazione aiuterà a migliorare l'app per tutti i tabaccai.",
-    "error": "Si è verificato un errore durante l'invio. Riprova più tardi."
+    "error": "Si è verificato un errore durante l'invio. Riprova più tardi.",
+    "loginRequired": "Devi effettuare l'accesso per poter inviare una segnalazione."
   },
   "productDetail": {
     "advancedInfo": "Informazioni Avanzate",
