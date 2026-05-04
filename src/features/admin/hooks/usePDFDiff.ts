@@ -2,13 +2,7 @@ import { useMemo } from 'react';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { Product } from '@/entities/product';
 
-export type ChangeType = 'new' | 'price' | 'status' | 'emissions' | 'unchanged';
-
-export interface DiffItem {
-  product: any;
-  type: ChangeType;
-  diffData: any;
-}
+import { ChangeType, DiffItem } from '../model/types';
 
 export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
   const diffItems = useMemo<DiffItem[]>(() => {
