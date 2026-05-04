@@ -1,24 +1,13 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
-import admRoutes from "./routes/admRoutes.js";
+import { configureApiRoutes } from "./appConfig.js";
 
 export async function createApp() {
   const app = express();
 
-  // Enables reading real IP behind reverse proxies (e.g., Google Cloud Run) for the rate limiter
-  app.set("trust proxy", 1);
-
-  // Extended JSON parsing middleware to allow large text parsing from PDFs
-  app.use(express.json({ limit: "10mb" }));
-
-  // API Routes
-  app.use("/api/adm", admRoutes);
-
-  // Health check
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok" });
-  });
+  // Configure shared API routes and middleware
+  configureApiRoutes(app);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
