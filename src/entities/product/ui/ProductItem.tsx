@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { Product, SortKey } from '../model/types';
-import { escapeRegExp, SYNONYM_MAP } from '@/shared/lib';
 import { useTranslation } from 'react-i18next';
 import { formatPackage } from '../lib/packageFormatter';
+import { TextHighlight } from '@/shared/ui';
+import { PriceHighlight } from './PriceHighlight';
 
 interface ProductItemProps {
   product: Product;
@@ -14,33 +15,6 @@ interface ProductItemProps {
   sortKey: SortKey;
 }
 
-const Highlight: React.FC<{ text: string | undefined; keywords: string[]; isCategory?: boolean }> = ({ text, keywords, isCategory = false }) => {
-    if (!keywords || keywords.length === 0 || !text) {
-        return <>{text}</>;
-    }
-
-    const effectiveKeywords = isCategory
-      ? [...new Set(keywords.flatMap(kw => [kw, ...(SYNONYM_MAP[kw.toLowerCase()] || [])]))]
-      : keywords;
-    
-    const regex = new RegExp(`\\b(${effectiveKeywords.map(escapeRegExp).join('|')})`, 'gi');
-    const parts = text.split(regex);
-    
-    return (
-        <>
-            {parts.filter(part => part).map((part, index) => {
-                const isHighlight = effectiveKeywords.some(kw => kw.toLowerCase() === part.toLowerCase());
-                return isHighlight ? (
-                    <mark key={index} className="bg-transparent text-blue-600 dark:text-blue-400 font-bold">
-                        {part}
-                    </mark>
-                ) : (
-                    <React.Fragment key={index}>{part}</React.Fragment>
-                );
-            })}
-        </>
-    );
-};
 
 
 const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywords, style, sortKey }) => {
@@ -48,82 +22,11 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywo
   const formattedPrice = `€ ${product.pricing.currentPrice.toFixed(2).replace('.', ',')}`;
   const isRetired = product.lifecycle.status === 'Radiato';
   const isOutOfCatalog = product.lifecycle.status === 'Fuori Catalogo';
-  const shouldHighlightText = searchKeywords.length > 0;
   const showEmissions = ['nicotine', 'tar', 'co'].includes(sortKey) && product.emissions;
 
   const localizedCategory = t(`catalog.categories.${product.identity.category}`, { defaultValue: product.identity.category });
   const localizedPackage = formatPackage(product.identity.package, product.identity.packageInfo, t);
 
-  const renderPriceWithHighlight = () => {
-    if (searchKeywords.length === 0) {
-      return formattedPrice;
-    }
-  
-    const priceKeywords = searchKeywords.filter(kw => 
-      kw === '€' || /^€?\d*[,.]?\d*$/.test(kw)
-    );
-  
-    if (priceKeywords.length === 0) {
-      return formattedPrice;
-    }
-  
-    const highlightEuro = priceKeywords.some(kw => kw.includes('€'));
-  
-    const priceStringWithDot = product.pricing.currentPrice.toFixed(2);
-    let numericMatchWithDot = '';
-    priceKeywords.forEach(kw => {
-      let normalizedKwWithDot = kw.replace('€', '').replace(',', '.');
-      if (normalizedKwWithDot && priceStringWithDot.startsWith(normalizedKwWithDot)) {
-        if (normalizedKwWithDot.length > numericMatchWithDot.length) {
-          numericMatchWithDot = normalizedKwWithDot;
-        }
-      }
-    });
-
-    const numericMatchWithComma = numericMatchWithDot.replace('.', ',');
-    const highlightNumber = numericMatchWithComma.length > 0;
-  
-    if (!highlightEuro && !highlightNumber) {
-      return formattedPrice;
-    }
-    
-    const FullHighlight: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <mark className="bg-blue-100 dark:bg-blue-500/20 rounded-sm text-inherit">
-        {children}
-      </mark>
-    );
-    
-    const priceStringWithComma = product.pricing.currentPrice.toFixed(2).replace('.', ',');
-    const remainingPart = highlightNumber ? priceStringWithComma.substring(numericMatchWithComma.length) : '';
-  
-    if (highlightEuro && highlightNumber) {
-      return (
-        <>
-          <FullHighlight>€&nbsp;{numericMatchWithComma}</FullHighlight>
-          {remainingPart}
-        </>
-      );
-    } 
-    else if (highlightNumber) {
-      return (
-        <>
-          €&nbsp;
-          <FullHighlight>{numericMatchWithComma}</FullHighlight>
-          {remainingPart}
-        </>
-      );
-    } 
-    else if (highlightEuro) {
-      return (
-        <>
-          <FullHighlight>€</FullHighlight>
-          &nbsp;{priceStringWithComma}
-        </>
-      );
-    }
-  
-    return formattedPrice;
-  };
 
   return (
     <div 
@@ -138,24 +41,30 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywo
       <div className="flex-grow min-w-0 flex flex-col">
         <div>
             <h3 className="text-light-text dark:text-dark-text-primary font-semibold text-sm leading-tight flex items-start gap-2">
-            <span className="block min-w-0 break-words line-clamp-2">{shouldHighlightText ? <Highlight text={product.identity.name} keywords={searchKeywords} /> : product.identity.name}</span>
+            <span className="block min-w-0 break-words line-clamp-2">
+              <TextHighlight text={product.identity.name} keywords={searchKeywords} />
+            </span>
             {isRetired && <span className="text-[10px] font-semibold text-red-100 bg-red-600 dark:bg-red-700 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">{t('product.status.retired')}</span>}
             {isOutOfCatalog && <span className="text-[10px] font-semibold text-yellow-900 bg-yellow-400 dark:bg-yellow-500 px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5">{t('product.status.outOfCatalog')}</span>}
             </h3>
             <p className="text-xs leading-snug text-neutral-600 dark:text-dark-text-primary mt-1">
-            {shouldHighlightText ? <Highlight text={localizedCategory} keywords={searchKeywords} isCategory={true} /> : localizedCategory}
+              <TextHighlight text={localizedCategory} keywords={searchKeywords} isCategory={true} />
             </p>
         </div>
         <p className="text-xs leading-snug text-neutral-500 dark:text-dark-text-secondary mt-1">
-          {shouldHighlightText ? <Highlight text={localizedPackage} keywords={searchKeywords} /> : localizedPackage}
+          <TextHighlight text={localizedPackage} keywords={searchKeywords} />
         </p>
       </div>
       <div className="text-right flex-shrink-0">
         <p className="text-blue-500 dark:text-blue-400 font-semibold text-lg">
-          {renderPriceWithHighlight()}
+          <PriceHighlight 
+            price={product.pricing.currentPrice} 
+            formattedPrice={formattedPrice} 
+            searchKeywords={searchKeywords} 
+          />
         </p>
         <p className="text-neutral-500 dark:text-dark-text-secondary text-xs mt-1">
-          {shouldHighlightText ? <Highlight text={product.identity.code} keywords={searchKeywords} /> : product.identity.code}
+          <TextHighlight text={product.identity.code} keywords={searchKeywords} />
         </p>
         {showEmissions && (
             <div className="text-[10px] text-neutral-500 dark:text-dark-text-secondary mt-1.5 flex items-center gap-x-1.5 justify-end">

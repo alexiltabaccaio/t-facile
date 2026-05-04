@@ -4,3 +4,4 @@ export * from './Logo';
 export * from './Modal';
 export * from './UpdatePwaPrompt';
 export * from './OrientationLockOverlay';
+export * from './TextHighlight/TextHighlight';
