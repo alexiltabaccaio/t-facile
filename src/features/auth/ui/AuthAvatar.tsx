@@ -4,7 +4,12 @@ import { signInWithGoogle, signOut } from '@/shared/api';
 import { User, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export const AuthAvatar: React.FC = () => {
+export interface AuthAvatarProps {
+  showLabel?: boolean;
+  centered?: boolean;
+}
+
+export const AuthAvatar: React.FC<AuthAvatarProps> = ({ showLabel = false, centered = false }) => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +28,7 @@ export const AuthAvatar: React.FC = () => {
   const handleAvatarClick = () => {
     if (!user) {
       signInWithGoogle();
-    } else {
+    } else if (!showLabel) {
       setIsOpen(!isOpen);
     }
   };
@@ -34,20 +39,51 @@ export const AuthAvatar: React.FC = () => {
   };
 
   return (
-    <div className="relative inline-flex items-center" ref={containerRef}>
-      <button
-        onClick={handleAvatarClick}
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 overflow-hidden transition-all hover:ring-2 hover:ring-blue-500/50"
-        aria-label={user ? t('settings.auth.logout') : t('settings.auth.login')}
-      >
-        {user?.photoURL ? (
-          <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
-        ) : (
-          <User size={18} className="text-neutral-500 dark:text-neutral-400" />
-        )}
-      </button>
+    <div className={`relative ${centered ? 'flex flex-col items-center justify-center gap-2 w-full' : `inline-flex items-center ${showLabel ? 'w-full gap-3' : ''}`}`} ref={containerRef}>
+      {showLabel ? (
+        <div
+          className={`flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden shrink-0 ${centered ? 'w-12 h-12' : 'w-10 h-10'}`}
+        >
+          {user?.photoURL ? (
+            <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+          ) : (
+            <User size={centered ? 24 : 20} className="text-neutral-500 dark:text-neutral-400" />
+          )}
+        </div>
+      ) : (
+        <button
+          onClick={handleAvatarClick}
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden transition-all hover:ring-2 hover:ring-blue-500/50 shrink-0"
+          aria-label={user ? t('settings.auth.logout') : t('settings.auth.login')}
+        >
+          {user?.photoURL ? (
+            <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+          ) : (
+            <User size={18} className="text-neutral-500 dark:text-neutral-400" />
+          )}
+        </button>
+      )}
 
-      {isOpen && user && (
+      {showLabel && (
+        <div className={`flex flex-col flex-1 min-w-0 justify-center ${centered ? 'items-center text-center' : ''}`}>
+          {!user ? (
+            <button onClick={() => signInWithGoogle()} className={`text-[14px] font-bold text-neutral-700 dark:text-neutral-300 hover:text-blue-500 transition-colors truncate ${centered ? 'text-center' : 'text-left'}`}>
+              {t('settings.auth.login')}
+            </button>
+          ) : (
+            <>
+              <p className={`text-[13px] font-semibold truncate text-light-text dark:text-dark-text-primary leading-tight ${centered ? 'text-center' : ''}`}>
+                {user.email}
+              </p>
+              <button onClick={handleLogout} className={`text-[11px] font-bold text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors uppercase tracking-wider mt-0.5 w-fit ${centered ? 'mx-auto' : 'text-left'}`}>
+                {t('settings.auth.logout')}
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {isOpen && user && !showLabel && (
         <div className="absolute top-full mt-2 left-0 z-50 min-w-[160px] bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-xl py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
            <div className="px-3 py-2 border-b border-neutral-100 dark:border-neutral-800">
              <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider leading-tight">{t('settings.auth.loggedInAs')}</p>

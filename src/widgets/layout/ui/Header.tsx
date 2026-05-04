@@ -12,7 +12,6 @@ import { useCatalogStore } from '@/entities/product';
 
 import { AIModelSelector } from '@/features/admin';
 import { ProductShareButton } from '@/features/product-share/ui/ProductShareButton';
-import { AuthAvatar } from '@/features/auth';
 
 import { useHeaderData } from '../model/useHeaderData';
 
@@ -74,9 +73,6 @@ const Header: React.FC = () => {
                 >
                   <SettingsIcon size={20} />
                 </button>
-                <div className="lg:hidden">
-                  <AuthAvatar />
-                </div>
               </>
             )}
           </div>

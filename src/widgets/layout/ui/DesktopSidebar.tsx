@@ -71,7 +71,7 @@ const DesktopSidebar: React.FC = () => {
 
       {/* User Section */}
       <div className="px-2 mb-10">
-        <AuthAvatar />
+        <AuthAvatar showLabel />
       </div>
 
       {/* Navigation */}

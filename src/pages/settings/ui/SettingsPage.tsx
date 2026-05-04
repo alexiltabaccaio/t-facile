@@ -5,6 +5,7 @@ import { useAuth } from '@/entities/session';
 import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { AuthAvatar } from '@/features/auth';
 
 const SegmentedButton: React.FC<{ label: string; active: boolean; onClick: () => void }> = ({ label, active, onClick }) => (
     <button
@@ -46,6 +47,20 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="flex-grow overflow-y-auto min-h-full">
         <div className="p-4 lg:p-8 space-y-8 w-full max-w-3xl mx-auto">
+          {/* Auth Section (Mobile Only) */}
+          <div className="flex flex-col items-center gap-4 lg:hidden">
+            <AuthAvatar showLabel centered />
+            {globalIsAdmin && (
+              <button 
+                onClick={() => navigate('/admin')}
+                className="text-[11px] font-bold text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors uppercase tracking-widest flex items-center gap-1.5"
+              >
+                 <Shield className="w-3.5 h-3.5" />
+                {t('settings.admin')}
+              </button>
+            )}
+          </div>
+
           {/* Theme Section */}
           <section>
             <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-3 px-1">{t('settings.theme.title')}</h3>
@@ -82,18 +97,7 @@ const SettingsPage: React.FC = () => {
               <InfoRow label={t('settings.info.report')} onClick={() => navigate('/settings/report')} disabled={!user} />
             </div>
 
-            {globalIsAdmin && (
-              <div className="mt-4 flex justify-center">
-                <button 
-                  onClick={() => navigate('/admin')}
-                  className="text-xs font-bold text-red-600 dark:text-red-500 hover:underline uppercase tracking-widest flex items-center gap-1"
-                >
-                   <Shield className="w-3 h-3" />
-                  {t('settings.admin')}
-                </button>
-              </div>
-            )}
-            
+
             <div className="mt-8 text-center">
                 <div className="text-[10px] text-neutral-400 dark:text-neutral-600 font-medium uppercase tracking-widest">
                   {t('settings.version', { version: import.meta.env.VITE_APP_VERSION, build: import.meta.env.VITE_APP_BUILD })}
