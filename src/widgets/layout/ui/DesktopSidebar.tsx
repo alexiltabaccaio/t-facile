@@ -12,6 +12,7 @@ import {
 import { Info, Shield, Flag } from 'lucide-react';
 import { Logo } from '@/shared/ui';
 import { useTranslation } from 'react-i18next';
+import { AuthAvatar } from '@/features/auth';
 
 const DesktopSidebar: React.FC = () => {
   const { t } = useTranslation();
@@ -53,7 +54,7 @@ const DesktopSidebar: React.FC = () => {
   return (
     <aside className="hidden lg:flex flex-col w-72 h-screen bg-white dark:bg-dark-bg border-r border-neutral-200 dark:border-dark-border py-8 px-6 shrink-0 z-50">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-2 mb-10">
+      <div className="flex items-center gap-3 px-2 mb-8">
         <Logo size={40} />
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
@@ -66,6 +67,11 @@ const DesktopSidebar: React.FC = () => {
           </div>
           <span className="text-[10px] text-neutral-500 uppercase font-semibold tracking-wider">{t('layout.sidebar.subtitle')}</span>
         </div>
+      </div>
+
+      {/* User Section */}
+      <div className="px-2 mb-10">
+        <AuthAvatar />
       </div>
 
       {/* Navigation */}

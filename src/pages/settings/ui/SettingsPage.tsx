@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronRightIcon } from '@/shared/ui';
 import { useThemeStore, useThemeActions } from '@/shared/lib';
 import { useAuth } from '@/entities/session';
-import { signInWithGoogle, signOut } from '@/shared/api';
 import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +40,6 @@ const SettingsPage: React.FC = () => {
   const { setTheme: onThemeChange } = useThemeActions();
   const navigate = useNavigate();
   const { user, isAdmin: globalIsAdmin } = useAuth();
-  const [buildClickCount, setBuildClickCount] = useState(0);
 
   const currentLanguage = i18n.resolvedLanguage || 'it';
 
@@ -76,7 +74,7 @@ const SettingsPage: React.FC = () => {
           </section>
 
           {/* Info Section */}
-          <section>
+          <section className="lg:hidden">
             <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px] mb-3 px-1">{t('settings.info.title')}</h3>
             <div className="flex flex-col bg-white dark:bg-dark-card-bg border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden shadow-sm">
               <InfoRow label={t('settings.info.about')} onClick={() => navigate('/settings/about')} />
@@ -96,32 +94,10 @@ const SettingsPage: React.FC = () => {
               </div>
             )}
             
-            <div className="mt-8 text-center space-y-2">
-                <button 
-                  onClick={() => setBuildClickCount(c => c + 1)}
-                  className="text-[10px] text-neutral-400 dark:text-neutral-600 font-medium uppercase tracking-widest cursor-default"
-                >
+            <div className="mt-8 text-center">
+                <div className="text-[10px] text-neutral-400 dark:text-neutral-600 font-medium uppercase tracking-widest">
                   {t('settings.version', { version: import.meta.env.VITE_APP_VERSION, build: import.meta.env.VITE_APP_BUILD })}
-                </button>
-                
-                {(buildClickCount >= 5 || user) && (
-                   <div className="pt-2">
-                      {user ? (
-                         <div className="text-[10px] text-neutral-500 dark:text-neutral-400">
-                           <p>{t('settings.auth.loggedInAs')}</p>
-                           <p className="font-bold">{user.email}</p>
-                           <button onClick={() => signOut()} className="text-red-500 underline mt-1">{t('settings.auth.logout')}</button>
-                         </div>
-                      ) : (
-                          <button 
-                            onClick={() => signInWithGoogle()}
-                            className="text-[10px] bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 px-3 py-1 rounded"
-                          >
-                          {t('settings.auth.login')}
-                          </button>
-                      )}
-                   </div>
-                )}
+                </div>
             </div>
           </section>
         </div>

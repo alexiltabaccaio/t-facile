@@ -12,6 +12,7 @@ import { useCatalogStore } from '@/entities/product';
 
 import { AIModelSelector } from '@/features/admin';
 import { ProductShareButton } from '@/features/product-share/ui/ProductShareButton';
+import { AuthAvatar } from '@/features/auth';
 
 import { useHeaderData } from '../model/useHeaderData';
 
@@ -60,18 +61,23 @@ const Header: React.FC = () => {
       <div className="relative flex items-center justify-between w-full h-8">
         {/* Left Slot: Icon + Online Status */}
         <div className="relative z-10 flex items-center flex-1 h-full">
-          <div className="absolute left-0 flex items-center h-full">
+          <div className="absolute left-0 flex items-center h-full gap-3">
             {showBackButton ? (
               <BackButton onClick={handleBack} />
             ) : (
-              <button 
-                className="text-neutral-600 hover:text-light-text dark:text-dark-text-secondary dark:hover:text-dark-text-primary p-1 lg:hidden"
-                onClick={() => navigate('/settings')}
-                title={t('settings.title')}
-                aria-label={t('settings.title')}
-              >
-                <SettingsIcon size={20} />
-              </button>
+              <>
+                <button 
+                  className="text-neutral-600 hover:text-light-text dark:text-dark-text-secondary dark:hover:text-dark-text-primary p-1 lg:hidden"
+                  onClick={() => navigate('/settings')}
+                  title={t('settings.title')}
+                  aria-label={t('settings.title')}
+                >
+                  <SettingsIcon size={20} />
+                </button>
+                <div className="lg:hidden">
+                  <AuthAvatar />
+                </div>
+              </>
             )}
           </div>
 
