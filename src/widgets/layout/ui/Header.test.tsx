@@ -3,24 +3,30 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Header from './Header';
 import { useNotificationStore } from '@/entities/notification';
 import { useCatalogStore } from '@/entities/product';
-import { useADMSyncStore, useADMSyncActions } from '@/features/admin';
+import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 
 // Mock the stores
-vi.mock('@/entities/notification/model/useNotificationStore', () => ({
+vi.mock('@/entities/notification', () => ({
   useNotificationStore: vi.fn(),
   useNotificationActions: vi.fn(() => ({ handleMarkAllAsRead: vi.fn(), handleDeleteAllNotifications: vi.fn() })),
 }));
-vi.mock('@/entities/product/model/useCatalogStore', () => ({
-  useCatalogStore: vi.fn(),
-  useCatalogActions: vi.fn(() => ({})),
-}));
-vi.mock('@/features/admin/model/useADMSyncStore', () => ({
-  useADMSyncStore: vi.fn(),
-  useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
-}));
-vi.mock('@/features/admin/api/pdfExtractor', () => ({
-  extractTextFromPDF: vi.fn(),
+
+vi.mock('@/entities/product', async (importOriginal) => {
+  const actual = await importOriginal<any>();
+  return {
+    ...actual,
+    useCatalogStore: vi.fn(),
+    useCatalogActions: vi.fn(() => ({})),
+    useADMSyncStore: vi.fn(),
+    useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
+  };
+});
+
+// Mock pdfjs-dist
+vi.mock('pdfjs-dist', () => ({
+  GlobalWorkerOptions: { workerSrc: '' },
+  getDocument: vi.fn(),
 }));
 
 // Mock useNavigate

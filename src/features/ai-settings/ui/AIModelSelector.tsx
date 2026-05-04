@@ -1,6 +1,6 @@
 import React from 'react';
 import { Cpu } from 'lucide-react';
-import { useADMSyncStore, useADMSyncActions } from '@/features/admin';
+import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
 
 export const AIModelSelector: React.FC = () => {
   const aiModel = useADMSyncStore(s => s.aiModel);

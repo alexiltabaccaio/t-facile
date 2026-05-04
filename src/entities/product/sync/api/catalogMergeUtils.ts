@@ -1,4 +1,4 @@
-import { Product } from '@/entities/product';
+import { Product } from '../../index';
 import { ParsedPDFResult, ParsedProduct } from '../api/pdfAnalyzer';
 import { mapParsedProductToFirestore, detectProductVariations } from './syncUtils';
 import { isDateNewer } from '@/shared/lib';

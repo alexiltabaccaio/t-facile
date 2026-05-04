@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeCategory, mapParsedProductToFirestore, detectProductVariations } from './syncUtils';
 import { ParsedProduct } from '../api/pdfAnalyzer';
-import { Product } from '@/entities/product';
+import { Product } from '../../index';
 
 describe('syncUtils', () => {
   describe('normalizeCategory', () => {

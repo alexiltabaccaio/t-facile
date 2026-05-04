@@ -10,8 +10,8 @@ import { useAppNavigation } from '@/shared/lib/hooks/useAppNavigation';
 import { useNotificationStore } from '@/entities/notification';
 import { useCatalogStore } from '@/entities/product';
 
-import { AIModelSelector } from '@/features/admin';
-import { ProductShareButton } from '@/features/product-share/ui/ProductShareButton';
+import { AIModelSelector } from '@/features/ai-settings';
+import { ProductShareButton } from '@/features/product-share';
 
 import { useHeaderData } from '../model/useHeaderData';
 

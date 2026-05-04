@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { mapFirestoreDocToProduct } from './productMapper';
+import { vi } from 'vitest';
+
+vi.mock('pdfjs-dist', () => ({
+  GlobalWorkerOptions: { workerSrc: '' },
+  getDocument: vi.fn(),
+}));
 
 describe('productMapper', () => {
   it('should map standard nested firestore data', () => {

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/entities/session';
 import { ShieldAlert, Zap, FileText, Cpu } from 'lucide-react';
-import { PDFUploader, ADMAutoUpdater, useADMSyncStore, useADMSyncActions } from '@/features/admin';
+import { PDFUploader } from '@/features/pdf-upload';
+import { ADMAutoUpdater } from '@/features/system-update';
+import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
 import { useTranslation } from 'react-i18next';
 
 const AdminPage: React.FC = () => {

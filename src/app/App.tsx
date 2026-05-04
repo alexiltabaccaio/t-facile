@@ -12,13 +12,13 @@ import { AdminPage } from '@/pages/admin';
 import { MainLayout } from '@/widgets/layout';
 
 // Shared
-import { InstallPwaPrompt, UpdatePwaPrompt, OrientationLockOverlay } from '@/shared/ui';
+import { OrientationLockOverlay } from '@/shared/ui';
+import { InstallPwaPrompt, UpdatePwaPrompt } from '@/features/pwa-management';
 import { useScrollToTop } from '@/shared/hooks';
 
 // App Providers
 import { InitializationProvider } from './providers';
 import { useCatalogStore } from '@/entities/product';
-import { useAuth } from '@/entities/session';
 
 const App: React.FC = () => {
   const mainContentRef = useRef<HTMLElement>(null);

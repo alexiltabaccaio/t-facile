@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Zap } from 'lucide-react';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
-import { useCatalogStore } from '@/entities/product';
-import { usePDFDiff, ChangeType } from '../hooks/usePDFDiff';
+import { useCatalogStore } from '../../index';
+import { usePDFDiff } from '../model/usePDFDiff';
+import { ChangeType } from '../model/types';
 import { PDFPreviewRow } from './PDFPreviewRow';
 import { useTranslation } from 'react-i18next';
 
@@ -14,14 +15,14 @@ interface PDFPreviewTableProps {
 
 export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, onCancel, onSave }) => {
   const { t } = useTranslation();
-  const products = useCatalogStore(state => state.products);
+  const products = useCatalogStore((state: any) => state.products);
   const [activeTab, setActiveTab] = useState<ChangeType | 'all'>('all');
 
   const { diffItems, stats } = usePDFDiff(parsedData, products);
 
   const filteredItems = activeTab === 'all' 
     ? diffItems 
-    : diffItems.filter(i => i.type === activeTab);
+    : diffItems.filter((i: any) => i.type === activeTab);
 
   const getTabLabel = (type: ChangeType | 'all') => {
     switch(type) {
@@ -95,7 +96,7 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-neutral-400 italic">{t('admin.preview.noProducts')}</td>
               </tr>
-            ) : filteredItems.map((item, i) => (
+            ) : filteredItems.map((item: any, i: number) => (
               <PDFPreviewRow key={i} item={item} />
             ))}
           </tbody>

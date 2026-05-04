@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
-import { Product } from '@/entities/product';
+import { Product } from '../../index';
 
 import { ChangeType, DiffItem } from '../model/types';
 

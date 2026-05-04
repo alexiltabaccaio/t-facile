@@ -1,5 +1,5 @@
 import { productRepository } from '@/shared/api';
-import { PackageType, PackageUnit } from '@/entities/product';
+import { PackageType, PackageUnit } from '../../index';
 
 /**
  * Parser identical to the Mapper one for consistency

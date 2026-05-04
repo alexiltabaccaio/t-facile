@@ -1,9 +1,9 @@
 import { productRepository } from '@/shared/api';
-import { Product } from '@/entities/product';
+import { Product } from '../../index';
 import { ParsedPDFResult } from './pdfAnalyzer';
 import { isDateNewer, chunkArray } from '@/shared/lib';
-import { mergeParsedCatalog, calculateNextCategoryDates } from '../lib/catalogMergeUtils';
-import { formatHistoryEntry } from '../lib/syncHistoryUtils';
+import { mergeParsedCatalog, calculateNextCategoryDates } from './catalogMergeUtils';
+import { formatHistoryEntry } from './syncHistoryUtils';
 
 export const saveParsedDataToFirestore = async (
   parsedData: ParsedPDFResult,

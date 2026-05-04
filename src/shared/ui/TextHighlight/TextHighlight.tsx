@@ -1,5 +1,5 @@
 import React from 'react';
-import { escapeRegExp, SYNONYM_MAP } from '@/shared/lib';
+import { escapeRegExp, SYNONYM_MAP } from '../../lib';
 
 interface TextHighlightProps {
   text: string | undefined;

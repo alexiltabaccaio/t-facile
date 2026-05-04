@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { saveParsedDataToFirestore } from '../api/dbSyncer';
-import { Product } from '@/entities/product';
+import { Product } from '../../index';
 import { Listino, fetchListini } from '../api/admApiService';
 import { processListiniBatch } from '../api/admProcessor';
 

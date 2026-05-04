@@ -22,6 +22,11 @@ vi.mock('@/shared/api', () => ({
   db: {},
 }));
 
+vi.mock('pdfjs-dist', () => ({
+  GlobalWorkerOptions: { workerSrc: '' },
+  getDocument: vi.fn(),
+}));
+
 describe('useCatalogSync', () => {
   const mockConfig = {
     lastUpdateDate: '2024-05-01',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatPackage } from '@/entities/product';
+import { formatPackage } from '../../index';
 import { DiffItem } from '../model/types';
 import { DiffStatusBadge } from './DiffStatusBadge';
 import { DiffDetails } from './DiffDetails';

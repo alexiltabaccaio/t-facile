@@ -1,8 +1,7 @@
 import React from 'react';
 import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle } from 'lucide-react';
-import { useADMSyncStore, useADMSyncActions } from '../model/useADMSyncStore';
+import { useADMSyncStore, useADMSyncActions, PDFPreviewTable } from '@/entities/product';
 import { useCatalogStore, useCatalogActions } from '@/entities/product';
-import { PDFPreviewTable } from './PDFPreviewTable';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 

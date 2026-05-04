@@ -5,6 +5,9 @@ import { fixupPluginRules } from '@eslint/compat';
 
 export default [
   {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.rules'],
+  },
+  {
     files: ['**/*.rules'],
     languageOptions: {
       parser: firebaseRulesPlugin.parser,
@@ -60,6 +63,35 @@ export default [
     files: ['src/shared/api/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': 'off',
+    },
+  },
+  {
+    files: ['src/shared/ui/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'CallExpression[callee.name=/^use(State|Effect|Reducer|Context|LayoutEffect|ImperativeHandle)/]',
+          message: 'I componenti in shared/ui devono essere presentazionali (dumb). Evita logica di stato o effetti collaterali.',
+        },
+        {
+          selector: 'CallExpression[callee.name=/^use[A-Z]/]',
+          message: 'I componenti in shared/ui non devono usare custom hooks che potrebbero contenere logica di dominio.',
+        }
+      ],
+    },
+  },
+  {
+    files: ['src/shared/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['@/features/**', '@/entities/**', '@/widgets/**', '@/pages/**'],
+            message: 'Violazione FSD: Il layer shared non può importare dai layer superiori.'
+          }
+        ]
+      }],
     },
   },
 ];

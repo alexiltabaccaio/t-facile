@@ -1,5 +1,5 @@
 import { ParsedProduct } from '../api/pdfAnalyzer';
-import { Product } from '@/entities/product';
+import { Product } from '../../index';
 
 /**
  * Normalizes the category name according to application standards.

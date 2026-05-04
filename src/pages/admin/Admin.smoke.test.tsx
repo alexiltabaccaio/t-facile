@@ -46,13 +46,22 @@ vi.mock('pdfjs-dist', () => ({
   getDocument: vi.fn(),
 }));
 
-// Mock the admin feature to avoid complex side effects
-vi.mock('@/features/admin', async (importOriginal) => {
+// Mock the split features to avoid complex side effects
+vi.mock('@/features/pdf-upload', () => ({
+  PDFUploader: () => <div data-testid="pdf-uploader">PDF Uploader Component</div>,
+}));
+
+vi.mock('@/features/system-update', () => ({
+  ADMAutoUpdater: () => <div data-testid="auto-updater">Auto Updater Component</div>,
+}));
+
+// Mock the admin-sync entity logic now located in @/entities/product
+vi.mock('@/entities/product', async (importOriginal) => {
   const actual = await importOriginal<any>();
   return {
     ...actual,
-    PDFUploader: () => <div data-testid="pdf-uploader">PDF Uploader Component</div>,
-    ADMAutoUpdater: () => <div data-testid="auto-updater">Auto Updater Component</div>,
+    useADMSyncStore: vi.fn((selector) => selector({ aiModel: 'gemini-3-flash-preview' })),
+    useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
   };
 });
 
