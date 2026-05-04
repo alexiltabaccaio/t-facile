@@ -33,7 +33,8 @@
     "search": "Search...",
      "noResults": "No results found",
     "error": "An error occurred",
-    "nd": "N/A"
+    "nd": "N/A",
+    "share": "Share"
   },
   "layout": {
     "sidebar": {

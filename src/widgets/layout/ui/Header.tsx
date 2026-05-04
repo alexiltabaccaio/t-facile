@@ -4,7 +4,7 @@ import { useNotificationStore } from '@/entities/notification';
 import { useCatalogStore } from '@/entities/product';
 import { useADMSyncStore, useADMSyncActions } from '@/features/admin';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Cpu } from 'lucide-react';
+import { Cpu, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const BackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
@@ -30,6 +30,10 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
   
+  const isProductDetail = location.pathname.startsWith('/catalog/') && location.pathname !== '/catalog';
+  const productId = isProductDetail ? location.pathname.replace('/catalog/', '') : null;
+  const currentProduct = isProductDetail ? products.find(p => p.identity.code === productId) : null;
+  
   const isCatalog = location.pathname === '/catalog' || location.pathname === '/';
   const showBackButton = !isCatalog;
   
@@ -51,6 +55,34 @@ const Header: React.FC = () => {
     setTimeout(() => {
       setIsRefreshing(false);
     }, 1000);
+  };
+  
+  const handleShare = async () => {
+    if (!currentProduct) return;
+
+    const formattedPrice = `€ ${currentProduct.pricing.currentPrice.toFixed(2).replace('.', ',')}`;
+    const shareText = `📦 ${currentProduct.identity.name}\n🔑 Codice ADM: ${currentProduct.identity.code}\n💶 Prezzo: ${formattedPrice}\n\n🔗 Guarda la scheda completa su T-Facile:\nhttps://t-facile.vercel.app/catalog/${currentProduct.identity.code}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `T-Facile - ${currentProduct.identity.name}`,
+          text: shareText,
+        });
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error sharing:', error);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        // We can't easily show a toast here without more context, but the user didn't ask for it
+        // and we have a "Copiato!" translation in admin.auto.copied
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
+    }
   };
 
   const getTitle = () => {
@@ -193,7 +225,17 @@ const Header: React.FC = () => {
             </div>
           )}
           
-          <div className="absolute right-0 flex items-center h-full">
+          <div className="absolute right-0 flex items-center h-full gap-1">
+            {isProductDetail && currentProduct && (
+              <button 
+                onClick={handleShare}
+                className="text-neutral-600 hover:text-light-text dark:text-dark-text-secondary dark:hover:text-dark-text-primary p-1"
+                title={t('common.share')}
+                aria-label={t('common.share')}
+              >
+                <Share2 size={20} />
+              </button>
+            )}
             <button 
               onClick={() => navigate('/notifications')}
               className="relative text-neutral-600 hover:text-light-text dark:text-dark-text-secondary dark:hover:text-dark-text-primary p-1"

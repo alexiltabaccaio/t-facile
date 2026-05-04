@@ -33,7 +33,8 @@
     "search": "Cerca...",
      "noResults": "Nessun risultato trovato",
     "error": "Si è verificato un errore",
-    "nd": "N/D"
+    "nd": "N/D",
+    "share": "Condividi"
   },
   "layout": {
     "sidebar": {
