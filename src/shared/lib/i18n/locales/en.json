@@ -42,7 +42,7 @@
       "catalog": "Catalog",
       "updates": "Updates",
       "settings": "Settings",
-      "admin": "Admin Panel",
+      "admin": "Admin",
       "subtitle": "Price Management",
       "info": "Info",
       "legal": "Legal",
@@ -117,7 +117,7 @@
     }
   },
   "admin": {
-    "title": "Admin Panel",
+    "title": "Admin",
     "subtitle": "Automated price management",
     "denied": "Access Denied",
     "deniedSubtitle": "This area is restricted to system administrators.",

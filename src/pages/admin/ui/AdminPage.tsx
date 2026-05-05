@@ -124,13 +124,13 @@ const AdminPage: React.FC = () => {
                   </div>
                   <div className="px-2 py-1 space-y-1">
                     <button 
-                      onClick={() => { setAiModel('gemini-3-flash-preview'); setShowBackupMenu(false); }}
+                      onClick={() => { setAiModel('gemini-3-flash-preview'); }}
                       className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-colors ${aiModel === 'gemini-3-flash-preview' ? 'bg-blue-600 text-white shadow-md' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50'}`}
                     >
                       Flash (Standard)
                     </button>
                     <button 
-                      onClick={() => { setAiModel('gemini-3.1-flash-lite-preview'); setShowBackupMenu(false); }}
+                      onClick={() => { setAiModel('gemini-3.1-flash-lite-preview'); }}
                       className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-colors ${aiModel === 'gemini-3.1-flash-lite-preview' ? 'bg-blue-600 text-white shadow-md' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50'}`}
                     >
                       Flash-Lite (Veloce)

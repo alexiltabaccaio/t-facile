@@ -10,7 +10,6 @@ import { useAppNavigation } from '@/shared/lib/hooks/useAppNavigation';
 import { useNotificationStore } from '@/entities/notification';
 import { useCatalogStore } from '@/entities/product';
 
-import { AIModelSelector } from '@/features/ai-settings';
 import { ProductShareButton } from '@/features/product-share';
 
 import { useHeaderData } from '../model/useHeaderData';
@@ -35,8 +34,7 @@ const Header: React.FC = () => {
     showBackButton, 
     title, 
     isProductDetail, 
-    currentProduct, 
-    location 
+    currentProduct
   } = useHeaderData();
   
   const { handleBack } = useAppNavigation();
@@ -110,8 +108,6 @@ const Header: React.FC = () => {
                 </span>
               )}
             </div>
-            
-            {location.pathname === '/admin' && <AIModelSelector />}
           </div>
         </div>
 

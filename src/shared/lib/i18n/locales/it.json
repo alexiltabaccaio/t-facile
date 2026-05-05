@@ -42,7 +42,7 @@
       "catalog": "Catalogo",
       "updates": "Aggiornamenti",
       "settings": "Impostazioni",
-      "admin": "Pannello Admin",
+      "admin": "Admin",
       "subtitle": "Gestione Listini",
       "info": "Info",
       "legal": "Legali",
@@ -117,7 +117,7 @@
     }
   },
   "admin": {
-    "title": "Pannello Admin",
+    "title": "Admin",
     "subtitle": "Gestione automatizzata dei listini",
     "denied": "Accesso Negato",
     "deniedSubtitle": "Questa area è riservata agli amministratori del sistema.",
