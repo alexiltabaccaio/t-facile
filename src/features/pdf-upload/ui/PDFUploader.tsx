@@ -1,8 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { auth, handleFirestoreError } from '@/shared/api';
-import { useCatalogStore } from '@/entities/product';
-import { analyzePdfChunks, ParsedPDFResult, saveParsedDataToFirestore, useADMSyncStore, PDFPreviewTable } from '@/entities/product';
+import { 
+  useCatalogDataStore, 
+  useCatalogSyncStore, 
+  useCatalogSyncActions, 
+  analyzePdfChunks, 
+  ParsedPDFResult, 
+  saveParsedDataToFirestore, 
+  useADMSyncStore, 
+  PDFPreviewTable 
+} from '@/entities/product';
 import { PDFUploadDropzone } from './PDFUploadDropzone';
 import { PDFFileList } from './PDFFileList';
 import { useTranslation } from 'react-i18next';
@@ -55,15 +63,15 @@ export const PDFUploader: React.FC = () => {
     }
   };
 
+  const { lastUpdateDate } = useCatalogSyncStore();
+  const { products } = useCatalogDataStore();
+  const { setLastUpdateDate } = useCatalogSyncActions();
+
   const handleSaveToDB = async () => {
     if (!parsedData) return;
     setIsProcessing(true);
     
     try {
-      const lastUpdateDate = useCatalogStore.getState().lastUpdateDate;
-      const products = useCatalogStore.getState().products;
-      const { setLastUpdateDate } = useCatalogStore.getState().actions;
-      
       // Calls the Firebase sync DB service
       const { finalDate } = await saveParsedDataToFirestore(parsedData, lastUpdateDate, products);
       

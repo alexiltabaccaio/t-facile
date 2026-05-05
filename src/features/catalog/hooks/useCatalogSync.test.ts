@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useCatalogSync } from './useCatalogSync';
-import { useCatalogStore, catalogService } from '@/entities/product';
+import { useCatalogSyncStore, useCatalogDataStore, catalogService } from '@/entities/product';
 
 // Mocking catalogService
 vi.mock('@/entities/product', async (importOriginal) => {
@@ -39,12 +39,13 @@ describe('useCatalogSync', () => {
     vi.clearAllMocks();
     
     // Reset Zustand store state
-    const { actions } = useCatalogStore.getState();
-    actions.setProducts([]);
-    actions.setLastUpdateDate('');
-    actions.setLastSyncId(0);
-    actions.setIsInitialLoading(true);
-    actions.setSyncError(null);
+    const { actions: syncActions } = useCatalogSyncStore.getState();
+    const { actions: dataActions } = useCatalogDataStore.getState();
+    dataActions.setProducts([]);
+    syncActions.setLastUpdateDate('');
+    syncActions.setLastSyncId(0);
+    syncActions.setIsInitialLoading(true);
+    syncActions.setSyncError(null);
   });
 
   it('should trigger full sync when cache is empty', async () => {
@@ -69,18 +70,16 @@ describe('useCatalogSync', () => {
       expect(catalogService.fetchCatalogInChunks).toHaveBeenCalledWith(2);
     });
 
-    const state = useCatalogStore.getState();
-    expect(state.products).toHaveLength(1);
-    expect(state.lastSyncId).toBe(100);
-    expect(state.isInitialLoading).toBe(false);
+    expect(useCatalogDataStore.getState().products).toHaveLength(1);
+    expect(useCatalogSyncStore.getState().lastSyncId).toBe(100);
+    expect(useCatalogSyncStore.getState().isInitialLoading).toBe(false);
   });
 
   it('should NOT sync when cache is already updated', async () => {
     // Pre-fill store
-    const { actions } = useCatalogStore.getState();
-    actions.setProducts([{ identity: { code: '1' } }] as any);
-    actions.setLastUpdateDate('2024-05-01');
-    actions.setLastSyncId(100);
+    useCatalogDataStore.getState().actions.setProducts([{ identity: { code: '1' } }] as any);
+    useCatalogSyncStore.getState().actions.setLastUpdateDate('2024-05-01');
+    useCatalogSyncStore.getState().actions.setLastSyncId(100);
 
     let configCallback: any;
     (catalogService.subscribeToConfig as any).mockImplementation((onUpdate: any) => {
@@ -97,8 +96,7 @@ describe('useCatalogSync', () => {
 
     expect(catalogService.fetchCatalogInChunks).not.toHaveReturned();
     
-    const state = useCatalogStore.getState();
-    expect(state.isInitialLoading).toBe(false);
+    expect(useCatalogSyncStore.getState().isInitialLoading).toBe(false);
   });
 
   it('should handle sync errors gracefully', async () => {
@@ -120,10 +118,10 @@ describe('useCatalogSync', () => {
 
 
     await waitFor(() => {
-      expect(useCatalogStore.getState().syncError).toBe('Errore di sincronizzazione dati.');
+      expect(useCatalogSyncStore.getState().syncError).toBe('Errore di sincronizzazione dati.');
     });
 
-    expect(useCatalogStore.getState().isInitialLoading).toBe(false);
+    expect(useCatalogSyncStore.getState().isInitialLoading).toBe(false);
     consoleSpy.mockRestore();
   });
 
@@ -143,8 +141,8 @@ describe('useCatalogSync', () => {
       errorCallback(new Error('Permission denied'));
     });
 
-    expect(useCatalogStore.getState().isOnline).toBe(false);
-    expect(useCatalogStore.getState().syncError).toBe('Connessione assente o limitata.');
+    expect(useCatalogSyncStore.getState().isOnline).toBe(false);
+    expect(useCatalogSyncStore.getState().syncError).toBe('Connessione assente o limitata.');
     
     consoleSpy.mockRestore();
   });

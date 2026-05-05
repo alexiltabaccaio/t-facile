@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { testConnection } from '@/shared/api';
-import { useCatalogStore, useCatalogActions, catalogService } from '@/entities/product';
+import { useCatalogSyncStore, useCatalogSyncActions, useCatalogDataStore, useCatalogDataActions, catalogService } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -12,21 +12,23 @@ export const useCatalogSync = () => {
   const { 
     lastUpdateDate: persistedDate,
     lastSyncId: persistedSyncId,
-    products: persistedProducts
-  } = useCatalogStore(useShallow(state => ({
+  } = useCatalogSyncStore(useShallow(state => ({
     lastUpdateDate: state.lastUpdateDate,
     lastSyncId: state.lastSyncId,
-    products: state.products
   })));
+  
+  const persistedProducts = useCatalogDataStore(state => state.products);
+
   const {
-    setProducts, 
     setIsOnline, 
     setSyncError, 
     setLastUpdateDate, 
     setCategoryDates,
     setIsInitialLoading,
     setLastSyncId
-  } = useCatalogActions();
+  } = useCatalogSyncActions();
+
+  const { setProducts } = useCatalogDataActions();
 
   const isFetchingRef = useRef(false);
   const hasLoggedBotRef = useRef(false);

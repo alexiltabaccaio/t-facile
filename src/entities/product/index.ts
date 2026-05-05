@@ -1,4 +1,6 @@
-export * from './model/useCatalogStore';
+export * from './model/useCatalogDataStore';
+export * from './model/useCatalogFilterStore';
+export * from './model/useCatalogSyncStore';
 export * from './model/useCatalogUiStore';
 export * from './model/types';
 export * from './api/catalogService';

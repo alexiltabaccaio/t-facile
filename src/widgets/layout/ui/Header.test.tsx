@@ -2,8 +2,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Header from './Header';
 import { useNotificationStore } from '@/entities/notification';
-import { useCatalogStore } from '@/entities/product';
-import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
+import { useCatalogSyncStore, useCatalogDataStore, useADMSyncStore, useADMSyncActions } from '@/entities/product';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 
 // Mock the stores
@@ -16,8 +15,10 @@ vi.mock('@/entities/product', async (importOriginal) => {
   const actual = await importOriginal<any>();
   return {
     ...actual,
-    useCatalogStore: vi.fn(),
-    useCatalogActions: vi.fn(() => ({})),
+    useCatalogSyncStore: vi.fn(),
+    useCatalogSyncActions: vi.fn(() => ({})),
+    useCatalogDataStore: vi.fn(),
+    useCatalogDataActions: vi.fn(() => ({})),
     useADMSyncStore: vi.fn(),
     useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
   };
@@ -47,7 +48,8 @@ describe('Header Component', () => {
     
     // Default store implementations
     (useNotificationStore as any).mockImplementation((selector: any) => selector ? selector({ hasUnread: false }) : { hasUnread: false });
-    (useCatalogStore as any).mockImplementation((selector: any) => selector ? selector({ isOnline: true, lastUpdateDate: '01/01/2026', products: [] }) : { isOnline: true, lastUpdateDate: '01/01/2026', products: [] });
+    (useCatalogSyncStore as any).mockImplementation((selector: any) => selector ? selector({ isOnline: true, lastUpdateDate: '01/01/2026' }) : { isOnline: true, lastUpdateDate: '01/01/2026' });
+    (useCatalogDataStore as any).mockImplementation((selector: any) => selector ? selector({ products: [] }) : { products: [] });
     (useADMSyncStore as any).mockImplementation((selector: any) => selector ? selector({ aiModel: 'gemini-3-flash-preview' }) : { aiModel: 'gemini-3-flash-preview' });
     (useADMSyncActions as any).mockReturnValue({ setAiModel: vi.fn() });
   });

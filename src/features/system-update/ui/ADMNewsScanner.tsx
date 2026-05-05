@@ -1,7 +1,13 @@
 import React from 'react';
 import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle, Newspaper } from 'lucide-react';
-import { useADMSyncStore, useADMSyncActions, PDFPreviewTable } from '@/entities/product';
-import { useCatalogStore, useCatalogActions } from '@/entities/product';
+import { 
+  useADMSyncStore, 
+  useADMSyncActions, 
+  PDFPreviewTable, 
+  useCatalogDataStore, 
+  useCatalogSyncStore, 
+  useCatalogSyncActions 
+} from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
@@ -41,12 +47,14 @@ export const ADMNewsScanner: React.FC = () => {
     cancelProcessing
   } = useADMSyncActions();
 
-  const { lastUpdateDate, products, categoryDates } = useCatalogStore(useShallow((state: any) => ({
+  const { lastUpdateDate, categoryDates } = useCatalogSyncStore(useShallow((state: any) => ({
     lastUpdateDate: state.lastUpdateDate,
-    products: state.products,
     categoryDates: state.categoryDates
   })));
-  const { setLastUpdateDate } = useCatalogActions();
+  
+  const products = useCatalogDataStore((state: any) => state.products);
+  
+  const { setLastUpdateDate } = useCatalogSyncActions();
 
   const isNovitaMode = availableUpdates.length > 0 && availableUpdates[0].type === 'Novità';
   const isMyProcessing = isProcessing && currentNews !== null;

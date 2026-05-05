@@ -2,7 +2,16 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SearchBar, useProductSearch } from '@/features/product-search';
 import { SortModal } from '@/features/product-sort';
-import { useCatalogStore, useCatalogActions, useCatalogUiStore, useCatalogUiActions, Product, ProductList, ProductDetail } from '@/entities/product';
+import { 
+  useCatalogDataStore, 
+  useCatalogFilterStore, 
+  useCatalogFilterActions, 
+  useCatalogUiStore, 
+  useCatalogUiActions, 
+  Product, 
+  ProductList, 
+  ProductDetail 
+} from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
@@ -16,18 +25,18 @@ export const ProductCatalog: React.FC = () => {
     sortOption, 
     showRetired, 
     showOutOfCatalog,
-    products, 
     listScrollPosition
-  } = useCatalogStore(useShallow(state => ({
+  } = useCatalogFilterStore(useShallow(state => ({
     searchTerm: state.searchTerm,
     sortOption: state.sortOption,
     showRetired: state.showRetired,
     showOutOfCatalog: state.showOutOfCatalog,
-    products: state.products,
     listScrollPosition: state.listScrollPosition
   })));
   
-  const { setSelectedProduct, setListScrollPosition } = useCatalogActions();
+  const products = useCatalogDataStore(state => state.products);
+  
+  const { setSelectedProduct, setListScrollPosition } = useCatalogFilterActions();
   const showSortModal = useCatalogUiStore(s => s.showSortModal);
   const { setShowSortModal } = useCatalogUiActions();
 

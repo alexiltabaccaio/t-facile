@@ -18,7 +18,7 @@ import { useScrollToTop } from '@/shared/hooks';
 
 // App Providers
 import { InitializationProvider } from './providers';
-import { useCatalogStore } from '@/entities/product';
+import { useCatalogDataStore, useCatalogSyncStore } from '@/entities/product';
 
 const App: React.FC = () => {
   const mainContentRef = useRef<HTMLElement>(null);
@@ -28,13 +28,23 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     // Check initial hydration state
-    setIsHydrated(useCatalogStore.persist.hasHydrated());
+    const dataHydrated = useCatalogDataStore.persist.hasHydrated();
+    const syncHydrated = useCatalogSyncStore.persist.hasHydrated();
+    
+    setIsHydrated(dataHydrated && syncHydrated);
     
     // Subscribe to hydration events
-    const unsubFinishHydration = useCatalogStore.persist.onFinishHydration(() => setIsHydrated(true));
+    const unsubData = useCatalogDataStore.persist.onFinishHydration(() => {
+      if (useCatalogSyncStore.persist.hasHydrated()) setIsHydrated(true);
+    });
+    
+    const unsubSync = useCatalogSyncStore.persist.onFinishHydration(() => {
+      if (useCatalogDataStore.persist.hasHydrated()) setIsHydrated(true);
+    });
     
     return () => {
-      unsubFinishHydration();
+      unsubData();
+      unsubSync();
     };
   }, []);
 

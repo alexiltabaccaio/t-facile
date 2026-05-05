@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Zap, Copy, Check } from 'lucide-react';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
-import { useCatalogStore } from '../../index';
+import { useCatalogDataStore } from '../../index';
 import { usePDFDiff } from '../model/usePDFDiff';
 import { ChangeType } from '../model/types';
 import { PDFPreviewRow } from './PDFPreviewRow';
@@ -15,7 +15,7 @@ interface PDFPreviewTableProps {
 
 export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, onCancel, onSave }) => {
   const { t } = useTranslation();
-  const products = useCatalogStore((state: any) => state.products);
+  const products = useCatalogDataStore((state: any) => state.products);
   const [activeTab, setActiveTab] = useState<ChangeType | 'all'>('all');
   const [copied, setCopied] = useState(false);
 

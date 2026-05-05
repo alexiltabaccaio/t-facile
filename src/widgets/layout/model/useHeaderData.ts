@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useCatalogStore } from '@/entities/product';
+import { useCatalogDataStore } from '@/entities/product';
 
 /**
  * Hook to extract and manage Header-specific data and logic.
@@ -9,7 +9,7 @@ import { useCatalogStore } from '@/entities/product';
 export const useHeaderData = () => {
   const { t } = useTranslation();
   const location = useLocation();
-  const products = useCatalogStore(state => state.products);
+  const products = useCatalogDataStore(state => state.products);
 
   const isProductDetail = location.pathname.startsWith('/catalog/') && location.pathname !== '/catalog';
   const productId = isProductDetail ? location.pathname.replace('/catalog/', '') : null;

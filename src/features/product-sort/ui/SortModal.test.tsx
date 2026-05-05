@@ -1,12 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import SortModal from './SortModal';
-import { useCatalogStore, useCatalogActions } from '@/entities/product';
+import { useCatalogFilterStore, useCatalogFilterActions } from '@/entities/product';
 
 // Mock dello store
 vi.mock('@/entities/product', () => ({
-  useCatalogStore: vi.fn(),
-  useCatalogActions: vi.fn(),
+  useCatalogFilterStore: vi.fn(),
+  useCatalogFilterActions: vi.fn(),
 }));
 
 describe('SortModal', () => {
@@ -16,12 +16,12 @@ describe('SortModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCatalogStore as any).mockReturnValue({
+    (useCatalogFilterStore as any).mockReturnValue({
       sortOption: { key: 'smart', order: 'desc' },
       showRetired: false,
       showOutOfCatalog: false,
     });
-    (useCatalogActions as any).mockReturnValue({
+    (useCatalogFilterActions as any).mockReturnValue({
       setSortOption: mockSetSortOption,
       setShowRetired: mockSetShowRetired,
       setShowOutOfCatalog: mockSetShowOutOfCatalog,
@@ -58,7 +58,7 @@ describe('SortModal', () => {
   });
 
   it('calls setSortOption with toggled order when order button is clicked', () => {
-     (useCatalogStore as any).mockReturnValue({
+     (useCatalogFilterStore as any).mockReturnValue({
       sortOption: { key: 'name', order: 'asc' },
       showRetired: false,
       showOutOfCatalog: false,

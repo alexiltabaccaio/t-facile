@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import DesktopSidebar from './DesktopSidebar';
-import { useCatalogStore } from '@/entities/product';
+import { useCatalogSyncStore } from '@/entities/product';
 import { useLocation } from 'react-router-dom';
 import { AlertTriangle, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -20,8 +20,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   footer,
   showSubHeader = false
 }) => {
-  const isOnline = useCatalogStore(state => state.isOnline);
-  const syncError = useCatalogStore(state => state.syncError);
+  const isOnline = useCatalogSyncStore(state => state.isOnline);
+  const syncError = useCatalogSyncStore(state => state.syncError);
   const location = useLocation();
   const { t } = useTranslation();
 

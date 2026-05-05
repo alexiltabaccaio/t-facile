@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import { SessionProvider } from '@/entities/session';
-import { useCatalogStore } from '@/entities/product';
+import { useCatalogSyncStore, useCatalogDataStore } from '@/entities/product';
 
 // Mock dependencies
 vi.mock('@vercel/analytics/react', () => ({ Analytics: () => null }));
@@ -69,10 +69,11 @@ describe('Error Handling Smoke Test', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset store state
-    const state = useCatalogStore.getState();
-    state.actions.setSyncError(null);
-    state.actions.setIsOnline(true);
-    state.actions.setProducts([]);
+    act(() => {
+      useCatalogSyncStore.getState().actions.setSyncError(null);
+      useCatalogSyncStore.getState().actions.setIsOnline(true);
+      useCatalogDataStore.getState().actions.setProducts([]);
+    });
   });
 
   it('displays connection error message when Firestore subscription fails', async () => {

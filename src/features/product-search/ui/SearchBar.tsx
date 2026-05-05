@@ -1,19 +1,29 @@
 
 import React, { useState } from 'react';
 import { SearchIcon, FilterIcon, RefreshIcon } from '@/shared/ui';
-import { useCatalogStore, useCatalogActions, useCatalogUiStore, useCatalogUiActions } from '@/entities/product';
+import { 
+  useCatalogFilterStore, 
+  useCatalogFilterActions, 
+  useCatalogSyncStore, 
+  useCatalogUiStore, 
+  useCatalogUiActions 
+} from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
 const SearchBar: React.FC = () => {
   const { t } = useTranslation();
-  const { searchTerm, sortOption, lastUpdateDate, isOnline } = useCatalogStore(useShallow(state => ({
+  const { searchTerm, sortOption } = useCatalogFilterStore(useShallow(state => ({
     searchTerm: state.searchTerm,
     sortOption: state.sortOption,
+  })));
+  const { setSearchTerm } = useCatalogFilterActions();
+  
+  const { lastUpdateDate, isOnline } = useCatalogSyncStore(useShallow(state => ({
     lastUpdateDate: state.lastUpdateDate,
     isOnline: state.isOnline
   })));
-  const { setSearchTerm } = useCatalogActions();
+  
   const showSortModal = useCatalogUiStore((state) => state.showSortModal);
   const { setShowSortModal } = useCatalogUiActions();
   const [isFocused, setIsFocused] = useState(false);

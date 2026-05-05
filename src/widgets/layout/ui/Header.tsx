@@ -8,7 +8,7 @@ import { usePresentationMode } from '@/shared/lib/hooks/usePresentationMode';
 import { useAppNavigation } from '@/shared/lib/hooks/useAppNavigation';
 
 import { useNotificationStore } from '@/entities/notification';
-import { useCatalogStore } from '@/entities/product';
+import { useCatalogSyncStore } from '@/entities/product';
 
 import { ProductShareButton } from '@/features/product-share';
 
@@ -41,8 +41,8 @@ const Header: React.FC = () => {
   const isPresentation = usePresentationMode();
   
   const { hasUnread: hasUnreadNotifications } = useNotificationStore();
-  const isOnline = useCatalogStore(state => state.isOnline);
-  const lastUpdateDate = useCatalogStore(state => state.lastUpdateDate);
+  const isOnline = useCatalogSyncStore(state => state.isOnline);
+  const lastUpdateDate = useCatalogSyncStore(state => state.lastUpdateDate);
   
   const [isRefreshing, setIsRefreshing] = useState(false);
 

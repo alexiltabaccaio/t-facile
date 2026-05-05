@@ -1,5 +1,5 @@
 import React from 'react';
-import { SortKey, useCatalogStore, useCatalogActions } from '@/entities/product';
+import { SortKey, useCatalogFilterStore, useCatalogFilterActions } from '@/entities/product';
 import { ArrowsUpDownIcon } from '@/shared/ui';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
@@ -40,12 +40,12 @@ const SortModal: React.FC<SortModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const { sortOption, showRetired, showOutOfCatalog } = useCatalogStore(useShallow((state) => ({
+  const { sortOption, showRetired, showOutOfCatalog } = useCatalogFilterStore(useShallow((state) => ({
     sortOption: state.sortOption,
     showRetired: state.showRetired,
     showOutOfCatalog: state.showOutOfCatalog
   })));
-  const { setSortOption, setShowRetired, setShowOutOfCatalog } = useCatalogActions();
+  const { setSortOption, setShowRetired, setShowOutOfCatalog } = useCatalogFilterActions();
 
   const handleSortKeyChange = (key: SortKey) => {
     if (key !== sortOption.key) {

@@ -1,7 +1,13 @@
 import React from 'react';
 import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle } from 'lucide-react';
-import { useADMSyncStore, useADMSyncActions, PDFPreviewTable } from '@/entities/product';
-import { useCatalogStore, useCatalogActions } from '@/entities/product';
+import { 
+  useADMSyncStore, 
+  useADMSyncActions, 
+  PDFPreviewTable, 
+  useCatalogDataStore, 
+  useCatalogSyncStore, 
+  useCatalogSyncActions 
+} from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
@@ -39,13 +45,15 @@ export const ADMAutoUpdater: React.FC = () => {
     cancelProcessing
   } = useADMSyncActions();
 
-  // Selected from Catalog Store to decouple it from ADM Sync Store logic
-  const { lastUpdateDate, products, categoryDates } = useCatalogStore(useShallow(state => ({
+  // Selected from Catalog Stores to decouple it from ADM Sync Store logic
+  const { lastUpdateDate, categoryDates } = useCatalogSyncStore(useShallow(state => ({
     lastUpdateDate: state.lastUpdateDate,
-    products: state.products,
     categoryDates: state.categoryDates
   })));
-  const { setLastUpdateDate } = useCatalogActions();
+  
+  const products = useCatalogDataStore(state => state.products);
+  
+  const { setLastUpdateDate } = useCatalogSyncActions();
 
   const handleFinalSave = async () => {
     await finalSaveToDatabase({
