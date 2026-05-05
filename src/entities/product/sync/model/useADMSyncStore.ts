@@ -84,9 +84,9 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
     },
 
     checkUpdates: async () => {
-      set({ isChecking: true, error: null, availableUpdates: [], processedData: null, currentNews: null, hasScannedNews: false });
+      set({ isChecking: true, error: null, success: false, hasScannedNews: false, availableUpdates: [], processedData: null, currentNews: null });
       try {
-        set({ statusMsg: "Contatto i server ADM..." });
+        set({ statusMsg: "admin.sync.contacting" });
         const listini = await fetchListini();
         set({ availableUpdates: listini });
       } catch (err: any) {
@@ -98,9 +98,9 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
     },
 
     checkNewsUpdates: async () => {
-      set({ isChecking: true, error: null, availableUpdates: [], processedData: null, currentNews: null, hasScannedNews: true });
+      set({ isChecking: true, error: null, success: false, hasScannedNews: true, availableUpdates: [], processedData: null, currentNews: null });
       try {
-        set({ statusMsg: "Scansione ADM News in corso..." });
+        set({ statusMsg: "admin.sync.scanningNews" });
         const news = await fetchNews();
         const autoSelectedNews = news.map((item, index) => ({
           ...item,
@@ -166,7 +166,7 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
     finalSaveToDatabase: async ({ lastUpdateDate, products, categoryDates, onSuccess, effectiveDate, skipNotifications }) => {
       const { processedData, currentNews } = get();
       if (!processedData) return;
-      set({ isProcessing: true, statusMsg: "Salvataggio definitivo nel Database cloud..." });
+      set({ isProcessing: true, statusMsg: "admin.sync.savingToDb" });
       try {
         const isDeltaUpdate = currentNews?.type === 'Novità';
         const { finalDate } = await saveParsedDataToFirestore(

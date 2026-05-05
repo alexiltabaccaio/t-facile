@@ -48,7 +48,7 @@ export const DiffStatusBadge: React.FC<DiffStatusBadgeProps> = ({ item }) => {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1 text-[10px] lg:text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase">
           {item.diffData.isSuspicious && <AlertTriangle className="w-3 h-3 text-red-500" />}
-          {item.diffData.isSuspicious ? 'REVISIONE PREZZO' : t('admin.preview.priceVariation')}
+          {item.diffData.isSuspicious ? t('admin.preview.priceReview') : t('admin.preview.priceVariation')}
           {isIncrease ? (
             <TrendingUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-green-500 ml-1" />
           ) : (
@@ -59,7 +59,7 @@ export const DiffStatusBadge: React.FC<DiffStatusBadgeProps> = ({ item }) => {
         {item.diffData.isSuspicious && (
           <div className="text-[10px] font-bold text-red-500 flex items-center gap-1 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded w-fit mt-0.5">
             <AlertTriangle className="w-2.5 h-2.5" />
-            Anomala ({((Math.abs(item.diffData.newPrice - item.diffData.oldPrice) / item.diffData.oldPrice) * 100).toFixed(0)}%)
+            {t('admin.preview.anomalous')} ({((Math.abs(item.diffData.newPrice - item.diffData.oldPrice) / item.diffData.oldPrice) * 100).toFixed(0)}%)
           </div>
         )}
       </div>

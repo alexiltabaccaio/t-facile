@@ -153,7 +153,11 @@
         "status": "Stati ({{count}})",
         "emissions": "Emissioni ({{count}})",
         "unchanged": "Invariati ({{count}})"
-      }
+      },
+      "copyJson": "Copia JSON per Debug",
+      "price": "Prezzo",
+      "priceReview": "REVISIONE PREZZO",
+      "anomalous": "Anomala"
     },
     "auto": {
       "search": "Cerca Nuovi Listini",
@@ -173,7 +177,13 @@
       "checking": "Scansione Novità ADM...",
       "noNovita": "Nessuna nuova variazione di prezzo rilevata.",
       "success": "Database aggiornato e link contrassegnato come letto!",
-      "analyze": "Analizza Variazione"
+      "analyze": "Analizza Variazione",
+      "effectiveDateLabel": "Data di Decorrenza",
+      "effectiveDateHint": "* Basata su data news ({{date}})",
+      "notifyUsers": "Notifica Utenti",
+      "notifyUsersDesc": "Gli utenti riceveranno una notifica dell'aggiornamento.",
+      "silentUpdateDesc": "Aggiornamento silenzioso (nessuna notifica o log).",
+      "selectedCount": "{{count}} selezionati"
     },
     "manual": {
       "invalidFile": "Per favore seleziona file PDF validi.",
@@ -196,7 +206,36 @@
     "tabs": {
       "auto": "Scanner Listini",
       "manual": "Lettore PDF",
-      "news": "News Scanner"
+      "news": "News Scanner",
+      "db": "Database & Modelli"
+    },
+    "sync": {
+      "contacting": "Contatto i server ADM...",
+      "scanningNews": "Scansione ADM News in corso...",
+      "savingToDb": "Salvataggio definitivo nel Database cloud..."
+    },
+    "settings": {
+      "restore": {
+        "button": "Ripristina Ultimo Backup",
+        "confirmPlaceholder": "Scrivi \"ripristina ultimo backup\" per confermare",
+        "cancel": "Annulla",
+        "confirm": "Conferma Operazione",
+        "restoring": "Ripristino in corso...",
+        "success": "Catalogo ripristinato con successo! La pagina verrà ricaricata per applicare le modifiche.",
+        "error": "Errore durante il ripristino del backup.",
+        "confirmationString": "ripristina ultimo backup"
+      },
+      "ai": {
+        "title": "Motore Intelligenza Artificiale",
+        "flash": "Gemini Flash",
+        "lite": "Gemini Flash Lite"
+      }
+    },
+    "item": {
+      "pdfDate": "Data PDF",
+      "inDatabase": "In Database",
+      "neverUpdated": "Mai aggiornato",
+      "notAvailable": "Non disponibile"
     },
     "table": {
       "modType": "Tipo Modifica",

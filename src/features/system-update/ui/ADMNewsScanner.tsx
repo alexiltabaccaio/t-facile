@@ -120,7 +120,7 @@ export const ADMNewsScanner: React.FC = () => {
       {isMyProcessing && (
          <div className="bg-amber-100/50 dark:bg-amber-900/30 rounded p-4 flex flex-col items-center justify-center mt-4 border border-amber-200 dark:border-amber-800">
            <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-3" />
-           <p className="text-sm font-bold text-amber-800 dark:text-amber-200 text-center mb-4 leading-relaxed max-w-sm">{statusMsg}</p>
+           <p className="text-sm font-bold text-amber-800 dark:text-amber-200 text-center mb-4 leading-relaxed max-w-sm">{t(statusMsg as any)}</p>
            <button 
              onClick={cancelProcessing}
              className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 text-xs font-bold uppercase rounded-lg transition-colors border border-red-200 dark:border-red-800/50"
@@ -138,7 +138,7 @@ export const ADMNewsScanner: React.FC = () => {
             {/* Effective Date Card */}
             <div className="bg-white dark:bg-neutral-800 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm">
               <label className="block text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-2">
-                Data di Decorrenza
+                {t('admin.news.effectiveDateLabel')}
               </label>
               <div className="flex flex-col gap-2">
                 <input 
@@ -148,7 +148,7 @@ export const ADMNewsScanner: React.FC = () => {
                   className="w-full px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm font-bold text-amber-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                 />
                 <p className="text-[9px] text-amber-600/70 dark:text-amber-400/50 italic px-1">
-                  * Basata su data news ({currentNews?.date})
+                  {t('admin.news.effectiveDateHint', { date: currentNews?.date })}
                 </p>
               </div>
             </div>
@@ -166,12 +166,12 @@ export const ADMNewsScanner: React.FC = () => {
                 <label className={`block text-[10px] font-black uppercase tracking-widest mb-1 transition-colors ${
                   sendNotification ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-400'
                 }`}>
-                  Notifica Utenti
+                  {t('admin.news.notifyUsers')}
                 </label>
                 <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium leading-tight max-w-[150px]">
                   {sendNotification 
-                    ? 'Gli utenti riceveranno una notifica dell\'aggiornamento.' 
-                    : 'Aggiornamento silenzioso (nessuna notifica o log).'}
+                    ? t('admin.news.notifyUsersDesc')
+                    : t('admin.news.silentUpdateDesc')}
                 </p>
               </div>
               <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${
@@ -232,7 +232,7 @@ export const ADMNewsScanner: React.FC = () => {
                 {availableUpdates.every((u: any) => u.selected) ? t('admin.auto.deselectAll') : t('admin.auto.selectAll')}
               </button>
               <span className="text-[10px] font-bold text-neutral-400 uppercase">
-                {availableUpdates.filter((u: any) => u.selected).length} selezionati
+                {t('admin.news.selectedCount', { count: availableUpdates.filter((u: any) => u.selected).length })}
               </span>
             </div>
           </div>

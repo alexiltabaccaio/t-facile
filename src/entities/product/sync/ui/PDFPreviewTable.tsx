@@ -60,7 +60,7 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
           <div className="flex items-center gap-2">
              <button 
                onClick={handleCopy} 
-               title="Copia JSON per Debug"
+               title={t('admin.preview.copyJson')}
                className="p-2 text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full shadow-sm transition-colors"
              >
                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
@@ -102,7 +102,7 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
               <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.product')}</th>
               <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.package')}</th>
               <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.modType')}</th>
-              <th className="px-4 py-3 text-right lg:px-6 lg:py-4">Prezzo</th>
+              <th className="px-4 py-3 text-right lg:px-6 lg:py-4">{t('admin.preview.price')}</th>
               <th className="px-4 py-3 text-right lg:px-6 lg:py-4">{t('admin.preview.priceKg')}</th>
             </tr>
           </thead>

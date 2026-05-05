@@ -1,5 +1,5 @@
-import React from 'react';
 import { CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ADMUpdateItemProps {
   listino: any;
@@ -8,6 +8,7 @@ interface ADMUpdateItemProps {
 }
 
 export const ADMUpdateItem: React.FC<ADMUpdateItemProps> = ({ listino, categoryDate, onToggle }) => {
+  const { t } = useTranslation();
   const dTitle = listino.category;
 
   // Badge colors
@@ -42,11 +43,11 @@ export const ADMUpdateItem: React.FC<ADMUpdateItemProps> = ({ listino, categoryD
         <p className="text-sm font-black text-neutral-800 dark:text-neutral-100 truncate">{dTitle}</p>
         <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-neutral-500 capitalize mt-1">
           <span className="flex items-center gap-1 font-bold">
-            <span className="opacity-50">Data PDF:</span> <span className={listino.date === 'Non disponibile' ? 'text-neutral-400 italic' : 'text-blue-600 dark:text-blue-400'}>{listino.date}</span>
+            <span className="opacity-50">{t('admin.item.pdfDate')}:</span> <span className={listino.date === 'Non disponibile' ? 'text-neutral-400 italic' : 'text-blue-600 dark:text-blue-400'}>{listino.date === 'Non disponibile' ? t('admin.item.notAvailable') : listino.date}</span>
           </span>
           {listino.type !== 'Novità' && (
             <span className="flex items-center gap-1 font-bold">
-              <span className="opacity-50">In Database:</span> <span className="text-neutral-400">{categoryDate || 'Mai aggiornato'}</span>
+              <span className="opacity-50">{t('admin.item.inDatabase')}:</span> <span className="text-neutral-400">{categoryDate || t('admin.item.neverUpdated')}</span>
             </span>
           )}
           <span className={`font-black px-1.5 py-0.5 rounded text-[8px] uppercase tracking-wider ${badgeColor}`}>
