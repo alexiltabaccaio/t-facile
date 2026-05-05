@@ -40,7 +40,7 @@ export const UpdatePwaPrompt: React.FC = () => {
           <div className="flex items-start justify-between">
             <div>
               <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-primary" />
+                <RefreshCw className="w-4 h-4 text-blue-500" />
                 Aggiornamento Disponibile
               </h3>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
@@ -56,7 +56,7 @@ export const UpdatePwaPrompt: React.FC = () => {
           </div>
           <button 
             onClick={() => updateServiceWorker(true)}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-medium text-sm py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 font-medium text-sm py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             Aggiorna Ora
           </button>

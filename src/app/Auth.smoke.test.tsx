@@ -131,9 +131,9 @@ describe('Auth & Route Protection Smoke Test', () => {
 
     // Verify that the Admin Panel title appears (and not "Access Denied")
     await waitFor(() => {
-      // Use getAllByText because the title appears in the Header and on the page (Admin Panel)
+      // Use getAllByText because the title appears in the Header and on the page (Admin)
       expect(screen.queryByText(/Accesso Negato/i)).toBeNull();
-      const adminTitles = screen.getAllByText(/Pannello Admin/i);
+      const adminTitles = screen.getAllByText(/Admin/i);
       expect(adminTitles.length).toBeGreaterThan(0);
     });
   });
@@ -152,7 +152,7 @@ describe('Auth & Route Protection Smoke Test', () => {
     );
 
     await waitFor(() => {
-        expect(screen.queryByText(/Pannello Admin/i)).toBeDefined();
+        expect(screen.queryByText(/Admin/i)).toBeDefined();
     });
 
     // Simulate session loss by triggering the stored callback

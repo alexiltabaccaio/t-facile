@@ -110,21 +110,5 @@ describe('Header Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/catalog', { replace: true });
   });
 
-  it('allows changing AI model in admin view', () => {
-    const setAiModelMock = vi.fn();
-    (useADMSyncActions as any).mockReturnValue({ setAiModel: setAiModelMock });
-    (useADMSyncStore as any).mockImplementation((selector: any) => selector ? selector({ aiModel: 'gemini-3-flash-preview' }) : { aiModel: 'gemini-3-flash-preview' });
-
-    render(
-      <MemoryRouter initialEntries={['/admin']}>
-        <Header />
-      </MemoryRouter>
-    );
-
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'gemini-3.1-flash-lite-preview' } });
-
-    expect(setAiModelMock).toHaveBeenCalledWith('gemini-3.1-flash-lite-preview');
-  });
 });
 

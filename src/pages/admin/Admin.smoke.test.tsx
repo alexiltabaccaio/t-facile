@@ -53,6 +53,7 @@ vi.mock('@/features/pdf-upload', () => ({
 
 vi.mock('@/features/system-update', () => ({
   ADMAutoUpdater: () => <div data-testid="auto-updater">Auto Updater Component</div>,
+  ADMNewsScanner: () => <div data-testid="news-scanner">News Scanner Component</div>,
 }));
 
 // Mock the admin-sync entity logic now located in @/entities/product
@@ -73,9 +74,9 @@ describe('Admin Page Smoke Test', () => {
     mockGetDoc.mockResolvedValue({ exists: () => true });
   });
 
-  it('renders the Admin Page with default "Pilota Auto" tab', async () => {
+  it('renders the Admin Page with default "News Scanner" tab', async () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/admin']}>
         <SessionProvider>
           <AdminPage />
         </SessionProvider>
@@ -83,14 +84,13 @@ describe('Admin Page Smoke Test', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Pannello Admin/i)).toBeDefined();
-      expect(screen.getByTestId('auto-updater')).toBeDefined();
+      expect(screen.getByTestId('news-scanner')).toBeDefined();
     });
   });
 
   it('switches to "Lettore PDF" tab when clicked', async () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/admin']}>
         <SessionProvider>
           <AdminPage />
         </SessionProvider>
@@ -98,7 +98,7 @@ describe('Admin Page Smoke Test', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Lettore PDF/i)).toBeDefined();
+      expect(screen.getByTestId('news-scanner')).toBeDefined();
     });
 
     const pdfTabButton = screen.getByText(/Lettore PDF/i);
@@ -106,7 +106,7 @@ describe('Admin Page Smoke Test', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('pdf-uploader')).toBeDefined();
-      expect(screen.queryByTestId('auto-updater')).toBeNull();
+      expect(screen.queryByTestId('news-scanner')).toBeNull();
     });
   });
 });

@@ -168,13 +168,15 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       if (!processedData) return;
       set({ isProcessing: true, statusMsg: "Salvataggio definitivo nel Database cloud..." });
       try {
+        const isDeltaUpdate = currentNews?.type === 'Novità';
         const { finalDate } = await saveParsedDataToFirestore(
           processedData, 
           lastUpdateDate, 
           products, 
           categoryDates,
           effectiveDate,
-          skipNotifications
+          skipNotifications,
+          isDeltaUpdate
         );
         
         // If it was a news item, mark it as analyzed in the backend

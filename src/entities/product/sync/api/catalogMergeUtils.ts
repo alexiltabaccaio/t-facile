@@ -17,7 +17,8 @@ export interface MergeResult {
  */
 export const mergeParsedCatalog = (
   parsedData: ParsedPDFResult,
-  existingProducts: Product[]
+  existingProducts: Product[],
+  isDeltaUpdate: boolean = false
 ): MergeResult => {
   const stats: SyncStats = { new: 0, price: 0, status: 0, emissions: 0 };
   const allVariations: string[] = [];
@@ -42,7 +43,7 @@ export const mergeParsedCatalog = (
   // 1. Initial pass: Mark products in updated categories as 'Fuori Catalogo' if we are doing a full update
   existingProducts.forEach(p => {
     const isInCategoryBeingUpdated = updatedCategories.has(p.identity.category);
-    const hasFullPriceListInSession = categoriesWithPrices.has(p.identity.category) && categoriesWithActiveProducts.has(p.identity.category);
+    const hasFullPriceListInSession = !isDeltaUpdate && categoriesWithPrices.has(p.identity.category) && categoriesWithActiveProducts.has(p.identity.category);
     
     if (isInCategoryBeingUpdated && hasFullPriceListInSession && p.lifecycle.status === 'Attivo') {
        mergedCatalogMap.set(p.identity.code, {

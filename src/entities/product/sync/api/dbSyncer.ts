@@ -11,7 +11,8 @@ export const saveParsedDataToFirestore = async (
   existingProducts: Product[],
   existingCategoryDates: Record<string, string> = {},
   effectiveDate?: string,
-  skipNotifications?: boolean
+  skipNotifications?: boolean,
+  isDeltaUpdate?: boolean
 ): Promise<{ finalDate: string }> => {
   
   const isNewer = isDateNewer(parsedData.updateDate, currentLastUpdateDate);
@@ -23,7 +24,7 @@ export const saveParsedDataToFirestore = async (
     stats, 
     allVariations, 
     updatedCategories 
-  } = mergeParsedCatalog(parsedData, existingProducts);
+  } = mergeParsedCatalog(parsedData, existingProducts, isDeltaUpdate);
 
   // 2. Prepare history entry
   const historyEntry = formatHistoryEntry(parsedData.updateDate, stats, allVariations);
