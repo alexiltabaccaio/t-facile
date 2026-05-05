@@ -54,7 +54,7 @@ export default [
       'no-restricted-imports': ['error', {
         patterns: [{
           group: ['firebase', 'firebase/*'],
-          message: 'Violazione FSD: I moduli Firebase non possono essere importati direttamente nei layer superiori. Usa @/shared/api/firebase'
+          message: 'FSD Violation: Firebase modules cannot be imported directly in higher layers. Use @/shared/api/firebase instead.'
         }]
       }],
     },
@@ -72,11 +72,11 @@ export default [
         'error',
         {
           selector: 'CallExpression[callee.name=/^use(State|Effect|Reducer|Context|LayoutEffect|ImperativeHandle)/]',
-          message: 'I componenti in shared/ui devono essere presentazionali (dumb). Evita logica di stato o effetti collaterali.',
+          message: 'Components in shared/ui must be presentational (dumb). Avoid state logic or side effects.',
         },
         {
           selector: 'CallExpression[callee.name=/^use[A-Z]/]',
-          message: 'I componenti in shared/ui non devono usare custom hooks che potrebbero contenere logica di dominio.',
+          message: 'Components in shared/ui must not use custom hooks that might contain domain logic.',
         }
       ],
     },

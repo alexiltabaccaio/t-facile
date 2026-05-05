@@ -11,6 +11,7 @@ vi.mock('@/entities/product', async (importOriginal) => {
     catalogService: {
       subscribeToConfig: vi.fn(),
       fetchCatalogInChunks: vi.fn(),
+      fetchPendingScheduledSyncs: vi.fn(() => Promise.resolve([])),
     },
     // We'll use the real store but we might need to mock some parts if needed
     // or just use setState to control it.

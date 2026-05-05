@@ -70,7 +70,22 @@ vi.mock('@/entities/product', async (importOriginal) => {
         return () => {};
       }),
       fetchCatalogInChunks: vi.fn(() => Promise.resolve([])),
+      fetchPendingScheduledSyncs: vi.fn(() => Promise.resolve([])),
     },
+    useCatalogDataStore: Object.assign(actual.useCatalogDataStore, {
+        persist: {
+            ...actual.useCatalogDataStore.persist,
+            hasHydrated: () => true,
+            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+        }
+    }),
+    useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
+        persist: {
+            ...actual.useCatalogSyncStore.persist,
+            hasHydrated: () => true,
+            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+        }
+    }),
   };
 });
 

@@ -24,10 +24,10 @@ export default defineConfig(() => {
             navigateFallbackDenylist: [/^\/api/],
           },
           manifest: {
-            id: process.env.VERCEL_ENV === 'production' ? 't-facile-prod' : 't-facile-dev',
+            id: process.env.VERCEL_ENV === 'production' ? 't-facile-prod' : `t-facile-${process.env.VERCEL_GIT_COMMIT_REF || 'dev'}`,
             name: process.env.VERCEL_ENV === 'production' ? 'T-Facile' : 'T-Facile (Dev)',
-            short_name: process.env.VERCEL_ENV === 'production' ? 'T-Facile' : 'T-Facile Dev',
-            theme_color: '#ffffff',
+            short_name: process.env.VERCEL_ENV === 'production' ? 'T-Facile' : 'TF Dev',
+            theme_color: process.env.VERCEL_ENV === 'production' ? '#ffffff' : '#f8fafc',
             background_color: '#ffffff',
             display: 'standalone',
             icons: [

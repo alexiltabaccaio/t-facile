@@ -119,8 +119,8 @@
   "admin": {
     "title": "Admin",
     "subtitle": "Automated price management",
-    "denied": "Access Denied",
-    "deniedSubtitle": "This area is restricted to system administrators.",
+    "denied": "Something went wrong",
+    "deniedSubtitle": "or it's simply none of your business",
     "aiModel": "AI Model",
     "preview": {
       "title": "Human-in-the-loop: Modification Preview",

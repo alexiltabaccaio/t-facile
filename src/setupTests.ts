@@ -85,3 +85,34 @@ vi.mock('virtual:pwa-register/react', () => ({
     updateServiceWorker: vi.fn(),
   }),
 }));
+
+// Mock OrientationLockOverlay to avoid interfering with tests
+vi.mock('@/shared/ui', async (importOriginal) => {
+  const actual = await importOriginal<any>();
+  return {
+    ...actual,
+    OrientationLockOverlay: () => null,
+  };
+});
+
+// Ensure stores are always "hydrated" in tests
+vi.mock('./entities/product', async (importOriginal) => {
+  const actual = await importOriginal<any>();
+  return {
+    ...actual,
+    useCatalogDataStore: Object.assign(actual.useCatalogDataStore, {
+        persist: {
+            ...actual.useCatalogDataStore.persist,
+            hasHydrated: () => true,
+            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+        }
+    }),
+    useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
+        persist: {
+            ...actual.useCatalogSyncStore.persist,
+            hasHydrated: () => true,
+            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+        }
+    }),
+  };
+});

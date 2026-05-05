@@ -119,8 +119,8 @@
   "admin": {
     "title": "Admin",
     "subtitle": "Gestione automatizzata dei listini",
-    "denied": "Accesso Negato",
-    "deniedSubtitle": "Questa area è riservata agli amministratori del sistema.",
+    "denied": "Qualcosa è andato storto",
+    "deniedSubtitle": "o semplicemente non sono affari tuoi",
     "aiModel": "Modello IA",
     "preview": {
       "title": "Human-in-the-loop: Anteprima Modifiche",

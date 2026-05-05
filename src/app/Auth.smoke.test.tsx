@@ -58,12 +58,27 @@ vi.mock('@/entities/product', async (importOriginal) => {
   return {
     ...actual,
     catalogService: {
-      subscribeToConfig: vi.fn((onSuccess: (config: any) => void) => {
-        onSuccess({ lastUpdateDate: '01/01/2026', syncId: 'test', totalChunks: 0 });
+      subscribeToConfig: vi.fn((onUpdate: (config: any) => void) => {
+        onUpdate({ lastUpdateDate: '01/01/2026', syncId: 'test', totalChunks: 0 });
         return () => {};
       }),
       fetchCatalogInChunks: vi.fn(() => Promise.resolve([])),
+      fetchPendingScheduledSyncs: vi.fn(() => Promise.resolve([])),
     },
+    useCatalogDataStore: Object.assign(actual.useCatalogDataStore, {
+        persist: {
+            ...actual.useCatalogDataStore.persist,
+            hasHydrated: () => true,
+            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+        }
+    }),
+    useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
+        persist: {
+            ...actual.useCatalogSyncStore.persist,
+            hasHydrated: () => true,
+            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+        }
+    }),
   };
 });
 
@@ -91,8 +106,8 @@ describe('Auth & Route Protection Smoke Test', () => {
 
     // Verify that the "Access Denied" message appears
     await waitFor(() => {
-      expect(screen.getByText(/Accesso Negato/i)).toBeDefined();
-      expect(screen.getByText(/riservata agli amministratori/i)).toBeDefined();
+      expect(screen.getByText(/Qualcosa è andato storto/i)).toBeDefined();
+      expect(screen.getByText(/non sono affari tuoi/i)).toBeDefined();
     });
   });
 
@@ -111,7 +126,7 @@ describe('Auth & Route Protection Smoke Test', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Accesso Negato/i)).toBeDefined();
+      expect(screen.getByText(/Qualcosa è andato storto/i)).toBeDefined();
     });
   });
 
@@ -132,7 +147,7 @@ describe('Auth & Route Protection Smoke Test', () => {
     // Verify that the Admin Panel title appears (and not "Access Denied")
     await waitFor(() => {
       // Use getAllByText because the title appears in the Header and on the page (Admin)
-      expect(screen.queryByText(/Accesso Negato/i)).toBeNull();
+      expect(screen.queryByText(/Qualcosa è andato storto/i)).toBeNull();
       const adminTitles = screen.getAllByText(/Admin/i);
       expect(adminTitles.length).toBeGreaterThan(0);
     });
@@ -162,7 +177,7 @@ describe('Auth & Route Protection Smoke Test', () => {
     });
     
     await waitFor(() => {
-        expect(screen.getByText(/Accesso Negato/i)).toBeDefined();
+        expect(screen.getByText(/Qualcosa è andato storto/i)).toBeDefined();
     });
   });
 });
