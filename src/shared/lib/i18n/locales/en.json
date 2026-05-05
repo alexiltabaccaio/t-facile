@@ -167,6 +167,14 @@
       "selectAll": "Select all",
       "selectedCount": "{{count}} selected"
     },
+    "news": {
+      "title": "ADM News Scanner",
+      "search": "Search New Price Variations",
+      "checking": "Scanning ADM News...",
+      "noNovita": "No new price variations detected.",
+      "success": "Database updated and link marked as read!",
+      "analyze": "Analyze Variation"
+    },
     "manual": {
       "invalidFile": "Please select valid PDF files.",
       "unauthenticated": "User not authenticated",
@@ -186,8 +194,9 @@
       "dropzoneSubtitle": "You can select multiple files at once"
     },
     "tabs": {
-      "auto": "Auto Pilot",
-      "manual": "PDF Reader"
+      "auto": "Catalogs Scanner",
+      "manual": "PDF Reader",
+      "news": "News Scanner"
     },
     "table": {
       "modType": "Modification Type",

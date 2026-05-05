@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, Copy, Check } from 'lucide-react';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { useCatalogStore } from '../../index';
 import { usePDFDiff } from '../model/usePDFDiff';
@@ -17,6 +17,7 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
   const { t } = useTranslation();
   const products = useCatalogStore((state: any) => state.products);
   const [activeTab, setActiveTab] = useState<ChangeType | 'all'>('all');
+  const [copied, setCopied] = useState(false);
 
   const { diffItems, stats } = usePDFDiff(parsedData, products);
 
@@ -35,6 +36,14 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
     }
   };
 
+  const handleCopy = () => {
+    const textToCopy = JSON.stringify(diffItems, null, 2);
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="mt-4 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden flex flex-col bg-white dark:bg-neutral-900 shadow-2xl w-full">
       <div className="bg-neutral-50 dark:bg-neutral-800/50 p-4 border-b border-neutral-200 dark:border-neutral-800 lg:p-6">
@@ -49,6 +58,13 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
             </p>
           </div>
           <div className="flex items-center gap-2">
+             <button 
+               onClick={handleCopy} 
+               title="Copia JSON per Debug"
+               className="p-2 text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full shadow-sm transition-colors"
+             >
+               {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+             </button>
              <button onClick={onCancel} className="px-4 py-2 text-xs font-black text-neutral-500 hover:text-red-500 dark:text-neutral-400 dark:hover:text-red-400 border border-neutral-300 dark:border-neutral-700 rounded-full transition-colors uppercase tracking-widest lg:px-6 lg:py-3">
                 {t('admin.preview.cancel')}
              </button>

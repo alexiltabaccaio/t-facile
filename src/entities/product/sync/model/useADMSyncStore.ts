@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { saveParsedDataToFirestore } from '../api/dbSyncer';
 import { Product } from '../../index';
-import { Listino, fetchListini } from '../api/admApiService';
+import { Listino, fetchListini, fetchNews, markNewsAsAnalyzed } from '../api/admApiService';
 import { processListiniBatch } from '../api/admProcessor';
 
 interface ADMSyncState {
@@ -15,6 +15,8 @@ interface ADMSyncState {
   error: string | null;
   success: boolean;
   abortController: AbortController | null;
+  currentNews: Listino | null;
+  hasScannedNews: boolean;
 
   actions: {
     setAiModel: (val: string) => void;
@@ -30,6 +32,7 @@ interface ADMSyncState {
     toggleSelection: (index: number) => void;
     toggleAll: () => void;
     checkUpdates: () => Promise<void>;
+    checkNewsUpdates: () => Promise<void>;
     processSelectedListini: () => Promise<void>;
     cancelProcessing: () => void;
     finalSaveToDatabase: (params: { 
@@ -52,6 +55,8 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
   error: null,
   success: false,
   abortController: null,
+  currentNews: null,
+  hasScannedNews: false,
 
   actions: {
     setAiModel: (val) => set({ aiModel: val }),
@@ -77,7 +82,7 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
     },
 
     checkUpdates: async () => {
-      set({ isChecking: true, error: null, availableUpdates: [], processedData: null });
+      set({ isChecking: true, error: null, availableUpdates: [], processedData: null, currentNews: null, hasScannedNews: false });
       try {
         set({ statusMsg: "Contatto i server ADM..." });
         const listini = await fetchListini();
@@ -85,6 +90,24 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       } catch (err: any) {
         console.error(err);
         set({ error: err.message || "Impossibile leggere il sito dell'Agenzia delle Dogane." });
+      } finally {
+        set({ isChecking: false });
+      }
+    },
+
+    checkNewsUpdates: async () => {
+      set({ isChecking: true, error: null, availableUpdates: [], processedData: null, currentNews: null, hasScannedNews: true });
+      try {
+        set({ statusMsg: "Scansione ADM News in corso..." });
+        const news = await fetchNews();
+        const autoSelectedNews = news.map((item, index) => ({
+          ...item,
+          selected: index === 0
+        }));
+        set({ availableUpdates: autoSelectedNews });
+      } catch (err: any) {
+        console.error(err);
+        set({ error: err.message || "Errore durante la scansione delle news." });
       } finally {
         set({ isChecking: false });
       }
@@ -100,7 +123,8 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
         isProcessing: true,
         error: null,
         success: false,
-        abortController: controller
+        abortController: controller,
+        currentNews: selected.length === 1 && selected[0].type === 'Novità' ? selected[0] : null
       });
 
       try {
@@ -138,7 +162,7 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
     },
 
     finalSaveToDatabase: async ({ lastUpdateDate, products, categoryDates, onSuccess }) => {
-      const { processedData } = get();
+      const { processedData, currentNews } = get();
       if (!processedData) return;
       set({ isProcessing: true, statusMsg: "Salvataggio definitivo nel Database cloud..." });
       try {
@@ -148,8 +172,14 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
           products, 
           categoryDates
         );
+        
+        // If it was a news item, mark it as analyzed in the backend
+        if (currentNews) {
+          await markNewsAsAnalyzed(currentNews.url, currentNews.title);
+        }
+
         onSuccess(finalDate);
-        set({ success: true, processedData: null });
+        set({ success: true, processedData: null, currentNews: null });
         setTimeout(() => set({ success: false }), 5000);
       } catch (err: any) {
          set({ error: err.message || "Errore durante il salvataggio" });
@@ -159,7 +189,7 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
     },
 
     cancelStaging: () => {
-      set({ processedData: null });
+      set({ processedData: null, currentNews: null });
     }
   }
 }));

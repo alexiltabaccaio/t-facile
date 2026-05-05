@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { fetchADMListini, downloadADMPdfAsBase64 } from '../services/admService.js';
+import { fetchADMListini, downloadADMPdfAsBase64, fetchADMNews } from '../services/admService.js';
 import { analyzeTextWithAI } from '../services/aiAnalyzer.js';
 import { requireAdmin } from '../middleware/authMiddleware.js';
 import { validateADMUrl } from '../middleware/urlValidator.js';
+import { getAnalyzedNewsUrls, markNewsAsAnalyzed } from '../services/newsService.js';
 
 const admLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -26,6 +27,43 @@ router.get("/listini", requireAdmin, async (_req, res) => {
     res.json({ success: true, listini });
   } catch (err: any) {
     console.error("Error in /api/adm/listini:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/adm/novita
+ * Retrieve news from ADM filtered by already analyzed ones
+ */
+router.get("/news", requireAdmin, async (_req, res) => {
+  try {
+    const [allNovita, analyzedUrls] = await Promise.all([
+      fetchADMNews(),
+      getAnalyzedNewsUrls()
+    ]);
+    
+    // Filter out already analyzed ones
+    const filtered = allNovita.filter(n => !analyzedUrls.includes(n.url));
+    
+    res.json({ success: true, news: filtered });
+  } catch (err: any) {
+    console.error("Error in /api/adm/news:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/adm/news/mark
+ * Marks a news item as analyzed
+ */
+router.post("/news/mark", requireAdmin, async (req, res) => {
+  try {
+    const { url, title } = req.body;
+    if (!url) return res.status(400).json({ success: false, error: "URL mancante" });
+    await markNewsAsAnalyzed(url, title || "Novità ADM");
+    res.json({ success: true });
+  } catch (err: any) {
+    console.error("Error in /api/adm/news/mark:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

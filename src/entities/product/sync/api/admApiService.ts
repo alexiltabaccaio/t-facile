@@ -71,4 +71,45 @@ export async function downloadListinoAsFile(listino: Listino, signal?: AbortSign
   
   return new File([blob], `${prefix}_${listino.category.toLowerCase()}_${listino.date.replace(/\//g, '.')}.pdf`, { type: 'application/pdf' });
 }
+export async function fetchNews(): Promise<Listino[]> {
+  if (!auth.currentUser) throw new Error("Utente non autenticato");
+  const token = await auth.currentUser.getIdToken();
+  const headers = { 'Authorization': `Bearer ${token}` };
 
+  const res = await fetch('/api/adm/news', { headers });
+  const textResponse = await res.text();
+  
+  let data;
+  try {
+    data = JSON.parse(textResponse);
+  } catch (parseError) {
+    throw new Error(`Errore dal server (${res.status}): ${textResponse}`);
+  }
+  
+  if (!res.ok) {
+    throw new Error(data?.error || `Errore server: HTTP ${res.status}`);
+  }
+  
+  if (!data.success) throw new Error(data.error);
+  return data.news.map((n: any) => ({ ...n, selected: true }));
+}
+
+export async function markNewsAsAnalyzed(url: string, title: string): Promise<void> {
+  if (!auth.currentUser) throw new Error("Utente non autenticato");
+  const token = await auth.currentUser.getIdToken();
+  const headers = { 
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+
+  const res = await fetch('/api/adm/news/mark', { 
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ url, title })
+  });
+  
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Errore server: HTTP ${res.status}`);
+  }
+}

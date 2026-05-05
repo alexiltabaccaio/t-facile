@@ -167,6 +167,14 @@
       "selectAll": "Seleziona tutto",
       "selectedCount": "{{count}} selezionati"
     },
+    "news": {
+      "title": "Scanner Novità ADM",
+      "search": "Cerca Nuove Variazioni Prezzi",
+      "checking": "Scansione Novità ADM...",
+      "noNovita": "Nessuna nuova variazione di prezzo rilevata.",
+      "success": "Database aggiornato e link contrassegnato come letto!",
+      "analyze": "Analizza Variazione"
+    },
     "manual": {
       "invalidFile": "Per favore seleziona file PDF validi.",
       "unauthenticated": "Utente non autenticato",
@@ -186,8 +194,9 @@
       "dropzoneSubtitle": "Puoi selezionare più file contemporaneamente"
     },
     "tabs": {
-      "auto": "Pilota Auto",
-      "manual": "Lettore PDF"
+      "auto": "Scanner Listini",
+      "manual": "Lettore PDF",
+      "news": "News Scanner"
     },
     "table": {
       "modType": "Tipo Modifica",

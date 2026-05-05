@@ -4,10 +4,22 @@ import { Product } from '../../index';
 
 import { ChangeType, DiffItem } from '../model/types';
 
+const normalizeName = (name: string) => {
+  return name
+    .toLowerCase()
+    .replace(/[^\w\s]/gi, '') // Rimuove punteggiatura e caratteri speciali
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
   const diffItems = useMemo<DiffItem[]>(() => {
     return parsedData.products.map(p => {
-      const existing = products.find(sp => sp.identity.code === p.code);
+      let existing = products.find(sp => sp.identity.code === p.code && p.code !== "");
+      if (!existing && !p.code && p.name) {
+        const normPName = normalizeName(p.name);
+        existing = products.find(sp => normalizeName(sp.identity.name) === normPName);
+      }
       
       let type: ChangeType = 'unchanged';
       let diffData: any = {};

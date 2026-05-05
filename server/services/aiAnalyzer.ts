@@ -66,10 +66,19 @@ async function createBackendPrompts(fileName: string, textData: string) {
   const template = await getPromptsFromDb(type);
 
   // Apply template replacements
-  const finalUserPrompt = template.userPromptTemplate
+  let finalUserPrompt = template.userPromptTemplate
     .replace(/{{textData}}/g, textData)
     .replace(/{{forcedCategory}}/g, forcedCategory || 'Deduci dal contesto')
     .replace(/{{forcedStatus}}/g, forcedStatus || 'Attivo');
+
+  finalUserPrompt += `
+  
+ATTENZIONE (REGOLE CRITICHE AGGIUNTIVE SUI CODICI):
+1. In alcuni documenti (come per i "Sigari" o le variazioni di prezzo), la colonna "Codice" potrebbe NON ESSERE PRESENTE nella tabella.
+2. SE IL CODICE NON E' PRESENTE, DEVI COMUNQUE ESTRARRE IL PRODOTTO! Non ignorare nessun prodotto solo perché manca il codice.
+3. In questi casi, imposta il campo "code" a una stringa vuota ("").
+4. Estrai sempre tutti i prodotti presenti nel testo fornito.
+  `;
 
   return {
     systemPrompt: template.systemPrompt,

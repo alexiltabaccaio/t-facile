@@ -22,7 +22,7 @@ export const extractTextFromPDF = async (file: File, onProgress?: (page: number,
     
     // Join the page strings with spaces
     fullText += `\n--- PAGE ${i} ---\n`;
-    fullText += strings.join(' ');
+    fullText += strings.join(' ').replace(/∞/g, '°');
     
     if (onProgress) {
       onProgress(i, numPages);

@@ -12,12 +12,16 @@ export const ADMUpdateItem: React.FC<ADMUpdateItemProps> = ({ listino, categoryD
 
   // Badge colors
   let badgeColor = 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300';
-  if (listino.status.toLowerCase() === 'attivo') {
+  const status = listino.status?.toLowerCase() || '';
+  
+  if (status === 'attivo') {
     badgeColor = 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400';
-  } else if (listino.status.toLowerCase() === 'radiato') {
+  } else if (status === 'radiato') {
     badgeColor = 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400';
-  } else if (listino.status.toLowerCase() === 'emissione') {
+  } else if (status === 'emissione') {
     badgeColor = 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400';
+  } else if (status === 'novità') {
+    badgeColor = 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400';
   }
 
   return (
@@ -40,9 +44,11 @@ export const ADMUpdateItem: React.FC<ADMUpdateItemProps> = ({ listino, categoryD
           <span className="flex items-center gap-1 font-bold">
             <span className="opacity-50">Data PDF:</span> <span className={listino.date === 'Non disponibile' ? 'text-neutral-400 italic' : 'text-blue-600 dark:text-blue-400'}>{listino.date}</span>
           </span>
-          <span className="flex items-center gap-1 font-bold">
-            <span className="opacity-50">In Database:</span> <span className="text-neutral-400">{categoryDate || 'Mai aggiornato'}</span>
-          </span>
+          {listino.type !== 'Novità' && (
+            <span className="flex items-center gap-1 font-bold">
+              <span className="opacity-50">In Database:</span> <span className="text-neutral-400">{categoryDate || 'Mai aggiornato'}</span>
+            </span>
+          )}
           <span className={`font-black px-1.5 py-0.5 rounded text-[8px] uppercase tracking-wider ${badgeColor}`}>
             {listino.status}
           </span>

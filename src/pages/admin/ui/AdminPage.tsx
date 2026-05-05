@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/entities/session';
-import { ShieldAlert, Zap, FileText, Cpu } from 'lucide-react';
+import { ShieldAlert, Zap, FileText, Cpu, Newspaper } from 'lucide-react';
 import { PDFUploader } from '@/features/pdf-upload';
-import { ADMAutoUpdater } from '@/features/system-update';
+import { ADMAutoUpdater, ADMNewsScanner } from '@/features/system-update';
 import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
 import { useTranslation } from 'react-i18next';
 
 const AdminPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<'auto' | 'manual'>('auto');
+  const [activeTab, setActiveTab] = useState<'news' | 'auto' | 'manual'>('news');
   const aiModel = useADMSyncStore(s => s.aiModel);
   const { setAiModel } = useADMSyncActions();
 
@@ -57,8 +57,19 @@ const AdminPage: React.FC = () => {
         {/* Tab System */}
         <div className="flex border-b border-neutral-200 dark:border-neutral-800 -mx-3 px-3 bg-white dark:bg-neutral-900 sticky top-0 z-10 lg:static lg:bg-transparent lg:border-0 lg:p-0 lg:m-0 lg:gap-4 lg:mb-4">
           <button
+            onClick={() => setActiveTab('news')}
+            className={`flex-1 flex items-center justify-center gap-2 lg:gap-3 py-3 lg:py-4 text-xs lg:text-sm font-black uppercase tracking-widest border-b-2 lg:rounded-2xl lg:border-2 ${
+              activeTab === 'news' 
+                ? 'border-amber-600 text-amber-600 lg:bg-amber-50 dark:lg:bg-amber-900/10 lg:shadow-lg lg:shadow-amber-500/10' 
+                : 'border-transparent text-neutral-400 hover:text-neutral-600 lg:bg-white dark:lg:bg-neutral-800 lg:border-neutral-200 dark:lg:border-neutral-700 shadow-sm'
+            }`}
+          >
+            <Newspaper className={`w-3.5 h-3.5 lg:w-5 lg:h-5 ${activeTab === 'news' ? 'fill-current/20' : ''}`} />
+            {t('admin.tabs.news')}
+          </button>
+          <button
             onClick={() => setActiveTab('auto')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 lg:py-4 text-xs lg:text-sm font-black uppercase tracking-widest border-b-2 lg:rounded-2xl lg:border-2 ${
+            className={`flex-1 flex items-center justify-center gap-2 lg:gap-3 py-3 lg:py-4 text-xs lg:text-sm font-black uppercase tracking-widest border-b-2 lg:rounded-2xl lg:border-2 ${
               activeTab === 'auto' 
                 ? 'border-blue-600 text-blue-600 lg:bg-blue-50 dark:lg:bg-blue-900/10 lg:shadow-lg lg:shadow-blue-500/10' 
                 : 'border-transparent text-neutral-400 hover:text-neutral-600 lg:bg-white dark:lg:bg-neutral-800 lg:border-neutral-200 dark:lg:border-neutral-700 shadow-sm'
@@ -69,7 +80,7 @@ const AdminPage: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('manual')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 lg:py-4 text-xs lg:text-sm font-black uppercase tracking-widest border-b-2 lg:rounded-2xl lg:border-2 ${
+            className={`flex-1 flex items-center justify-center gap-2 lg:gap-3 py-3 lg:py-4 text-xs lg:text-sm font-black uppercase tracking-widest border-b-2 lg:rounded-2xl lg:border-2 ${
               activeTab === 'manual' 
                 ? 'border-blue-600 text-blue-600 lg:bg-blue-50 dark:lg:bg-blue-900/10 lg:shadow-lg lg:shadow-blue-500/10' 
                 : 'border-transparent text-neutral-400 hover:text-neutral-600 lg:bg-white dark:lg:bg-neutral-800 lg:border-neutral-200 dark:lg:border-neutral-700 shadow-sm'
@@ -83,6 +94,7 @@ const AdminPage: React.FC = () => {
         {/* Tools */}
         <section className="space-y-3 pt-2 lg:pt-0">
           <div className={`${activeTab === 'manual' ? 'lg:bg-white lg:dark:bg-neutral-900 lg:p-8 lg:rounded-3xl lg:shadow-xl lg:border lg:border-neutral-100 lg:dark:border-neutral-800' : 'w-full'}`}>
+            {activeTab === 'news' && <ADMNewsScanner />}
             {activeTab === 'auto' && <ADMAutoUpdater />}
             {activeTab === 'manual' && <PDFUploader />}
           </div>

@@ -131,6 +131,58 @@ function sortListini(listini: any[]) {
   });
 }
 
+export async function fetchADMNews() {
+  const url = `${BASE_URL}/portale/novita-accise`;
+  try {
+    const html = await ADMClient.fetchHTML(url);
+    const $ = cheerio.load(html);
+    const results: any[] = [];
+    const dateRegex = /(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/;
+
+    // Looking for links that mention price changes or tobacco brands
+    $('a[href*=".pdf"]').each((_, el) => {
+      const href = $(el).attr('href');
+      let title = $(el).text().trim().replace(/\s+/g, ' ');
+      
+      // If title is empty or too short, look at parent text
+      if (!title || title.length < 10) {
+        title = $(el).closest('h3').text().trim().replace(/\s+/g, ' ') || 
+                $(el).parent().text().trim().replace(/\s+/g, ' ');
+      }
+
+      const isPriceVariation = /varia(zione)?.*prezzo|listino.*aggiornato|tabacchi.*lavorati|marche.*tabacchi/i.test(title);
+      
+      if (href && isPriceVariation) {
+        let date = 'Non disponibile';
+        const parentText = $(el).parent().text().trim();
+        const dateMatch = title.match(dateRegex) || parentText.match(dateRegex);
+        if (dateMatch) {
+          date = `${dateMatch[1]}/${dateMatch[2]}/${dateMatch[3]}`;
+          if (dateMatch[3].length === 2) date = `${dateMatch[1]}/${dateMatch[2]}/20${dateMatch[3]}`;
+        }
+
+        const fullUrl = href.startsWith('http') ? href : `${BASE_URL}${href}`;
+        
+        if (!results.some(r => r.url === fullUrl)) {
+          results.push({
+            title: title.replace(/\s*-\s*pdf/i, '').trim(),
+            url: fullUrl,
+            date,
+            type: 'Novità',
+            status: 'Novità',
+            category: 'Variazioni Prezzi'
+          });
+        }
+      }
+    });
+
+    return results;
+  } catch (error: any) {
+    console.error(`Error fetching ADM Novità:`, error.message);
+    throw error;
+  }
+}
+
 export async function downloadADMPdfAsBase64(path: string) {
   const buffer = await ADMClient.downloadPdfAsBuffer(path);
   return Buffer.from(buffer).toString('base64');

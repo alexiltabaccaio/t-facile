@@ -80,9 +80,18 @@ export const analyzePdfChunks = async (
 
   // De-duplication and final Merge
   const mergedMap = new Map<string, ParsedProduct>();
+  let noCodeCounter = 0;
+  
   allProducts.forEach(p => {
-    const existing = mergedMap.get(p.code);
-    mergedMap.set(p.code, existing ? { ...existing, ...p } : p);
+    const code = p.code ? p.code.trim() : "";
+    if (code) {
+      const existing = mergedMap.get(code);
+      mergedMap.set(code, existing ? { ...existing, ...p } : p);
+    } else {
+      // If there's no code, we don't merge them because we can't reliably know if they are the same
+      noCodeCounter++;
+      mergedMap.set(`NO_CODE_${noCodeCounter}`, { ...p, code: "" });
+    }
   });
 
   return {
