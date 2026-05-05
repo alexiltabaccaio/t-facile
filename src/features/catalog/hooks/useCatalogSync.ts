@@ -62,6 +62,35 @@ export const useCatalogSync = () => {
         
         const { persistedDate: pDate, persistedSyncId: pSyncId, productsCount } = stateRef.current;
 
+        // NEW: Check for scheduled updates
+        const localToday = new Date();
+        const todayStr = `${localToday.getFullYear()}-${String(localToday.getMonth() + 1).padStart(2, '0')}-${String(localToday.getDate()).padStart(2, '0')}`;
+        try {
+          const pendingUpdates = await catalogService.fetchPendingScheduledSyncs(todayStr);
+          if (pendingUpdates.length > 0) {
+            console.log(`[useCatalogSync] Found ${pendingUpdates.length} pending scheduled updates. Applying...`);
+            
+            // We need current products to merge
+            let currentProducts = persistedProducts;
+            if (productsCount === 0) {
+              currentProducts = await catalogService.fetchCatalogInChunks(totalChunks);
+            }
+
+            for (const update of pendingUpdates) {
+              await catalogService.applyScheduledUpdate(update, currentProducts, config);
+              // Update local reference for next iterations of the loop
+              // In a real scenario we'd probably re-fetch or re-read the store, 
+              // but for now we'll assume they don't overlap too much or we'll let the next sync handle it
+            }
+            
+            // Force a reload of the config/catalog if needed, or let the subscription trigger naturally
+            // Actually, applyScheduledUpdate calls saveCatalogSync which updates config, 
+            // so this listener WILL trigger again.
+            return; 
+          }
+        } catch (err) {
+          console.error("[useCatalogSync] Error checking scheduled updates:", err);
+        }
 
         const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
 

@@ -8,7 +8,7 @@ import { getAnalyzedNewsUrls, markNewsAsAnalyzed } from '../services/newsService
 
 const admLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 30, // limit each IP to 30 requests per windowMs
+  max: 200, // limit each IP to 200 requests per windowMs
   message: { success: false, error: "Troppe richieste da questo IP, riprova più tardi." }
 });
 

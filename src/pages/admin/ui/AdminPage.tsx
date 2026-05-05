@@ -4,7 +4,9 @@ import { ShieldAlert, Zap, FileText, Cpu, Newspaper } from 'lucide-react';
 import { PDFUploader } from '@/features/pdf-upload';
 import { ADMAutoUpdater, ADMNewsScanner } from '@/features/system-update';
 import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
+import { productRepository } from '@/shared/api';
 import { useTranslation } from 'react-i18next';
+import { MoreVertical, RotateCcw } from 'lucide-react';
 
 const AdminPage: React.FC = () => {
   const { t } = useTranslation();
@@ -12,6 +14,28 @@ const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'news' | 'auto' | 'manual'>('news');
   const aiModel = useADMSyncStore(s => s.aiModel);
   const { setAiModel } = useADMSyncActions();
+  const [showBackupMenu, setShowBackupMenu] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  const handleRestore = async () => {
+    if (!window.confirm("Sei sicuro di voler ripristinare il catalogo dall'ultimo backup? Questa operazione sovrascriverà tutti i dati attuali.")) {
+      return;
+    }
+
+    setIsRestoring(true);
+    setShowBackupMenu(false);
+    try {
+      await productRepository.restoreCatalogBackup();
+      alert("Catalogo ripristinato con successo! La pagina verrà ricaricata per applicare le modifiche.");
+      // Force reload to sync the state
+      window.location.reload();
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Errore durante il ripristino del backup.");
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   if (!isAdmin) {
     return (
@@ -29,30 +53,7 @@ const AdminPage: React.FC = () => {
     <div className="pb-20 lg:pb-10 min-h-full">
       <div className="p-3 lg:p-6 space-y-4 w-full max-w-5xl mx-auto">
         
-        {/* Desktop Header for Admin */}
-        <div className="hidden lg:flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-display font-black text-neutral-900 dark:text-white uppercase tracking-tight">
-              {t('admin.title')}
-            </h1>
-            <p className="text-sm text-neutral-500 font-medium">{t('admin.subtitle')}</p>
-          </div>
 
-          <div className="flex items-center gap-2 bg-white dark:bg-neutral-800 rounded-2xl px-4 py-2 border border-neutral-200 dark:border-neutral-700 shadow-sm">
-            <div className="flex items-center gap-2 mr-3 border-r border-neutral-100 dark:border-neutral-700 pr-3">
-              <Cpu className="w-4 h-4 text-blue-500" />
-              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{t('admin.aiModel')}</span>
-            </div>
-            <select 
-              value={aiModel} 
-              onChange={(e) => setAiModel(e.target.value)}
-              className="text-xs font-bold text-neutral-700 dark:text-neutral-200 uppercase tracking-wider bg-transparent border-none focus:ring-0 p-0 outline-none cursor-pointer"
-            >
-              <option value="gemini-3-flash-preview">FLASH</option>
-              <option value="gemini-3.1-flash-lite-preview">FLASH-LITE</option>
-            </select>
-          </div>
-        </div>
 
         {/* Tab System */}
         <div className="flex border-b border-neutral-200 dark:border-neutral-800 -mx-3 px-3 bg-white dark:bg-neutral-900 sticky top-0 z-10 lg:static lg:bg-transparent lg:border-0 lg:p-0 lg:m-0 lg:gap-4 lg:mb-4">
@@ -89,6 +90,56 @@ const AdminPage: React.FC = () => {
             <FileText className="w-3.5 h-3.5 lg:w-5 lg:h-5" />
             {t('admin.tabs.manual')}
           </button>
+
+          {/* Independent Backup/Restore Menu */}
+          <div className="relative flex items-center ml-1 lg:ml-2">
+            <button 
+              onClick={() => setShowBackupMenu(!showBackupMenu)}
+              className="p-3 lg:p-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 bg-white dark:bg-neutral-900 border-b-2 border-transparent lg:bg-white dark:lg:bg-neutral-800 lg:border-2 lg:border-neutral-200 dark:lg:border-neutral-700 lg:rounded-2xl shadow-sm transition-all"
+              aria-label="Opzioni Backup"
+            >
+              <MoreVertical className="w-4 h-4 lg:w-5 lg:h-5" />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showBackupMenu && (
+              <>
+                <div className="fixed inset-0 z-20" onClick={() => setShowBackupMenu(false)} />
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 z-30 py-2 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-4 py-2 border-b border-neutral-100 dark:border-neutral-700 mb-1">
+                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Gestione Database</p>
+                  </div>
+                  <button
+                    onClick={handleRestore}
+                    disabled={isRestoring}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors disabled:opacity-50"
+                  >
+                    <RotateCcw className={`w-4 h-4 ${isRestoring ? 'animate-spin' : ''}`} />
+                    RIPRISTINA ULTIMO BACKUP
+                  </button>
+
+                  <div className="px-4 py-2 border-b border-t border-neutral-100 dark:border-neutral-700 mt-2 mb-1 flex items-center gap-2">
+                    <Cpu className="w-3.5 h-3.5 text-blue-500" />
+                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t('admin.aiModel')}</p>
+                  </div>
+                  <div className="px-2 py-1 space-y-1">
+                    <button 
+                      onClick={() => { setAiModel('gemini-3-flash-preview'); setShowBackupMenu(false); }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-colors ${aiModel === 'gemini-3-flash-preview' ? 'bg-blue-600 text-white shadow-md' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50'}`}
+                    >
+                      Flash (Standard)
+                    </button>
+                    <button 
+                      onClick={() => { setAiModel('gemini-3.1-flash-lite-preview'); setShowBackupMenu(false); }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-colors ${aiModel === 'gemini-3.1-flash-lite-preview' ? 'bg-blue-600 text-white shadow-md' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50'}`}
+                    >
+                      Flash-Lite (Veloce)
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
  
         {/* Tools */}

@@ -3,26 +3,31 @@ import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { Product } from '../../index';
 
 import { ChangeType, DiffItem } from '../model/types';
-
-const normalizeName = (name: string) => {
-  return name
-    .toLowerCase()
-    .replace(/[^\w\s]/gi, '') // Rimuove punteggiatura e caratteri speciali
-    .replace(/\s+/g, ' ')
-    .trim();
-};
+import { findMatchingProduct } from '../api/syncUtils';
 
 export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
   const diffItems = useMemo<DiffItem[]>(() => {
     return parsedData.products.map(p => {
-      let existing = products.find(sp => sp.identity.code === p.code && p.code !== "");
-      if (!existing && !p.code && p.name) {
-        const normPName = normalizeName(p.name);
-        existing = products.find(sp => normalizeName(sp.identity.name) === normPName);
-      }
+      const { existing, matchMethod } = findMatchingProduct(p, products);
       
+      // Inherit code and potentially other metadata from existing product if missing
+      const finalProduct = { ...p };
+      if (existing && !finalProduct.code) {
+        finalProduct.code = existing.identity.code;
+      }
+
       let type: ChangeType = 'unchanged';
       let diffData: any = {};
+      
+      // Inject debugging info to help developers trace how products were mapped
+      if (existing) {
+        diffData.debug = {
+          matchMethod,
+          dbProductCode: existing.identity.code,
+          dbProductName: existing.identity.name,
+          dbProductQuantity: existing.identity.package?.quantity
+        };
+      }
 
       if (!existing) {
         type = 'new';
@@ -49,6 +54,23 @@ export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
           type = 'price';
           diffData.oldPrice = existing.pricing.currentPrice;
           diffData.newPrice = p.price;
+          
+          if (p.oldPricePerKg !== undefined) {
+            diffData.oldPricePerKg = p.oldPricePerKg;
+          } else if (existing.pricing.pricePerKg !== undefined) {
+            diffData.oldPricePerKg = existing.pricing.pricePerKg;
+          }
+          
+          if (p.pricePerKg !== undefined) {
+            diffData.newPricePerKg = p.pricePerKg;
+          }
+          
+          const priceDiff = Math.abs(p.price! - existing.pricing.currentPrice);
+          const diffRatio = existing.pricing.currentPrice > 0 ? priceDiff / existing.pricing.currentPrice : 0;
+          const isSuspicious = diffRatio > 0.40; // Oltre 40% di variazione è sempre anomalo
+          if (isSuspicious) {
+             diffData.isSuspicious = true;
+          }
         } else if (emissionsChanged) {
           type = 'emissions';
           diffData.oldTar = existing.emissions?.tar || 0;
@@ -60,7 +82,7 @@ export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
         }
       }
 
-      return { product: p, type, diffData };
+      return { product: finalProduct, type, diffData };
     });
   }, [parsedData.products, products]);
 

@@ -16,6 +16,9 @@ export interface UpdateHistoryEntry {
   id?: string;
   title: string;
   date: string;
+  summary?: string;
+  type?: 'pre-announcement' | 'price' | 'system';
+  effectiveDate?: string;
   stats: {
     new: number;
     price: number;

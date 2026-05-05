@@ -48,20 +48,48 @@ export const ADMNewsScanner: React.FC = () => {
   })));
   const { setLastUpdateDate } = useCatalogActions();
 
-  const handleFinalSave = async () => {
-    await finalSaveToDatabase({
-      lastUpdateDate,
-      products,
-      categoryDates,
-      onSuccess: (finalDate: string) => setLastUpdateDate(finalDate)
-    });
-  };
-
   const isNovitaMode = availableUpdates.length > 0 && availableUpdates[0].type === 'Novità';
   const isMyProcessing = isProcessing && currentNews !== null;
   const isMyStaging = processedData && !isProcessing && currentNews !== null;
   const isMySuccess = success && !isProcessing && currentNews !== null;
   const isMyError = error && !isProcessing && currentNews !== null;
+
+  const [effectiveDate, setEffectiveDate] = React.useState<string>('');
+  const [sendNotification, setSendNotification] = React.useState<boolean>(true);
+
+  // Auto-calculate default effective date when staging opens
+  React.useEffect(() => {
+    if (isMyStaging && currentNews?.date && !effectiveDate) {
+      try {
+        // Assuming format DD/MM/YYYY
+        const parts = currentNews.date.split('/');
+        if (parts.length === 3) {
+          const d = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10) - 1;
+          const y = parseInt(parts[2], 10);
+          
+          if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+            const date = new Date(y, m, d);
+            date.setDate(date.getDate() + 1);
+            setEffectiveDate(date.toISOString().split('T')[0]);
+          }
+        }
+      } catch (err) {
+        console.error("Error calculating default effective date:", err);
+      }
+    }
+  }, [isMyStaging, currentNews, effectiveDate]);
+
+  const handleFinalSave = async () => {
+    await finalSaveToDatabase({
+      lastUpdateDate,
+      products,
+      categoryDates,
+      effectiveDate,
+      skipNotifications: !sendNotification,
+      onSuccess: (finalDate: string) => setLastUpdateDate(finalDate)
+    });
+  };
 
   return (
     <div className="bg-amber-50 dark:bg-amber-900/5 border border-amber-100 dark:border-amber-900/20 rounded-2xl p-4 lg:p-6 shadow-sm w-full mb-6 transition-all">
@@ -97,11 +125,62 @@ export const ADMNewsScanner: React.FC = () => {
 
       {/* Staging Control (Summary Table) */}
       {isMyStaging && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Effective Date Card */}
+            <div className="bg-white dark:bg-neutral-800 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-2">
+                Data di Decorrenza
+              </label>
+              <div className="flex flex-col gap-2">
+                <input 
+                  type="date" 
+                  value={effectiveDate}
+                  onChange={(e) => setEffectiveDate(e.target.value)}
+                  className="w-full px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm font-bold text-amber-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                />
+                <p className="text-[9px] text-amber-600/70 dark:text-amber-400/50 italic px-1">
+                  * Basata su data news ({currentNews?.date})
+                </p>
+              </div>
+            </div>
+
+            {/* Notification Toggle Card */}
+            <div 
+              onClick={() => setSendNotification(!sendNotification)}
+              className={`bg-white dark:bg-neutral-800 border rounded-2xl p-4 shadow-sm cursor-pointer transition-all flex items-center justify-between group ${
+                sendNotification 
+                  ? 'border-blue-200 dark:border-blue-900/40 bg-blue-50/10' 
+                  : 'border-neutral-200 dark:border-neutral-800'
+              }`}
+            >
+              <div>
+                <label className={`block text-[10px] font-black uppercase tracking-widest mb-1 transition-colors ${
+                  sendNotification ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-400'
+                }`}>
+                  Notifica Utenti
+                </label>
+                <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium leading-tight max-w-[150px]">
+                  {sendNotification 
+                    ? 'Gli utenti riceveranno una notifica dell\'aggiornamento.' 
+                    : 'Aggiornamento silenzioso (nessuna notifica o log).'}
+                </p>
+              </div>
+              <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${
+                sendNotification ? 'bg-blue-600' : 'bg-neutral-300 dark:bg-neutral-700'
+              }`}>
+                <div className={`w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                  sendNotification ? 'translate-x-6' : 'translate-x-0'
+                }`} />
+              </div>
+            </div>
+          </div>
           <PDFPreviewTable 
             parsedData={processedData} 
             onCancel={cancelStaging}
             onSave={handleFinalSave}
           />
+        </>
       )}
 
       {/* Success */}

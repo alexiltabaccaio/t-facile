@@ -7,6 +7,12 @@ export interface ParsedProduct {
   name?: string;
   category?: string;
   packageInfo?: string;
+  package?: {
+    type?: string;
+    quantity?: number;
+    unit?: string;
+  };
+  oldPricePerKg?: number;
   pricePerKg?: number;
   price?: number;
   status?: 'Attivo' | 'Radiato';
@@ -44,8 +50,8 @@ export const analyzePdfChunks = async (
     if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
 
     // PHASE 2: Split into text chunks
-    // Increasing the number of pages per block to 5 (instead of 1) drastically reduces the number of API requests (and avoids 429)
-    const textChunks = splitTextInChunks(fullText, 5);
+    // Decreasing the number of pages per block to 1 (instead of 5) to ensure Gemini doesn't truncate the output.
+    const textChunks = splitTextInChunks(fullText, 1);
     
     for (let chunkIdx = 0; chunkIdx < textChunks.length; chunkIdx++) {
       if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");

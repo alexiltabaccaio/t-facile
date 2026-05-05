@@ -1,6 +1,6 @@
 import { Product } from '../../index';
 import { ParsedPDFResult, ParsedProduct } from '../api/pdfAnalyzer';
-import { mapParsedProductToFirestore, detectProductVariations } from './syncUtils';
+import { mapParsedProductToFirestore, detectProductVariations, findMatchingProduct } from './syncUtils';
 import { isDateNewer } from '@/shared/lib';
 import { SyncStats } from './syncHistoryUtils';
 
@@ -59,7 +59,12 @@ export const mergeParsedCatalog = (
   
   // 2. Overwrite/Add updated products
   parsedData.products.forEach((product) => {
-    const existing = existingProducts.find(p => p.identity.code === product.code);
+    const { existing } = findMatchingProduct(product, existingProducts);
+    
+    if (existing && !product.code) {
+      product.code = existing.identity.code;
+    }
+
     const { type, variations } = detectProductVariations(product, existing);
     if (type === 'new') stats.new++;
     

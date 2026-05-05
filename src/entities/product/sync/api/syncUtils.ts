@@ -2,6 +2,74 @@ import { ParsedProduct } from '../api/pdfAnalyzer';
 import { Product } from '../../index';
 
 /**
+ * Normalizes a product name for fuzzy matching
+ */
+export const normalizeName = (name: string) => {
+  return name
+    .toLowerCase()
+    .replace(/[^\w\s]/gi, '') // Rimuove punteggiatura e caratteri speciali
+    .replace(/\s+/g, '') // Rimuove tutti gli spazi per un match più robusto
+    .trim();
+};
+
+/**
+ * Finds the best matching existing product for a parsed product
+ */
+export const findMatchingProduct = (
+  p: ParsedProduct, 
+  products: Product[]
+): { existing?: Product, matchMethod: string } => {
+  let existing = products.find(sp => sp.identity.code === p.code && p.code !== "");
+  let matchMethod = existing ? 'code' : 'none';
+
+  if (!existing && !p.code && p.name) {
+    const normPName = normalizeName(p.name);
+    const matchesByName = products.filter(sp => normalizeName(sp.identity.name) === normPName);
+    
+    if (matchesByName.length === 1) {
+      const singleDb = matchesByName[0];
+      const diffRatio = p.price !== undefined && singleDb.pricing.currentPrice > 0 
+           ? Math.abs(p.price - singleDb.pricing.currentPrice) / singleDb.pricing.currentPrice 
+           : 0;
+           
+      if (diffRatio < 0.3 || (p.package?.quantity && singleDb.identity.package?.quantity === p.package?.quantity)) {
+        existing = singleDb;
+        matchMethod = 'name_exact';
+      }
+    } else if (matchesByName.length > 1) {
+      if (p.package?.quantity) {
+         const exactMatch = matchesByName.find(sp => sp.identity.package?.quantity === p.package?.quantity);
+         if (exactMatch) {
+            existing = exactMatch;
+            matchMethod = 'name_and_quantity';
+         }
+      } 
+      
+      if (!existing && p.price !== undefined) {
+         let closest = matchesByName[0];
+         let minDiff = Math.abs(p.price - (closest.pricing.currentPrice || 0));
+         
+         for (let i = 1; i < matchesByName.length; i++) {
+            const dbPrice = matchesByName[i].pricing.currentPrice || 0;
+            const diff = Math.abs(p.price - dbPrice);
+            if (diff < minDiff) {
+               minDiff = diff;
+               closest = matchesByName[i];
+            }
+         }
+         
+         if (closest.pricing.currentPrice > 0 && (minDiff / closest.pricing.currentPrice) < 0.3) {
+            existing = closest;
+            matchMethod = 'name_closest_price';
+         }
+      }
+    }
+  }
+
+  return { existing, matchMethod };
+};
+
+/**
  * Normalizes the category name according to application standards.
  */
 export const normalizeCategory = (category: string | undefined): string => {

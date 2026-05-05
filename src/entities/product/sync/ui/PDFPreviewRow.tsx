@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { formatPackage } from '../../index';
 import { DiffItem } from '../model/types';
 import { DiffStatusBadge } from './DiffStatusBadge';
-import { DiffDetails } from './DiffDetails';
+import { ArrowRight } from 'lucide-react';
 
 interface PDFPreviewRowProps {
   item: DiffItem;
@@ -19,7 +19,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
     <tr className="bg-white dark:bg-neutral-900/40 hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group">
       <td className="px-4 py-3 lg:px-6 lg:py-4">
         <div className="flex flex-col">
-          <span className="font-black text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase truncate max-w-[180px] lg:max-w-xs">
+          <span className="font-black text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase leading-tight">
             {item.product.name}
           </span>
           <span className="text-[10px] font-mono text-neutral-500">{t('productDetail.code')}: {item.product.code}</span>
@@ -34,16 +34,37 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
       <td className="px-4 py-3 lg:px-6 lg:py-4">
         <DiffStatusBadge item={item} />
       </td>
-      <td className="px-4 py-3 lg:px-6 lg:py-4">
-        <DiffDetails item={item} />
+      <td className="px-4 py-3 text-right lg:px-6 lg:py-4">
+        <div className="flex items-center justify-end gap-2 text-xs lg:text-sm">
+          {item.type === 'price' ? (
+            <>
+              <span className="text-neutral-400 line-through text-[10px] lg:text-xs">€{item.diffData.oldPrice.toFixed(2)}</span>
+              <ArrowRight className="w-3 h-3 text-neutral-400" />
+              <span className="font-black text-neutral-900 dark:text-white">
+                €{item.diffData.newPrice.toFixed(2)}
+              </span>
+            </>
+          ) : (
+            <span className="font-black text-neutral-900 dark:text-white">€{item.product.price?.toFixed(2) || '---'}</span>
+          )}
+        </div>
       </td>
       <td className="px-4 py-3 text-right lg:px-6 lg:py-4">
-        <span className="text-neutral-600 dark:text-neutral-400">
-          {item.product.pricePerKg ? `€${item.product.pricePerKg.toFixed(2)}` : '---'}
-        </span>
-      </td>
-      <td className="px-4 py-3 text-right lg:px-6 lg:py-4">
-        <span className="font-black text-sm lg:text-base text-neutral-900 dark:text-white">€{item.product.price?.toFixed(2) || '---'}</span>
+        <div className="flex items-center justify-end gap-2 text-[10px] lg:text-xs">
+          {item.type === 'price' && item.diffData.oldPricePerKg !== undefined && item.diffData.newPricePerKg !== undefined ? (
+            <>
+              <span className="text-neutral-400 line-through">{item.diffData.oldPricePerKg.toFixed(2)}</span>
+              <ArrowRight className="w-2.5 h-2.5 text-neutral-400" />
+              <span className="font-bold text-neutral-600 dark:text-neutral-300">
+                {item.diffData.newPricePerKg.toFixed(2)}
+              </span>
+            </>
+          ) : (
+            <span className="text-neutral-600 dark:text-neutral-400">
+              {item.product.pricePerKg ? item.product.pricePerKg.toFixed(2) : '---'}
+            </span>
+          )}
+        </div>
       </td>
     </tr>
   );

@@ -102,15 +102,14 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
               <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.product')}</th>
               <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.package')}</th>
               <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.modType')}</th>
-              <th className="px-4 py-3 lg:px-6 lg:py-4">{t('admin.preview.details')}</th>
+              <th className="px-4 py-3 text-right lg:px-6 lg:py-4">Prezzo</th>
               <th className="px-4 py-3 text-right lg:px-6 lg:py-4">{t('admin.preview.priceKg')}</th>
-              <th className="px-4 py-3 text-right font-black text-blue-600 dark:text-blue-400 lg:px-6 lg:py-4">{t('admin.preview.finalPrice')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
             {filteredItems.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-neutral-400 italic">{t('admin.preview.noProducts')}</td>
+                <td colSpan={5} className="px-4 py-8 text-center text-neutral-400 italic">{t('admin.preview.noProducts')}</td>
               </tr>
             ) : filteredItems.map((item: any, i: number) => (
               <PDFPreviewRow key={i} item={item} />

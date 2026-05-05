@@ -73,11 +73,13 @@ async function createBackendPrompts(fileName: string, textData: string) {
 
   finalUserPrompt += `
   
-ATTENZIONE (REGOLE CRITICHE AGGIUNTIVE SUI CODICI):
+ATTENZIONE (REGOLE CRITICHE AGGIUNTIVE SUI CODICI E NOMI):
 1. In alcuni documenti (come per i "Sigari" o le variazioni di prezzo), la colonna "Codice" potrebbe NON ESSERE PRESENTE nella tabella.
 2. SE IL CODICE NON E' PRESENTE, DEVI COMUNQUE ESTRARRE IL PRODOTTO! Non ignorare nessun prodotto solo perché manca il codice.
 3. In questi casi, imposta il campo "code" a una stringa vuota ("").
 4. Estrai sempre tutti i prodotti presenti nel testo fornito.
+5. NOME DEL PRODOTTO: Il campo "name" deve essere ESATTAMENTE IDENTICO a come è scritto nel documento. NON rimuovere MAI numeri, quantità o parole finali dal nome per "pulirlo". Se il documento riporta "WINSTON CHURCHILL CHURCHILL 4", il campo "name" DEVE essere "WINSTON CHURCHILL CHURCHILL 4", anche se inserisci "4" come quantità. Non troncare mai i nomi.
+6. PREZZO AL CHILO PRECEDENTE: Se il documento riporta un prezzo al chilo precedente (spesso indicato con "Da €/Kg conv.le"), estrailo nel campo "oldPricePerKg" (numero).
   `;
 
   return {
@@ -119,19 +121,10 @@ export async function analyzeTextWithAI(
     const modelId = aiModel;
     
     let response: any;
-    try {
-      response = await ai.models.generateContent({
-        model: modelId,
-        contents: userPrompt,
-        config: {
-          systemInstruction: systemPrompt,
-          responseMimeType: "application/json"
-        }
-      });
-    } catch(err: any) {
-      if (err?.message?.includes("429") || err?.status === 429 || err?.message?.includes("RESOURCE_EXHAUSTED")) {
-        console.warn("Quota ecceduta, retry in 10s...");
-        await new Promise(r => setTimeout(r, 10000));
+    const maxRetries = 3;
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
         response = await ai.models.generateContent({
           model: modelId,
           contents: userPrompt,
@@ -140,8 +133,24 @@ export async function analyzeTextWithAI(
             responseMimeType: "application/json"
           }
         });
-      } else {
-        throw err;
+        break; // Success, exit loop
+      } catch(err: any) {
+        const isRetryableError = 
+          err?.status === 429 || 
+          err?.status === 503 ||
+          err?.message?.includes("429") || 
+          err?.message?.includes("503") ||
+          err?.message?.includes("RESOURCE_EXHAUSTED") ||
+          err?.message?.includes("UNAVAILABLE") ||
+          err?.message?.includes("high demand");
+
+        if (isRetryableError && attempt < maxRetries - 1) {
+          const delayMs = Math.pow(2, attempt) * 5000; // 5s, 10s
+          console.warn(`Errore AI (Sovraccarico/503/429). Riprovo tra ${delayMs/1000}s... (Tentativo ${attempt + 1} di ${maxRetries - 1})`);
+          await new Promise(r => setTimeout(r, delayMs));
+        } else {
+          throw err;
+        }
       }
     }
 

@@ -1,10 +1,15 @@
 import { 
   doc, 
   getDoc, 
+  getDocs,
   onSnapshot, 
   writeBatch, 
   serverTimestamp,
   collection,
+  query,
+  where,
+  deleteDoc,
+  addDoc,
   FirestoreError
 } from 'firebase/firestore';
 import { db } from './firebase';
@@ -80,6 +85,13 @@ export const productRepository = {
     config: CatalogConfig;
     historyEntry?: UpdateHistoryEntry;
   }) => {
+    // Automatically create a backup of current state before overwriting
+    try {
+      await productRepository.createCatalogBackup();
+    } catch (err) {
+      console.warn("Failed to create backup before sync, proceeding anyway:", err);
+    }
+
     const batch = writeBatch(db);
     
     // 1. Save chunks
@@ -148,5 +160,121 @@ export const productRepository = {
     } catch (err) {
       console.error("Failed to log bot activity:", err);
     }
+  },
+
+  /**
+   * Saves a scheduled catalog update
+   */
+  saveScheduledSync: async (params: {
+    parsedData: any;
+    effectiveDate: string;
+    historyEntry?: UpdateHistoryEntry;
+  }) => {
+    const scheduledRef = collection(db, 'scheduled_updates');
+    await addDoc(scheduledRef, {
+      ...params,
+      createdAt: serverTimestamp()
+    });
+  },
+
+  /**
+   * Fetches all pending scheduled syncs that should be applied
+   */
+  fetchPendingScheduledSyncs: async (todayStr: string): Promise<any[]> => {
+    const q = query(
+      collection(db, 'scheduled_updates'),
+      where('effectiveDate', '<=', todayStr)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id
+    }));
+  },
+
+  /**
+   * Deletes a scheduled sync after application
+   */
+  deleteScheduledSync: async (id: string) => {
+    await deleteDoc(doc(db, 'scheduled_updates', id));
+  },
+
+  /**
+   * Adds a generic history entry (notification)
+   */
+  addHistoryEntry: async (entry: UpdateHistoryEntry) => {
+    const historyRef = collection(db, 'update_history');
+    const docRef = doc(historyRef);
+    await writeBatch(db).set(docRef, {
+      ...entry,
+      id: docRef.id,
+      timestamp: serverTimestamp()
+    }).commit();
+  },
+
+  /**
+   * Creates a backup of the current catalog
+   */
+  createCatalogBackup: async () => {
+    const batch = writeBatch(db);
+    
+    // 1. Get current config
+    const configDoc = await getDoc(doc(db, 'system', 'config'));
+    if (!configDoc.exists()) return;
+    const config = configDoc.data();
+
+    // 2. Save config backup
+    const backupConfigRef = doc(db, 'system', 'backup_config');
+    batch.set(backupConfigRef, {
+      ...config,
+      backupCreatedAt: serverTimestamp()
+    });
+
+    // 3. Save chunks backup
+    const totalChunks = config.totalChunks || 0;
+    for (let i = 0; i < totalChunks; i++) {
+      const chunkDoc = await getDoc(doc(db, 'system', `catalog_chunk_${i}`));
+      if (chunkDoc.exists()) {
+        const backupChunkRef = doc(db, 'system', `backup_catalog_chunk_${i}`);
+        batch.set(backupChunkRef, {
+          ...chunkDoc.data(),
+          backupCreatedAt: serverTimestamp()
+        });
+      }
+    }
+
+    await batch.commit();
+  },
+
+  /**
+   * Restores the catalog from the last backup
+   */
+  restoreCatalogBackup: async () => {
+    const batch = writeBatch(db);
+
+    // 1. Get backup config
+    const backupConfigDoc = await getDoc(doc(db, 'system', 'backup_config'));
+    if (!backupConfigDoc.exists()) throw new Error("Nessun backup trovato.");
+    const config = backupConfigDoc.data();
+    delete (config as any).backupCreatedAt;
+
+    // 2. Restore main config
+    const configRef = doc(db, 'system', 'config');
+    batch.set(configRef, config, { merge: true });
+
+    // 3. Restore chunks
+    const totalChunks = config.totalChunks || 0;
+    for (let i = 0; i < totalChunks; i++) {
+      const backupChunkDoc = await getDoc(doc(db, 'system', `backup_catalog_chunk_${i}`));
+      if (backupChunkDoc.exists()) {
+        const chunkData = backupChunkDoc.data();
+        delete (chunkData as any).backupCreatedAt;
+        
+        const chunkRef = doc(db, 'system', `catalog_chunk_${i}`);
+        batch.set(chunkRef, chunkData);
+      }
+    }
+
+    await batch.commit();
   }
 };

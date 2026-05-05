@@ -68,11 +68,7 @@ const ReportProblemPage: React.FC = () => {
     <div className="flex-grow overflow-y-auto min-h-full">
       <div className="p-6 max-w-lg mx-auto space-y-8 flex flex-col items-center">
         
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <AlertCircle className="w-16 h-16 mx-auto mb-4 text-neutral-900 dark:text-white" strokeWidth={1.5} />
-          <h2 className="text-2xl font-black tracking-tight">{t('settings.info.report')}</h2>
-        </div>
+
 
         <div className="w-full space-y-6 text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
           <p>

@@ -40,6 +40,8 @@ interface ADMSyncState {
       products: Product[];
       categoryDates: Record<string, string>;
       onSuccess: (finalDate: string) => void;
+      effectiveDate?: string;
+      skipNotifications?: boolean;
     }) => Promise<void>;
     cancelStaging: () => void;
   };
@@ -161,7 +163,7 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
       }
     },
 
-    finalSaveToDatabase: async ({ lastUpdateDate, products, categoryDates, onSuccess }) => {
+    finalSaveToDatabase: async ({ lastUpdateDate, products, categoryDates, onSuccess, effectiveDate, skipNotifications }) => {
       const { processedData, currentNews } = get();
       if (!processedData) return;
       set({ isProcessing: true, statusMsg: "Salvataggio definitivo nel Database cloud..." });
@@ -170,7 +172,9 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
           processedData, 
           lastUpdateDate, 
           products, 
-          categoryDates
+          categoryDates,
+          effectiveDate,
+          skipNotifications
         );
         
         // If it was a news item, mark it as analyzed in the backend

@@ -1,6 +1,9 @@
 import { productRepository, CatalogConfig, DbError } from '@/shared/api';
 import { Product } from '../model/types';
 import { parseLegacyPackageInfo } from '../lib/productParser';
+import { mergeParsedCatalog, calculateNextCategoryDates } from '../sync/api/catalogMergeUtils';
+import { chunkArray } from '@/shared/lib';
+import { formatHistoryEntry } from '../sync/api/syncHistoryUtils';
 
 
 export const catalogService = {
@@ -72,6 +75,63 @@ export const catalogService = {
    */
   logBotActivity: async (userAgent: string) => {
     return productRepository.logBotActivity(userAgent);
+  },
+
+  /**
+   * Fetches pending scheduled updates
+   */
+  fetchPendingScheduledSyncs: async (todayStr: string) => {
+    return productRepository.fetchPendingScheduledSyncs(todayStr);
+  },
+
+  /**
+   * Applies a scheduled update to the active catalog
+   */
+  applyScheduledUpdate: async (scheduledUpdate: any, existingProducts: Product[], config: CatalogConfig) => {
+    const { parsedData, id } = scheduledUpdate;
+    
+    // 1. Merge
+    const { mergedProducts, stats, allVariations, updatedCategories } = mergeParsedCatalog(parsedData, existingProducts);
+    
+    // 2. Chunks
+    const CHUNK_SIZE = 1500;
+    const chunkedData = chunkArray(mergedProducts, CHUNK_SIZE);
+    const chunks = chunkedData.map(chunk => JSON.stringify(chunk));
+
+    // 3. Category Dates
+    const nextCategoryDates = calculateNextCategoryDates(
+      updatedCategories,
+      parsedData.products,
+      parsedData.updateDate,
+      config.categoryDates || {}
+    );
+
+    // 4. Config
+    const syncConfig = {
+      ...config,
+      syncId: Date.now(),
+      lastUpdateDate: parsedData.updateDate, // We assume the news date is the new catalog date
+      categoryDates: nextCategoryDates,
+      totalChunks: chunks.length
+    };
+
+    // 5. History / Notification
+    const historyEntry = formatHistoryEntry(parsedData.updateDate, stats, allVariations);
+    if (historyEntry) {
+      historyEntry.title = `Effettivo: ${historyEntry.title}`;
+      historyEntry.summary = "L'aggiornamento programmato è ora attivo nel catalogo.";
+      historyEntry.type = 'price' as any;
+    }
+
+    // 6. Save and Delete
+    await productRepository.saveCatalogSync({
+      chunks,
+      config: syncConfig,
+      historyEntry
+    });
+
+    await productRepository.deleteScheduledSync(id);
+    console.log(`[catalogService] Scheduled update ${id} applied and deleted.`);
   }
 };
 
