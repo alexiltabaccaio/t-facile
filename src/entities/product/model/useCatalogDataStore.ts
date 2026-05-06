@@ -23,7 +23,7 @@ export const useCatalogDataStore = create<CatalogDataState>()(
       },
     }),
     {
-      name: 'catalog-data-storage',
+      name: 'catalog-store',
       storage: createJSONStorage(() => idbStorage),
       partialize: (state) => ({ products: state.products }),
     }
