@@ -88,6 +88,21 @@ export const mergeParsedCatalog = (
       } else {
         mergedCatalogMap.set(product.code, {
           ...mapped,
+          identity: {
+            ...existing.identity,
+            ...mapped.identity,
+            name: mapped.identity.name !== 'Senza Nome' ? mapped.identity.name : existing.identity.name,
+            packageInfo: mapped.identity.packageInfo || existing.identity.packageInfo,
+            package: existing.identity.package,
+            brand: existing.identity.brand,
+            manufacturer: existing.identity.manufacturer,
+            category: product.category ? mapped.identity.category : existing.identity.category,
+          },
+          pricing: {
+            ...existing.pricing,
+            currentPrice: product.price !== undefined ? mapped.pricing.currentPrice : existing.pricing.currentPrice,
+            pricePerKg: product.pricePerKg !== undefined ? mapped.pricing.pricePerKg : existing.pricing.pricePerKg,
+          },
           emissions: mapped.emissions || existing.emissions
         });
       }
