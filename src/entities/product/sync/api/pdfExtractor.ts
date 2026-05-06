@@ -16,13 +16,30 @@ export const extractTextFromPDF = async (file: File, onProgress?: (page: number,
 
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const strings = content.items
-      .filter((item: any) => 'str' in item)
-      .map((item: any) => item.str);
+    let pageText = '';
+    let lastY = -1;
+
+    content.items.forEach((item: any) => {
+      if (!('str' in item)) return;
+      
+      const str = item.str.trim();
+      if (!str) return; // Skip empty elements to avoid double separators
+      
+      const y = item.transform[5];
+      // If the Y coordinate changes by more than 4 points, we assume it's a new line.
+      if (lastY !== -1 && Math.abs(y - lastY) > 4) {
+        pageText += '\\n';
+      } else if (lastY !== -1) {
+        // Add a pipe separator between items on the same line to create a clear table structure
+        pageText += ' | ';
+      }
+      
+      pageText += str;
+      lastY = y;
+    });
     
-    // Join the page strings with spaces
-    fullText += `\n--- PAGE ${i} ---\n`;
-    fullText += strings.join(' ').replace(/∞/g, '°');
+    fullText += `\\n--- PAGE ${i} ---\\n`;
+    fullText += pageText.replace(/∞/g, '°');
     
     if (onProgress) {
       onProgress(i, numPages);

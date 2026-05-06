@@ -166,6 +166,9 @@ export async function analyzeTextWithAI(
     }
     
     const result = JSON.parse(text);
+    console.log("=== AI ANALYZER DEBUG ===");
+    console.log("TEXT DATA RECEIVED (first 500 chars):\\n", textData.substring(0, 500));
+    console.log("==========================");
 
     // Update date validation
     if (result.updateDate && !/^\d{4}-\d{2}-\d{2}$/.test(result.updateDate)) {
