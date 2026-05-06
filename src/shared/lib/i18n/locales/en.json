@@ -46,7 +46,7 @@
       "admin": "Admin",
       "subtitle": "Price Management",
       "info": "Info",
-      "legal": "Legal",
+      "legal": "Data Source & Legal Notes",
       "report": "Report"
     },
     "header": {
@@ -259,13 +259,21 @@
     "description": "T-Facile is an independent sales support tool. The data reported (names, prices, weights) are in the public domain, extracted from the official price lists published by the Agency of Customs and Monopolies (ADM).",
     "lastCheck": "Last data verification: {{date}}",
     "gdprTitle": "Data Processing (GDPR)",
-    "gdprDesc1": "By using Google login, we process your email address and profile picture exclusively to identify you and guarantee protected access to the app's admin functions.",
+    "gdprDesc1": "By using Google login, we process your email address and profile picture exclusively to identify you and guarantee protected access to the app's management functions.",
     "gdprDesc2": "This data is not sold, transferred, or used for marketing or commercial profiling purposes.",
     "cacheTitle": "Web Cache & Offline",
     "cacheDesc1": "The app uses the browser's Local Storage to save a copy of the price catalog on your device.",
     "cacheDesc2": "This technical mechanism is essential to guarantee instant search speed and the app's functionality even without an internet connection.",
     "cacheDesc3": "No \"profiling cookies\" are used by this application.",
-    "effectiveDate": "In force since: {{date}}"
+    "effectiveDate": "In force since: {{date}}",
+    "disclaimerTitle": "Disclaimer of Liability",
+    "disclaimerDesc": "T-Facile does not guarantee the absolute accuracy or timeliness of the reported data. The application is provided \"as is\" without warranties of any kind. The retailer is solely responsible for verifying prices and sales conditions through official channels.",
+    "affiliationTitle": "No Affiliation",
+    "affiliationDesc": "T-Facile is an independent initiative and is in no way affiliated with, authorized by, or associated with the Agency of Customs and Monopolies (ADM) or any other government agency.",
+    "analyticsTitle": "Analytics and Statistics",
+    "analyticsDesc": "We collect anonymous usage data (visited pages, response times) to monitor the app's status and improve the user experience. This data does not allow us to trace your identity in any way.",
+    "trademarksTitle": "Intellectual Property",
+    "trademarksDesc": "Product names, trademarks, and logos mentioned are the property of their respective rights holders and are used exclusively for informational and identification purposes."
   },
   "reportPage": {
     "title": "Report an issue",

@@ -17,6 +17,9 @@ describe('useNotificationStore', () => {
       selectedUpdate: null,
       hasUnread: false,
       isInitialized: false,
+      deletedIds: [],
+      lastReadId: null,
+      installDate: null,
     });
     localStorage.clear();
     vi.clearAllMocks();
@@ -45,7 +48,7 @@ describe('useNotificationStore', () => {
 
   it('should filter notifications by install date', () => {
     const installDate = Date.now();
-    localStorage.setItem('appInstallDate', installDate.toString());
+    useNotificationStore.setState({ installDate });
 
     const mockUpdates = [
       { id: 'new', title: 'After Install', timestamp: { toMillis: () => installDate + 1000 } },
@@ -68,7 +71,7 @@ describe('useNotificationStore', () => {
 
   it('should filter deleted notifications locally', () => {
     const now = Date.now();
-    localStorage.setItem('deletedNotificationIds', JSON.stringify(['deleted-id']));
+    useNotificationStore.setState({ deletedIds: ['deleted-id'] });
 
     const mockUpdates = [
       { id: 'visible', title: 'Visible', timestamp: { toMillis: () => now + 1000 } },
@@ -105,7 +108,7 @@ describe('useNotificationStore', () => {
     const state = useNotificationStore.getState();
     expect(state.hasUnread).toBe(false);
     expect(state.updates[0].read).toBe(true);
-    expect(localStorage.getItem('lastReadUpdateId')).toBe('latest');
+    expect(state.lastReadId).toBe('latest');
   });
 
   it('should delete a notification locally', async () => {
@@ -121,9 +124,7 @@ describe('useNotificationStore', () => {
     const state = useNotificationStore.getState();
     expect(state.updates).toHaveLength(1);
     expect(state.updates[0].id).toBe('1');
-    
-    const deletedIds = JSON.parse(localStorage.getItem('deletedNotificationIds') || '[]');
-    expect(deletedIds).toContain('2');
+    expect(state.deletedIds).toContain('2');
   });
 
   it('should delete all notifications locally', async () => {
@@ -139,10 +140,8 @@ describe('useNotificationStore', () => {
     const state = useNotificationStore.getState();
     expect(state.updates).toHaveLength(0);
     expect(state.hasUnread).toBe(false);
-    
-    const deletedIds = JSON.parse(localStorage.getItem('deletedNotificationIds') || '[]');
-    expect(deletedIds).toContain('1');
-    expect(deletedIds).toContain('2');
+    expect(state.deletedIds).toContain('1');
+    expect(state.deletedIds).toContain('2');
   });
 
   it('should handle clicking a notification', () => {
@@ -162,7 +161,7 @@ describe('useNotificationStore', () => {
     
     const state = useNotificationStore.getState();
     expect(state.selectedUpdate?.id).toBe('middle');
-    expect(localStorage.getItem('lastReadUpdateId')).toBe('middle');
+    expect(state.lastReadId).toBe('middle');
     
     // middle and oldest should be marked read, newest should be unread
     expect(state.updates[0].read).toBe(false);

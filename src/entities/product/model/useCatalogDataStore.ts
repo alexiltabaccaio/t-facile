@@ -33,8 +33,8 @@ export const useCatalogDataStore = create<CatalogDataState>()(
       name: 'catalog-data-storage',
       version: 1, // Incremented version to force cache invalidation
       migrate: (persistedState: any, version: number) => {
-        // Se la versione in memoria è la 0 (quella di default prima che aggiungessimo 'version')
-        // ignoriamo i vecchi dati corrotti e restituiamo lo stato iniziale vuoto
+        // If the stored version is 0 (the default before adding the 'version' field)
+        // we ignore the old corrupted data and return an empty initial state
         if (version === 0) {
           return { products: [] };
         }

@@ -1,5 +1,5 @@
-
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { UpdateRecord } from './types';
 import { notificationService } from '../api/notificationService';
 
@@ -8,6 +8,11 @@ interface NotificationState {
   selectedUpdate: UpdateRecord | null;
   hasUnread: boolean;
   isInitialized: boolean;
+  
+  // Persisted state
+  deletedIds: string[];
+  lastReadId: string | null;
+  installDate: number | null;
 
   actions: {
     init: () => () => void;
@@ -19,133 +24,142 @@ interface NotificationState {
   };
 }
 
-export const useNotificationStore = create<NotificationState>((set, get) => ({
-  updates: [],
-  selectedUpdate: null,
-  hasUnread: false,
-  isInitialized: false,
+export const useNotificationStore = create<NotificationState>()(
+  persist(
+    (set, get) => ({
+      updates: [],
+      selectedUpdate: null,
+      hasUnread: false,
+      isInitialized: false,
+      
+      deletedIds: [],
+      lastReadId: null,
+      installDate: null,
 
-  actions: {
-    init: () => {
-      if (get().isInitialized) return () => {};
+      actions: {
+        init: () => {
+          if (get().isInitialized) return () => {};
 
-      set({ isInitialized: true });
+          set({ isInitialized: true });
 
-      // Initialize install date if not present
-      let installDateStr = localStorage.getItem('appInstallDate');
-      if (!installDateStr) {
-        installDateStr = Date.now().toString();
-        localStorage.setItem('appInstallDate', installDateStr);
-      }
-      const installDate = parseInt(installDateStr);
-
-      const unsubscribe = notificationService.subscribeToNotifications(
-        (allUpdates) => {
-          // Get deleted notification IDs
-          const deletedIdsJson = localStorage.getItem('deletedNotificationIds');
-          const deletedIds: string[] = deletedIdsJson ? JSON.parse(deletedIdsJson) : [];
-
-          // Filter by install date and deleted IDs
-          const updates = (allUpdates as any[]).filter(u => {
-            const isDeleted = deletedIds.includes(u.id);
-            // Handle Firestore Timestamp or numeric timestamp
-            const timestamp = u.timestamp?.toMillis ? u.timestamp.toMillis() : 
-                            (u.timestamp?.seconds ? u.timestamp.seconds * 1000 : 0);
-            
-            // If timestamp is missing, we might want to show it or filter it. 
-            // Given the requirement, we filter out if it's before install.
-            const isAfterInstall = timestamp >= installDate;
-            return !isDeleted && isAfterInstall;
-          });
-
-          if (updates.length === 0) {
-            set({ updates: [], hasUnread: false, isInitialized: true });
-            return;
+          // Migration and initialization of installDate
+          let currentInstallDate = get().installDate;
+          if (!currentInstallDate) {
+             // Try to migrate from old localStorage key
+             const legacyInstallDate = localStorage.getItem('appInstallDate');
+             currentInstallDate = legacyInstallDate ? parseInt(legacyInstallDate) : Date.now();
+             set({ installDate: currentInstallDate });
+             if (!legacyInstallDate) localStorage.setItem('appInstallDate', currentInstallDate.toString());
           }
 
-          // Calculate hasUnread based on localStorage (linear tracking)
-          const lastReadId = localStorage.getItem('lastReadUpdateId');
-          const lastReadIndex = updates.findIndex(u => u.id === lastReadId);
+          // Legacy migration for deletedIds and lastReadId if store is empty but localStorage has data
+          if (get().deletedIds.length === 0) {
+            const legacyDeleted = localStorage.getItem('deletedNotificationIds');
+            if (legacyDeleted) set({ deletedIds: JSON.parse(legacyDeleted) });
+          }
+          if (!get().lastReadId) {
+            const legacyLastRead = localStorage.getItem('lastReadUpdateId');
+            if (legacyLastRead) set({ lastReadId: legacyLastRead });
+          }
+
+          const unsubscribe = notificationService.subscribeToNotifications(
+            (allUpdates) => {
+              const { deletedIds, lastReadId, installDate } = get();
+
+              // Filter by install date and deleted IDs
+              const updates = (allUpdates as any[]).filter(u => {
+                const isDeleted = deletedIds.includes(u.id);
+                const timestamp = u.timestamp?.toMillis ? u.timestamp.toMillis() : 
+                                (u.timestamp?.seconds ? u.timestamp.seconds * 1000 : 0);
+                
+                const isAfterInstall = installDate ? timestamp >= installDate : true;
+                return !isDeleted && isAfterInstall;
+              });
+
+              if (updates.length === 0) {
+                set({ updates: [], hasUnread: false, isInitialized: true });
+                return;
+              }
+
+              const lastReadIndex = updates.findIndex(u => u.id === lastReadId);
+              
+              const processedUpdates = updates.map((u, index) => ({
+                ...u,
+                read: lastReadIndex !== -1 ? index >= lastReadIndex : false
+              }));
+
+              const latestId = updates[0]?.id;
+              const hasUnread = latestId ? latestId !== lastReadId : false;
+
+              set({ updates: processedUpdates, hasUnread, isInitialized: true });
+            },
+            (err) => {
+              console.error("[useNotificationStore] Error during subscription:", err);
+            }
+          );
+
+          return unsubscribe;
+        },
+
+        setSelectedUpdate: (update) => set({ selectedUpdate: update }),
+
+        handleUpdateClick: (update: UpdateRecord) => {
+          const { updates } = get();
+          const updateIndex = updates.findIndex(u => u.id === update.id);
           
-          const processedUpdates = updates.map((u, index) => ({
+          const updatedUpdates = updates.map((u, index) => ({
             ...u,
-            read: lastReadIndex !== -1 ? index >= lastReadIndex : false
+            read: updateIndex !== -1 ? index >= updateIndex : u.read
           }));
 
-          const latestId = updates[0]?.id;
-          const hasUnread = latestId ? latestId !== lastReadId : false;
+          const hasUnread = updatedUpdates[0]?.id !== update.id && !updatedUpdates[0]?.read;
 
-          set({ updates: processedUpdates, hasUnread, isInitialized: true });
+          set({ 
+            lastReadId: update.id,
+            selectedUpdate: update,
+            updates: updatedUpdates,
+            hasUnread
+          });
         },
-        (err) => {
-          console.error("[useNotificationStore] Error during subscription:", err);
-        }
-      );
 
-      return unsubscribe;
-    },
+        handleMarkAllAsRead: () => {
+          const { updates } = get();
+          const latestId = updates[0]?.id;
+          if (latestId) {
+            const updatedUpdates = updates.map(u => ({ ...u, read: true }));
+            set({ lastReadId: latestId, hasUnread: false, updates: updatedUpdates });
+          }
+        },
 
-    setSelectedUpdate: (update) => set({ selectedUpdate: update }),
+        handleDeleteNotification: async (id: string) => {
+          const { deletedIds, updates } = get();
+          
+          if (!deletedIds.includes(id)) {
+            const newDeletedIds = [...deletedIds, id];
+            const filteredUpdates = updates.filter(u => u.id !== id);
+            set({ deletedIds: newDeletedIds, updates: filteredUpdates });
+          }
+        },
 
-    handleUpdateClick: (update: UpdateRecord) => {
-      localStorage.setItem('lastReadUpdateId', update.id);
-      
-      const { updates } = get();
-      const updateIndex = updates.findIndex(u => u.id === update.id);
-      
-      const updatedUpdates = updates.map((u, index) => ({
-        ...u,
-        read: updateIndex !== -1 ? index >= updateIndex : u.read
-      }));
-
-      const hasUnread = updatedUpdates[0]?.id !== update.id && !updatedUpdates[0]?.read;
-
-      set({ 
-        selectedUpdate: update,
-        updates: updatedUpdates,
-        hasUnread
-      });
-    },
-
-    handleMarkAllAsRead: () => {
-      const { updates } = get();
-      const latestId = updates[0]?.id;
-      if (latestId) {
-        localStorage.setItem('lastReadUpdateId', latestId);
-        const updatedUpdates = updates.map(u => ({ ...u, read: true }));
-        set({ hasUnread: false, updates: updatedUpdates });
+        handleDeleteAllNotifications: async () => {
+          const { updates, deletedIds } = get();
+          const idsToDelete = updates.map(u => u.id);
+          const newDeletedIds = Array.from(new Set([...deletedIds, ...idsToDelete]));
+          
+          set({ deletedIds: newDeletedIds, updates: [], hasUnread: false, selectedUpdate: null });
+        },
       }
-    },
-
-    handleDeleteNotification: async (id: string) => {
-      const deletedIdsJson = localStorage.getItem('deletedNotificationIds');
-      const deletedIds: string[] = deletedIdsJson ? JSON.parse(deletedIdsJson) : [];
-      
-      if (!deletedIds.includes(id)) {
-        deletedIds.push(id);
-        localStorage.setItem('deletedNotificationIds', JSON.stringify(deletedIds));
-        
-        // Update local state immediately
-        const { updates } = get();
-        const filteredUpdates = updates.filter(u => u.id !== id);
-        set({ updates: filteredUpdates });
-      }
-    },
-
-    handleDeleteAllNotifications: async () => {
-      const { updates } = get();
-      const idsToDelete = updates.map(u => u.id);
-      
-      const deletedIdsJson = localStorage.getItem('deletedNotificationIds');
-      const deletedIds: string[] = deletedIdsJson ? JSON.parse(deletedIdsJson) : [];
-      
-      const newDeletedIds = Array.from(new Set([...deletedIds, ...idsToDelete]));
-      localStorage.setItem('deletedNotificationIds', JSON.stringify(newDeletedIds));
-      
-      set({ updates: [], hasUnread: false, selectedUpdate: null });
-    },
-  }
-}));
+    }),
+    {
+      name: 'notification-storage',
+      partialize: (state) => ({
+        deletedIds: state.deletedIds,
+        lastReadId: state.lastReadId,
+        installDate: state.installDate
+      }),
+    }
+  )
+);
 
 export const useNotificationActions = () => useNotificationStore(state => state.actions);
 

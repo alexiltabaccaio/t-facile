@@ -16,13 +16,27 @@ vi.mock('@/entities/product', async (importOriginal) => {
   return {
     ...actual,
     useCatalogSyncStore: vi.fn(),
-    useCatalogSyncActions: vi.fn(() => ({})),
+    useCatalogSyncActions: vi.fn(() => ({ 
+      setLastSyncId: vi.fn(), 
+      setLastUpdateDate: vi.fn(), 
+      setCategoryDates: vi.fn(), 
+      setSyncError: vi.fn() 
+    })),
     useCatalogDataStore: vi.fn(),
-    useCatalogDataActions: vi.fn(() => ({})),
+    useCatalogDataActions: vi.fn(() => ({ setProducts: vi.fn() })),
     useADMSyncStore: vi.fn(),
     useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
+    catalogService: {
+      fetchCatalogInChunks: vi.fn(),
+    },
   };
 });
+
+vi.mock('@/shared/api', () => ({
+  productRepository: {
+    getGlobalConfig: vi.fn(),
+  },
+}));
 
 // Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
@@ -42,7 +56,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
 describe('Header Component', () => {
   const mockNavigate = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     (useNavigate as any).mockReturnValue(mockNavigate);
     
@@ -52,6 +66,17 @@ describe('Header Component', () => {
     (useCatalogDataStore as any).mockImplementation((selector: any) => selector ? selector({ products: [] }) : { products: [] });
     (useADMSyncStore as any).mockImplementation((selector: any) => selector ? selector({ aiModel: 'gemini-3-flash-preview' }) : { aiModel: 'gemini-3-flash-preview' });
     (useADMSyncActions as any).mockReturnValue({ setAiModel: vi.fn() });
+    
+    // Default API mocks
+    const { productRepository } = await import('@/shared/api');
+    (productRepository.getGlobalConfig as any).mockResolvedValue({
+      syncId: 'test-sync',
+      lastUpdateDate: '01/01/2026',
+      totalChunks: 1,
+      categoryDates: {}
+    });
+    const { catalogService } = await import('@/entities/product');
+    (catalogService.fetchCatalogInChunks as any).mockResolvedValue([{ id: '1' }]);
   });
 
   it('renders correctly with title T-Facile on catalog view', () => {

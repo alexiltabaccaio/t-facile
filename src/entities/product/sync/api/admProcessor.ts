@@ -1,5 +1,6 @@
 import { Listino, downloadListinoAsFile } from './admApiService';
 import { ParsedPDFResult, analyzePdfChunks } from './pdfAnalyzer';
+import { isDateNewer } from '@/shared/lib';
 
 export interface ProcessingProgress {
   setStatus: (status: string) => void;
@@ -21,7 +22,7 @@ export async function processListiniBatch(
     try {
       const file = await downloadListinoAsFile(listino, progress.signal);
       allFiles.push(file);
-      if (!latestDate || listino.date > latestDate) latestDate = listino.date;
+      if (!latestDate || isDateNewer(listino.date, latestDate)) latestDate = listino.date;
     } catch (err: any) {
       console.warn(`Salto listino ${listino.title} per errore:`, err.message);
       // Do not block the entire batch if a single download fails, unless it's an abort
@@ -48,8 +49,12 @@ export async function processListiniBatch(
     }
   });
   
-  if (latestDate && (!combinedParsedData.updateDate || latestDate > combinedParsedData.updateDate)) {
+  if (latestDate && (!combinedParsedData.updateDate || isDateNewer(latestDate, combinedParsedData.updateDate))) {
       combinedParsedData.updateDate = latestDate;
+  }
+  
+  if (!combinedParsedData.updateDate) {
+      combinedParsedData.updateDate = new Date().toISOString().split('T')[0];
   }
 
   return combinedParsedData;

@@ -9,7 +9,14 @@ export const ADMClient = {
    * Fetches the HTML content of a given URL.
    */
   fetchHTML: async (url: string) => {
-    const response = await fetch(url, {
+    const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    const finalUrl = new URL(fullUrl);
+    
+    if (finalUrl.hostname !== 'www.adm.gov.it') {
+      throw new Error("Hostname not authorized");
+    }
+
+    const response = await fetch(finalUrl.toString(), {
       headers: { 'User-Agent': USER_AGENT },
       redirect: 'follow'
     });

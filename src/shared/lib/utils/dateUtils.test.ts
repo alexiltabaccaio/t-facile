@@ -27,12 +27,12 @@ describe('dateUtils', () => {
 
   describe('formatToDisplayDate', () => {
     it('should convert ISO to display date', () => {
-      expect(formatToDisplayDate('2024-05-20')).toBe('20/05/2024');
-      expect(formatToDisplayDate('2024-05-20T10:00:00Z')).toBe('20/05/2024');
+      expect(formatToDisplayDate('2024-05-20')).toBe('20-05-2024');
+      expect(formatToDisplayDate('2024-05-20T10:00:00Z')).toBe('20-05-2024');
     });
 
     it('should keep ADM format', () => {
-      expect(formatToDisplayDate('20/05/2024')).toBe('20/05/2024');
+      expect(formatToDisplayDate('20/05/2024')).toBe('20-05-2024');
     });
 
     it('should return N/D for undefined or empty', () => {

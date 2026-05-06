@@ -72,8 +72,20 @@ export const analyzePdfChunks = async (
         allProducts.push(...analysisResult.products);
       }
       
+      // Date extraction from filename (priority)
+      let filenameDate = "";
+      if (!file.name.includes('_nodata')) {
+         const match = file.name.match(/_(\d{2})(\d{2})(\d{2})(?:_|\.pdf$)/);
+         if (match) {
+            const day = match[1];
+            const month = match[2];
+            const year = `20${match[3]}`;
+            filenameDate = `${year}-${month}-${day}`;
+         }
+      }
+
       // Date validation and normalization
-      let normalizedUpdateDate = analysisResult.updateDate;
+      let normalizedUpdateDate = filenameDate || analysisResult.updateDate;
       if (!normalizedUpdateDate || normalizedUpdateDate === "Non disponibile" || !/^\d{4}-\d{2}-\d{2}$/.test(normalizedUpdateDate)) {
         normalizedUpdateDate = "";
       }
@@ -107,7 +119,7 @@ export const analyzePdfChunks = async (
   });
 
   return {
-    updateDate: finalUpdateDate || new Date().toISOString().split('T')[0],
+    updateDate: finalUpdateDate || "",
     products: Array.from(mergedMap.values())
   };
 };

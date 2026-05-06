@@ -46,7 +46,7 @@
       "admin": "Admin",
       "subtitle": "Gestione Listini",
       "info": "Info",
-      "legal": "Legali",
+      "legal": "Fonte Dati & Note Legali",
       "report": "Segnala"
     },
     "header": {
@@ -259,13 +259,21 @@
     "description": "T-Facile è uno strumento indipendente di supporto alla vendita. I dati riportati (nomi, prezzi, pesi) sono di dominio pubblico, estratti dai listini ufficiali pubblicati dall'Agenzia delle Dogane e dei Monopoli (ADM).",
     "lastCheck": "Ultima verifica dati: {{date}}",
     "gdprTitle": "Trattamento Dati (GDPR)",
-    "gdprDesc1": "Utilizzando l'accesso con Google, trattiamo il tuo indirizzo email e la tua immagine profilo esclusivamente per identificarti e garantirti l'accesso protetto alle funzioni admin dell'app.",
+    "gdprDesc1": "Utilizzando l'accesso con Google, trattiamo il tuo indirizzo email e la tua immagine profilo esclusivamente per identificarti e garantirti l'accesso protetto alle funzioni di gestione dell'app.",
     "gdprDesc2": "Questi dati non vengono venduti, ceduti o utilizzati per scopi di marketing o profilazione commerciale.",
     "cacheTitle": "Cache Web & Offline",
     "cacheDesc1": "L'app utilizza il Local Storage del browser per salvare una copia del catalogo prezzi sul tuo dispositivo.",
     "cacheDesc2": "Questo meccanismo tecnico è essenziale per garantirti una velocità di ricerca istantanea e il funzionamento dell'app anche in assenza di connessione internet.",
     "cacheDesc3": "Nessun \"cookie di profilazione\" è utilizzato da questa applicazione.",
-    "effectiveDate": "In vigore dal: {{date}}"
+    "effectiveDate": "In vigore dal: {{date}}",
+    "disclaimerTitle": "Esonero di Responsabilità",
+    "disclaimerDesc": "T-Facile non garantisce l'assoluta precisione o attualità dei dati riportati. L'applicazione è fornita \"così com'è\" senza garanzie di alcun tipo. Il rivenditore è l'unico responsabile della verifica dei prezzi e delle condizioni di vendita tramite i canali ufficiali.",
+    "affiliationTitle": "Nessuna Affiliazione",
+    "affiliationDesc": "T-Facile è un'iniziativa indipendente e non è in alcun modo affiliata, autorizzata o associata all'Agenzia delle Dogane e dei Monopoli (ADM) o a qualsiasi altro ente governativo.",
+    "analyticsTitle": "Analisi e Statistiche",
+    "analyticsDesc": "Raccogliamo dati di utilizzo anonimi (pagine visitate, tempi di risposta) per monitorare lo stato dell'app e migliorarne l'esperienza d'uso. Questi dati non permettono in alcun modo di risalire alla tua identità.",
+    "trademarksTitle": "Proprietà Intellettuale",
+    "trademarksDesc": "I nomi dei prodotti, i marchi e i loghi citati sono di proprietà dei rispettivi detentori dei diritti e vengono utilizzati esclusivamente a scopo informativo e identificativo."
   },
   "reportPage": {
     "title": "Segnala un problema",

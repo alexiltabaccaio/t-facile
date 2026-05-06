@@ -1,6 +1,8 @@
 import { CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { formatToDisplayDate } from '@/shared/lib';
+
 interface ADMUpdateItemProps {
   listino: any;
   categoryDate: string;
@@ -47,7 +49,7 @@ export const ADMUpdateItem: React.FC<ADMUpdateItemProps> = ({ listino, categoryD
           </span>
           {listino.type !== 'Novità' && (
             <span className="flex items-center gap-1 font-bold">
-              <span className="opacity-50">{t('admin.item.inDatabase')}:</span> <span className="text-neutral-400">{categoryDate || t('admin.item.neverUpdated')}</span>
+              <span className="opacity-50">{t('admin.item.inDatabase')}:</span> <span className="text-neutral-400">{categoryDate ? formatToDisplayDate(categoryDate).replace(/-/g, '/') : t('admin.item.neverUpdated')}</span>
             </span>
           )}
           <span className={`font-black px-1.5 py-0.5 rounded text-[8px] uppercase tracking-wider ${badgeColor}`}>

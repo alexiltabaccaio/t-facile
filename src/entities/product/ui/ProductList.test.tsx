@@ -48,7 +48,7 @@ describe('ProductList', () => {
   it('renders NoResults when product list is empty', () => {
     render(<ProductList {...defaultProps} products={[]} />);
     
-    expect(screen.getByText('Nessun prodotto trovato')).toBeDefined();
+    expect(screen.getByText('Nessun risultato trovato')).toBeDefined();
     expect(screen.getByText(/Prova a modificare i termini di ricerca/)).toBeDefined();
   });
 

@@ -7,8 +7,8 @@ import { Product } from '../../index';
 export const normalizeName = (name: string) => {
   return name
     .toLowerCase()
-    .replace(/[^\w\s]/gi, '') // Rimuove punteggiatura e caratteri speciali
-    .replace(/\s+/g, '') // Rimuove tutti gli spazi per un match più robusto
+    .replace(/[^\w\s]/gi, '') // Removes punctuation and special characters
+    .replace(/\s+/g, '') // Removes all spaces for a more robust match
     .trim();
 };
 

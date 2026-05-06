@@ -1,7 +1,6 @@
 import { Product } from '../../index';
 import { ParsedPDFResult, ParsedProduct } from '../api/pdfAnalyzer';
 import { mapParsedProductToFirestore, detectProductVariations, findMatchingProduct } from './syncUtils';
-import { isDateNewer } from '@/shared/lib';
 import { SyncStats } from './syncHistoryUtils';
 
 export interface MergeResult {
@@ -132,7 +131,7 @@ export const calculateNextCategoryDates = (
   
   updatedCategories.forEach(cat => {
     const listinoDate = parsedProducts.find(p => p.category === cat)?.listinoDate || defaultUpdateDate;
-    if (!nextCategoryDates[cat] || isDateNewer(listinoDate, nextCategoryDates[cat])) {
+    if (listinoDate) {
       nextCategoryDates[cat] = listinoDate;
     }
   });

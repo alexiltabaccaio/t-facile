@@ -1,0 +1,26 @@
+# Antigravity Project Rules - T-Facile
+
+## Workflow & Communication
+- **PRIMA DI MODIFICARE IL CODICE:** Proponi sempre un **Implementation Plan** dettagliato.
+    - Il piano deve essere scritto in **Inglese** e ottimizzato per la comprensione di un LLM (strutturato, logico, senza ambiguità).
+    - Deve essere diviso in **Fasi operative** chiare e sequenziali.
+    - Ogni fase deve includere l'esecuzione obbligatoria della **Suite di Test** (`npm test`) e del **Linter**.
+- **CONFERMA:** Non applicare modifiche ai file finché non ricevi una conferma esplicita (es. "procedi", "ok", "vai").
+- Mantieni le spiegazioni concise e focalizzate sul codice.
+
+## Architettura e Standard
+- **Architettura:**
+    - **Frontend (`src/`):** Segui rigorosamente l'architettura **FSD (Feature-Sliced Design)**.
+    - **Backend (`server/`):** Segui una **Layered Architecture** (Routes -> Services -> Repositories -> Utils).
+- **Repository Pattern:** Mantieni il disaccoppiamento da Firebase tramite repository. Il frontend non deve chiamare direttamente l'SDK di Firebase.
+- **Lingua:** I Commenti nel codice devono essere in **inglese**.
+
+## Gestione dello Stato (Zustand)
+- **Struttura:** Separa sempre lo stato dalle azioni (raggruppate in un oggetto `actions`).
+- **Performance:** Esporta hook dedicati per le azioni (es. `useXActions`) per minimizzare i re-render. Usa sempre `useShallow` quando selezioni più proprietà dello stato nei componenti.
+- **Persistenza:** Utilizza il middleware `persist` nativo per la persistenza. Per dati voluminosi (es. il catalogo prodotti), prediligi IndexedDB rispetto a localStorage.
+- **Disaccoppiamento:** Mantieni gli store indipendenti. Evita l'accesso diretto tramite `.getState()` tra store diversi; preferisci passare i dati necessari come parametri alle azioni o orchestrare il flusso nel layer UI/Hooks.
+
+## Sicurezza e Qualità
+- **Validazione:** Usa sempre la validazione centralizzata per gli URL per prevenire attacchi SSRF.
+- **Test:** Assicurati che le modifiche non rompano i test esistenti.
