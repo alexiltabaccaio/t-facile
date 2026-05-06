@@ -31,7 +31,8 @@
     "back": "Indietro",
     "details": "Dettaglio",
     "search": "Cerca...",
-     "noResults": "Nessun risultato trovato",
+    "noResults": "Nessun risultato trovato",
+    "noResultsDesc": "Prova a modificare i termini di ricerca o a resettare i filtri.",
     "error": "Si è verificato un errore",
     "nd": "N/D",
     "share": "Condividi"

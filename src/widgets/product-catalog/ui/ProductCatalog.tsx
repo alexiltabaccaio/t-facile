@@ -10,7 +10,8 @@ import {
   useCatalogUiActions, 
   Product, 
   ProductList, 
-  ProductDetail 
+  ProductDetail,
+  useCatalogSyncStore
 } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,7 @@ export const ProductCatalog: React.FC = () => {
   })));
   
   const products = useCatalogDataStore(state => state.products);
+  const isInitialLoading = useCatalogSyncStore(state => state.isInitialLoading);
   
   const { setSelectedProduct, setListScrollPosition } = useCatalogFilterActions();
   const showSortModal = useCatalogUiStore(s => s.showSortModal);
@@ -80,6 +82,7 @@ export const ProductCatalog: React.FC = () => {
             searchKeywords={searchKeywords}
             sortOption={sortOption}
             initialOffset={listScrollPosition}
+            isLoading={isInitialLoading}
             onScrollUpdate={(offset) => { if(!isDetailView) setListScrollPosition(offset); }}
           />
         </div>

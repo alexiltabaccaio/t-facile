@@ -31,7 +31,8 @@
     "back": "Back",
     "details": "Detail",
     "search": "Search...",
-     "noResults": "No results found",
+    "noResults": "No results found",
+    "noResultsDesc": "Try changing your search terms or resetting filters.",
     "error": "An error occurred",
     "nd": "N/A",
     "share": "Share"

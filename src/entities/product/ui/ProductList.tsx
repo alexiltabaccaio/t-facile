@@ -1,6 +1,7 @@
 
 
 import React, { memo, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Product, SortOption } from '../model/types';
 import ProductItem from './ProductItem';
 import { FixedSizeList as List, FixedSizeGrid as Grid } from 'react-window';
@@ -12,19 +13,36 @@ interface ProductListProps {
   sortOption: SortOption;
   initialOffset?: number;
   onScrollUpdate?: (offset: number) => void;
+  isLoading?: boolean;
 }
 
-const NoResults: React.FC = () => (
-    <div className="text-center py-20 px-4">
-        <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="w-10 h-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+const NoResults: React.FC = () => {
+    const { t } = useTranslation();
+    return (
+        <div className="text-center py-20 px-4">
+            <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-neutral-900 dark:text-light-text tracking-tight">{t('common.noResults')}</h3>
+            <p className="text-neutral-500 dark:text-neutral-400 mt-2 max-w-xs mx-auto">
+                {t('common.noResultsDesc')}
+            </p>
         </div>
-        <h3 className="text-xl font-bold text-neutral-900 dark:text-light-text tracking-tight">Nessun prodotto trovato</h3>
-        <p className="text-neutral-500 dark:text-neutral-400 mt-2 max-w-xs mx-auto">Prova a modificare i termini di ricerca o a resettare i filtri.</p>
-    </div>
-);
+    );
+};
+
+const LoadingState: React.FC = () => {
+    const { t } = useTranslation();
+    return (
+        <div className="flex flex-col items-center justify-center py-20 px-4 h-full">
+            <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+            <p className="text-neutral-500 dark:text-neutral-400 font-medium">{t('common.loading')}</p>
+        </div>
+    );
+};
+
 
 const ITEM_HEIGHT = 88;
 
@@ -69,7 +87,7 @@ const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: nu
 
 // We will use a custom hook to measure the container size synchronously before paint
 
-const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, searchKeywords, sortOption, initialOffset = 0, onScrollUpdate }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, searchKeywords, sortOption, initialOffset = 0, onScrollUpdate, isLoading = false }) => {
   const listRef = useRef<any>(null);
   const scrollUpdateRef = useRef(onScrollUpdate);
   const searchKey = searchKeywords.join(' ');
@@ -129,7 +147,9 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
 
   return (
     <div className="h-full w-full overflow-hidden" ref={containerRef}>
-        {products.length === 0 ? (
+        {isLoading ? (
+            <LoadingState />
+        ) : products.length === 0 ? (
             <NoResults />
         ) : (
             containerSize.width > 0 && containerSize.height > 0 && (() => {
