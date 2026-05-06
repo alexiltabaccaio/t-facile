@@ -1,116 +1,17 @@
 import { GoogleGenAI } from "@google/genai";
-import { getDb } from '../firebaseAdmin.js';
-import { getFirebaseConfig } from '../utils/config.js';
+import { getGeminiApiKey } from "../repositories/secretRepository.js";
+import { createBackendPrompts } from "./promptBuilder.js";
 
-interface PromptTemplate {
-  systemPrompt: string;
-  userPromptTemplate: string;
-}
-
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-const promptCache: Record<string, { data: PromptTemplate; timestamp: number }> = {};
-
-function getFileMetadata(fileName: string, textData: string = "") {
-  const fileNameLower = fileName.toLowerCase();
-  const textLower = textData.toLowerCase();
-  
-  const isRadiato = fileNameLower.startsWith('rad_') || textLower.includes('tabacchi radiati');
-  const isAttivo = fileNameLower.startsWith('att_') || textLower.includes('listino aggiornato al');
-  const isEmissione = fileNameLower.startsWith('emi_') || textLower.includes('livelli di emissione');
-  
-  let forcedCategory = "";
-  const combinedText = fileNameLower + " " + textLower;
-
-  if (combinedText.includes('trinciati')) forcedCategory = "Trinciati";
-  else if (combinedText.includes('sigaretti')) forcedCategory = "Sigaretti";
-  else if (combinedText.includes('sigari')) forcedCategory = "Sigari";
-  else if (combinedText.includes('sigarette')) forcedCategory = "Sigarette";
-  else if (combinedText.includes('fiuto') || combinedText.includes('mastico') || combinedText.includes('fiutoemastico')) forcedCategory = "Fiuto e Mastico";
-  else if (combinedText.includes('inalazione') || combinedText.includes('liquidi') || combinedText.includes('senza combustione') || combinedText.includes('nocombustione')) forcedCategory = "Prodotti da inalazione senza combustione";
-  else if (combinedText.includes('altri')) forcedCategory = "Altri Tabacchi";
-  else if (combinedText.includes('pricechange') || combinedText.includes('variazione')) forcedCategory = "Variazioni Prezzi";
-
-  const forcedStatus: 'Attivo' | 'Radiato' | '' = isRadiato ? 'Radiato' : ((isAttivo || isEmissione) ? 'Attivo' : '');
-  const type = isEmissione ? 'Emissione' : (isRadiato ? 'Radiato' : 'Attivo');
-
-  return { forcedCategory, forcedStatus, type };
-}
-
-async function getPromptsFromDb(type: string): Promise<PromptTemplate> {
-  const now = Date.now();
-  if (promptCache[type] && (now - promptCache[type].timestamp < CACHE_TTL_MS)) {
-    return promptCache[type].data;
-  }
-
-  try {
-    const { firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
-    const db = getDb(databaseId);
-    const docId = type.toLowerCase();
-    const promptDoc = await db.collection('prompts').doc(docId).get();
-
-    if (promptDoc.exists) {
-      const data = promptDoc.data() as PromptTemplate;
-      promptCache[type] = { data, timestamp: now };
-      return data;
-    } else {
-      throw new Error(`Documento prompt "${docId}" non trovato nella collezione 'prompts' su Firestore.`);
-    }
-  } catch (error: any) {
-    console.error(`[AI-Analyzer] Error fetching prompt for ${type} from Firestore:`, error);
-    throw new Error(`Impossibile recuperare le istruzioni AI per i listini di tipo "${type}". Verifica la collezione 'prompts' su Firebase. Dettagli: ${error.message}`);
-  }
-}
-
-async function createBackendPrompts(fileName: string, textData: string) {
-  const { forcedCategory, forcedStatus, type } = getFileMetadata(fileName, textData);
-  
-  // Fetch the actual template from DB. Will throw an error if it doesn't exist.
-  const template = await getPromptsFromDb(type);
-
-  // Apply template replacements
-  let finalUserPrompt = template.userPromptTemplate
-    .replace(/{{textData}}/g, textData)
-    .replace(/{{forcedCategory}}/g, forcedCategory || 'Deduci dal contesto')
-    .replace(/{{forcedStatus}}/g, forcedStatus || 'Attivo');
-
-  finalUserPrompt += `
-  
-ATTENZIONE (REGOLE CRITICHE AGGIUNTIVE SUI CODICI E NOMI):
-1. In alcuni documenti (come per i "Sigari" o le variazioni di prezzo), la colonna "Codice" potrebbe NON ESSERE PRESENTE nella tabella.
-2. SE IL CODICE NON E' PRESENTE, DEVI COMUNQUE ESTRARRE IL PRODOTTO! Non ignorare nessun prodotto solo perché manca il codice.
-3. In questi casi, imposta il campo "code" a una stringa vuota ("").
-4. Estrai sempre tutti i prodotti presenti nel testo fornito.
-5. NOME DEL PRODOTTO: Il campo "name" deve essere ESATTAMENTE IDENTICO a come è scritto nel documento. NON rimuovere MAI numeri, quantità o parole finali dal nome per "pulirlo". Se il documento riporta "WINSTON CHURCHILL CHURCHILL 4", il campo "name" DEVE essere "WINSTON CHURCHILL CHURCHILL 4", anche se inserisci "4" come quantità. Non troncare mai i nomi.
-6. PREZZO AL CHILO PRECEDENTE: Se il documento riporta un prezzo al chilo precedente (spesso indicato con "Da €/Kg conv.le"), estrailo nel campo "oldPricePerKg" (numero).
-  `;
-
-  return {
-    systemPrompt: template.systemPrompt,
-    userPrompt: finalUserPrompt
-  };
-}
-
-
+/**
+ * Orchestrates the AI analysis of text extracted from a document.
+ * Handles API keys, prompt construction, LLM calls with retry logic, and JSON parsing.
+ */
 export async function analyzeTextWithAI(
   fileName: string,
   textData: string,
   aiModel: string = "gemini-3-flash-preview"
 ) {
-  let apiKey = process.env.GEMINI_API_KEY;
-  
-  // If not in .env, try to read it securely from Firestore database using Admin SDK
-  if (!apiKey) {
-    try {
-      const { firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
-      const db = getDb(databaseId);
-      const secretDoc = await db.collection('secrets').doc('gemini').get();
-      if (secretDoc.exists) {
-        apiKey = secretDoc.data()?.key;
-      }
-    } catch (e) {
-      console.error("Errore nel recupero della chiave Gemini da Firestore tramite Admin SDK:", e);
-    }
-  }
+  const apiKey = await getGeminiApiKey();
   
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY non configurata sul server (né in .env né in Firestore /secrets/gemini).");
@@ -147,7 +48,7 @@ export async function analyzeTextWithAI(
           err?.message?.includes("high demand");
 
         if (isRetryableError && attempt < maxRetries - 1) {
-          const delayMs = Math.pow(2, attempt) * 5000; // 5s, 10s
+          const delayMs = Math.pow(2, attempt) * 5000; // 5s, 10s, 20s, 40s...
           console.warn(`Errore AI (Sovraccarico/503/429). Riprovo tra ${delayMs/1000}s... (Tentativo ${attempt + 1} di ${maxRetries - 1})`);
           await new Promise(r => setTimeout(r, delayMs));
         } else {
@@ -167,7 +68,7 @@ export async function analyzeTextWithAI(
     
     const result = JSON.parse(text);
     console.log("=== AI ANALYZER DEBUG ===");
-    console.log("TEXT DATA RECEIVED (first 500 chars):\\n", textData.substring(0, 500));
+    console.log("TEXT DATA RECEIVED (first 500 chars):\n", textData.substring(0, 500));
     console.log("==========================");
 
     // Update date validation
@@ -181,4 +82,3 @@ export async function analyzeTextWithAI(
     throw new Error(`Errore durante l'interpretazione dei dati (${aiModel}): ${error.message}`);
   }
 }
-
