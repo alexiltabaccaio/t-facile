@@ -6,9 +6,15 @@ import { SettingsIcon, BellIcon, RefreshIcon } from '@/shared/ui';
 import { formatToDisplayDate } from '@/shared/lib/utils/dateUtils';
 import { usePresentationMode } from '@/shared/lib/hooks/usePresentationMode';
 import { useAppNavigation } from '@/shared/lib/hooks/useAppNavigation';
+import { productRepository } from '@/shared/api';
 
 import { useNotificationStore } from '@/entities/notification';
-import { useCatalogSyncStore } from '@/entities/product';
+import { 
+  useCatalogSyncStore, 
+  useCatalogSyncActions, 
+  useCatalogDataActions,
+  catalogService 
+} from '@/entities/product';
 
 import { ProductShareButton } from '@/features/product-share';
 
@@ -44,13 +50,41 @@ const Header: React.FC = () => {
   const isOnline = useCatalogSyncStore(state => state.isOnline);
   const lastUpdateDate = useCatalogSyncStore(state => state.lastUpdateDate);
   
+  const { setProducts } = useCatalogDataActions();
+  const { setLastSyncId, setLastUpdateDate, setCategoryDates, setSyncError } = useCatalogSyncActions();
+  
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const handleManualRefresh = () => {
+  const handleManualRefresh = async () => {
+    if (isRefreshing) return;
+    
     setIsRefreshing(true);
-    setTimeout(() => {
+    try {
+      console.log("[Header] Manual refresh started...");
+      const config = await productRepository.getGlobalConfig();
+      
+      if (config) {
+        const products = await catalogService.fetchCatalogInChunks(config.totalChunks);
+        
+        if (products.length > 0) {
+          setProducts(products);
+          setLastSyncId(config.syncId);
+          setLastUpdateDate(config.lastUpdateDate);
+          setCategoryDates(config.categoryDates || {});
+          setSyncError(null);
+          console.log(`[Header] Manual refresh complete: ${products.length} products.`);
+        } else {
+          setSyncError("Errore integrità dati durante l'aggiornamento manuale.");
+        }
+      } else {
+        setSyncError("Impossibile recuperare la configurazione dal server.");
+      }
+    } catch (err: any) {
+      console.error("[Header] Manual refresh error:", err);
+      setSyncError("Errore durante l'aggiornamento manuale.");
+    } finally {
       setIsRefreshing(false);
-    }, 1000);
+    }
   };
 
   return (
