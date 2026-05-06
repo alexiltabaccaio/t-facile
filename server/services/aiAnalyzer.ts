@@ -123,7 +123,7 @@ export async function analyzeTextWithAI(
     const modelId = aiModel;
     
     let response: any;
-    const maxRetries = 3;
+    const maxRetries = 6;
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
