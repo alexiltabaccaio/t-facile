@@ -120,10 +120,6 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
     }
   }, [searchKey, sortOption]);
 
-  if (products.length === 0) {
-    return <NoResults />;
-  }
-  
   const handleScroll = (scrollProps: any) => {
     const offset = scrollProps.scrollOffset !== undefined ? scrollProps.scrollOffset : scrollProps.scrollTop;
     if (onScrollUpdate) {
@@ -133,55 +129,59 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
 
   return (
     <div className="h-full w-full overflow-hidden" ref={containerRef}>
-        {containerSize.width > 0 && containerSize.height > 0 && (() => {
-            const h = containerSize.height;
-            const w = containerSize.width;
-            
-            // Determine the number of columns based on width
-            let columnCount = 1;
-            if (w > 800) {
-              columnCount = 3;
-            } else if (w > 500) {
-              columnCount = 2;
-            }
+        {products.length === 0 ? (
+            <NoResults />
+        ) : (
+            containerSize.width > 0 && containerSize.height > 0 && (() => {
+                const h = containerSize.height;
+                const w = containerSize.width;
+                
+                // Determine the number of columns based on width
+                let columnCount = 1;
+                if (w > 800) {
+                  columnCount = 3;
+                } else if (w > 500) {
+                  columnCount = 2;
+                }
 
-            if (columnCount === 1) {
-              return (
-                  <List
+                if (columnCount === 1) {
+                  return (
+                      <List
+                          ref={listRef}
+                          height={h}
+                          itemCount={products.length}
+                          itemSize={ITEM_HEIGHT}
+                          width={w}
+                          itemData={{ products, onProductClick, searchKeywords, sortOption }}
+                          initialScrollOffset={initialOffset}
+                          onScroll={handleScroll}
+                          overscanCount={15}
+                      >
+                          {ListRow}
+                      </List>
+                  );
+                } else {
+                  const rowCount = Math.ceil(products.length / columnCount);
+                  return (
+                    <Grid
                       ref={listRef}
+                      columnCount={columnCount}
+                      columnWidth={w / columnCount}
                       height={h}
-                      itemCount={products.length}
-                      itemSize={ITEM_HEIGHT}
+                      rowCount={rowCount}
+                      rowHeight={ITEM_HEIGHT}
                       width={w}
-                      itemData={{ products, onProductClick, searchKeywords, sortOption }}
-                      initialScrollOffset={initialOffset}
+                      itemData={{ products, onProductClick, searchKeywords, sortOption, columnCount }}
+                      initialScrollTop={initialOffset}
                       onScroll={handleScroll}
-                      overscanCount={15}
-                  >
-                      {ListRow}
-                  </List>
-              );
-            } else {
-              const rowCount = Math.ceil(products.length / columnCount);
-              return (
-                <Grid
-                  ref={listRef}
-                  columnCount={columnCount}
-                  columnWidth={w / columnCount}
-                  height={h}
-                  rowCount={rowCount}
-                  rowHeight={ITEM_HEIGHT}
-                  width={w}
-                  itemData={{ products, onProductClick, searchKeywords, sortOption, columnCount }}
-                  initialScrollTop={initialOffset}
-                  onScroll={handleScroll}
-                  overscanRowCount={15}
-                >
-                  {GridCell}
-                </Grid>
-              );
-            }
-        })()}
+                      overscanRowCount={15}
+                    >
+                      {GridCell}
+                    </Grid>
+                  );
+                }
+            })()
+        )}
     </div>
   );
 };

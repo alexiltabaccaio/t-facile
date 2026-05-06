@@ -34,22 +34,44 @@ export const isDateNewer = (newDate: string, currentDate: string): boolean => {
 };
 
 /**
- * Converts a date string (ISO or ADM) to the display format DD/MM/YYYY.
+ * Converts a date string (ISO or ADM) to the display format DD-MM-YYYY.
  */
 export const formatToDisplayDate = (dateStr: string | undefined): string => {
   if (!dateStr) return 'N/D';
   
-  // If it is already DD/MM/YYYY
-  if (dateStr.includes('/') && dateStr.split('/').length === 3) {
-    return dateStr;
-  }
-  
-  // If it is YYYY-MM-DD
-  if (dateStr.includes('-')) {
-    const parts = dateStr.split('T')[0].split('-'); // Handles ISO with time as well
-    if (parts.length === 3) {
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  try {
+    // Check if it's already an ISO string with time or just date
+    // Extract just the date part if it has a T
+    const datePart = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+    
+    // If it is DD/MM/YYYY or DD-MM-YYYY
+    if (datePart.includes('/')) {
+      const parts = datePart.split('/');
+      if (parts.length === 3) {
+        return `${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${parts[2]}`;
+      }
     }
+    
+    // If it is YYYY-MM-DD
+    if (datePart.includes('-')) {
+      const parts = datePart.split('-'); 
+      if (parts.length === 3) {
+        // If first part is YYYY (length 4)
+        if (parts[0].length === 4) {
+          return `${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${parts[0]}`;
+        }
+        // If it's already DD-MM-YYYY
+        return `${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${parts[2]}`;
+      }
+    }
+    
+    // Fallback if we can parse it as a valid date
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    }
+  } catch (e) {
+    console.error('Error formatting date:', e);
   }
   
   return dateStr;

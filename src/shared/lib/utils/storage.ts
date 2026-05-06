@@ -1,10 +1,9 @@
-import { StateStorage } from 'zustand/middleware';
 import { get, set, del } from 'idb-keyval';
 
 /**
  * Custom storage object for IndexedDB using idb-keyval
  */
-export const idbStorage: StateStorage = {
+export const idbStorage = {
   getItem: async (name: string): Promise<string | null> => {
     return (await get(name)) || null;
   },

@@ -10,6 +10,7 @@ import {
 } from '@/entities/product';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
+import { formatToDisplayDate } from '@/shared/lib/utils/dateUtils';
 
 const SearchBar: React.FC = () => {
   const { t } = useTranslation();
@@ -88,7 +89,7 @@ const SearchBar: React.FC = () => {
           </div>
           <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-700" />
           <div className="flex items-center gap-2">
-            <span className="whitespace-nowrap font-bold text-light-text dark:text-dark-text-primary">{t('layout.header.updatedAt', { date: lastUpdateDate })}</span>
+            <span className="whitespace-nowrap font-bold text-light-text dark:text-dark-text-primary">{t('layout.header.updatedAt', { date: formatToDisplayDate(lastUpdateDate) })}</span>
             <button 
               onClick={handleManualRefresh} 
               className={`p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full text-light-text dark:text-dark-text-primary transition-all active:scale-90 ${isRefreshing ? 'animate-spin opacity-50' : ''}`}
