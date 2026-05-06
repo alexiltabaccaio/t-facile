@@ -49,9 +49,9 @@ export const analyzePdfChunks = async (
 
     if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
 
-    // PHASE 2: Split into text chunks
-    // Increasing to 8 pages per block to optimize API quota while keeping precision.
-    const textChunks = splitTextInChunks(fullText, 8);
+    // Reducing to 1 page per block to ensure 100% extraction precision with Lite models (Gemini Flash Lite).
+    // This prevents output truncation caused by 8192 output token limit when dealing with dense tables.
+    const textChunks = splitTextInChunks(fullText, 1);
     
     for (let chunkIdx = 0; chunkIdx < textChunks.length; chunkIdx++) {
       if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");

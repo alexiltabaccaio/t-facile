@@ -8,9 +8,9 @@
  * and maintain high semantic precision.
  * 
  * @param text The complete text extracted from the PDF (with page markers)
- * @param pagesPerChunk Number of pages to include in each block (default 8)
+ * @param pagesPerChunk Number of pages to include in each block (default 1)
  */
-export const splitTextInChunks = (text: string, pagesPerChunk: number = 3): string[] => {
+export const splitTextInChunks = (text: string, pagesPerChunk: number = 1): string[] => {
   // Use a more flexible regex to intercept page markers
   const pages = text.split(/---\s*PAGE\s*\d+\s*---/i).filter(p => p.trim().length > 0);
   
