@@ -6,7 +6,7 @@ import { auth } from "@/shared/api";
 export async function analyzeTextWithAI(
   fileName: string,
   textData: string,
-  aiModel: string = "gemini-3-flash-preview",
+  aiModel: string = "gemini-3.1-flash-lite-preview",
   signal?: AbortSignal
 ) {
   const token = await auth.currentUser?.getIdToken();

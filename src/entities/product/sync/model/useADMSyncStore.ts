@@ -48,7 +48,7 @@ interface ADMSyncState {
 }
 
 export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
-  aiModel: "gemini-3-flash-preview",
+  aiModel: "gemini-3.1-flash-lite-preview",
   isChecking: false,
   isProcessing: false,
   statusMsg: "",

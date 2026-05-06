@@ -50,8 +50,8 @@ export const analyzePdfChunks = async (
     if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
 
     // PHASE 2: Split into text chunks
-    // Decreasing the number of pages per block to 1 (instead of 5) to ensure Gemini doesn't truncate the output.
-    const textChunks = splitTextInChunks(fullText, 1);
+    // Increasing to 8 pages per block to optimize API quota while keeping precision.
+    const textChunks = splitTextInChunks(fullText, 8);
     
     for (let chunkIdx = 0; chunkIdx < textChunks.length; chunkIdx++) {
       if (signal?.aborted) throw new Error("Operazione annullata dall'utente.");
@@ -60,7 +60,13 @@ export const analyzePdfChunks = async (
       const textData = textChunks[chunkIdx];
 
       // PHASE 4: Call Gemini SDK (Frontend calls Backend)
-      const analysisResult = await analyzeTextWithAI(file.name, textData, aiModel ? aiModel : "gemini-3-flash-preview", signal);
+      // Standardized default model to gemini-3.1-flash-lite-preview
+      const analysisResult = await analyzeTextWithAI(file.name, textData, aiModel ? aiModel : "gemini-3.1-flash-lite-preview", signal);
+
+      // RATE LIMITING: Wait 2 seconds before the next call (except for the last block)
+      if (chunkIdx < textChunks.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
 
       if (analysisResult.products) {
         allProducts.push(...analysisResult.products);
