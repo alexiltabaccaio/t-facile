@@ -25,8 +25,10 @@ function getFileMetadata(fileName: string, textData: string = "") {
   else if (combinedText.includes('sigaretti')) forcedCategory = "Sigaretti";
   else if (combinedText.includes('sigari')) forcedCategory = "Sigari";
   else if (combinedText.includes('sigarette')) forcedCategory = "Sigarette";
-  else if (combinedText.includes('fiuto') || combinedText.includes('mastico')) forcedCategory = "Fiuto e Mastico";
-  else if (combinedText.includes('inalazione') || combinedText.includes('liquidi') || combinedText.includes('senza combustione')) forcedCategory = "Prodotti da inalazione senza combustione";
+  else if (combinedText.includes('fiuto') || combinedText.includes('mastico') || combinedText.includes('fiutoemastico')) forcedCategory = "Fiuto e Mastico";
+  else if (combinedText.includes('inalazione') || combinedText.includes('liquidi') || combinedText.includes('senza combustione') || combinedText.includes('nocombustione')) forcedCategory = "Prodotti da inalazione senza combustione";
+  else if (combinedText.includes('altri')) forcedCategory = "Altri Tabacchi";
+  else if (combinedText.includes('pricechange') || combinedText.includes('variazione')) forcedCategory = "Variazioni Prezzi";
 
   const forcedStatus: 'Attivo' | 'Radiato' | '' = isRadiato ? 'Radiato' : ((isAttivo || isEmissione) ? 'Attivo' : '');
   const type = isEmissione ? 'Emissione' : (isRadiato ? 'Radiato' : 'Attivo');

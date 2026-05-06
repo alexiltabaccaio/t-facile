@@ -28,6 +28,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Data folder
+data/
+
 # Firebase Service Account
 service-account.json
 

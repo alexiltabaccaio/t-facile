@@ -55,11 +55,14 @@ export const ADMAutoUpdater: React.FC = () => {
   
   const { setLastUpdateDate } = useCatalogSyncActions();
 
+  const [sendNotification, setSendNotification] = React.useState<boolean>(true);
+
   const handleFinalSave = async () => {
     await finalSaveToDatabase({
       lastUpdateDate,
       products,
       categoryDates,
+      skipNotifications: !sendNotification,
       onSuccess: (finalDate) => setLastUpdateDate(finalDate)
     });
   };
@@ -103,11 +106,43 @@ export const ADMAutoUpdater: React.FC = () => {
 
       {/* Staging Control (Human-in-the-loop) */}
       {isMyStaging && (
+        <>
+          {/* Notification Toggle Card */}
+          <div 
+            onClick={() => setSendNotification(!sendNotification)}
+            className={`mb-4 bg-white dark:bg-neutral-800 border rounded-2xl p-4 shadow-sm cursor-pointer transition-all flex items-center justify-between group ${
+              sendNotification 
+                ? 'border-blue-200 dark:border-blue-900/40 bg-blue-50/10' 
+                : 'border-neutral-200 dark:border-neutral-800'
+            }`}
+          >
+            <div>
+              <label className={`block text-[10px] font-black uppercase tracking-widest mb-1 transition-colors ${
+                sendNotification ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-400'
+              }`}>
+                {t('admin.news.notifyUsers')}
+              </label>
+              <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium leading-tight max-w-[200px]">
+                {sendNotification 
+                  ? t('admin.news.notifyUsersDesc')
+                  : t('admin.news.silentUpdateDesc')}
+              </p>
+            </div>
+            <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${
+              sendNotification ? 'bg-blue-600' : 'bg-neutral-300 dark:bg-neutral-700'
+            }`}>
+              <div className={`w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                sendNotification ? 'translate-x-6' : 'translate-x-0'
+              }`} />
+            </div>
+          </div>
+
           <PDFPreviewTable 
             parsedData={processedData} 
             onCancel={cancelStaging}
             onSave={handleFinalSave}
           />
+        </>
       )}
 
       {/* Success */}

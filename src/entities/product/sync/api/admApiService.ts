@@ -1,9 +1,11 @@
 import { auth } from '@/shared/api';
+import { getCategorySlug, formatDateToCompact } from '@/shared/lib/utils/admNamingUtils';
 
 export interface Listino {
   url: string;
   title: string;
   date: string;
+  effectiveDate?: string;
   category: string;
   status: string;
   type: string;
@@ -68,8 +70,19 @@ export async function downloadListinoAsFile(listino: Listino, signal?: AbortSign
   let prefix = 'att';
   if (listino.status === 'Radiato') prefix = 'rad';
   if (listino.status === 'Emissione') prefix = 'emi';
+  if (listino.status === 'Novità') prefix = 'news';
   
-  return new File([blob], `${prefix}_${listino.category.toLowerCase()}_${listino.date.replace(/\//g, '.')}.pdf`, { type: 'application/pdf' });
+  const categorySlug = getCategorySlug(listino.category);
+  const compactDate = formatDateToCompact(listino.date);
+  const compactEffDate = listino.effectiveDate ? formatDateToCompact(listino.effectiveDate) : '';
+  
+  let fileName = `${prefix}_${categorySlug}_${compactDate}`;
+  if (compactEffDate && compactEffDate !== 'nodata') {
+    fileName += `_${compactEffDate}`;
+  }
+  fileName += '.pdf';
+  
+  return new File([blob], fileName, { type: 'application/pdf' });
 }
 export async function fetchNews(): Promise<Listino[]> {
   if (!auth.currentUser) throw new Error("Utente non autenticato");

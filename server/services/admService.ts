@@ -154,11 +154,52 @@ export async function fetchADMNews() {
       
       if (href && isPriceVariation) {
         let date = 'Non disponibile';
+        let effectiveDate = '';
         const parentText = $(el).parent().text().trim();
+        const combinedText = (title + ' ' + parentText).replace(/\s+/g, ' ');
+        
+        // Extract publication date
         const dateMatch = title.match(dateRegex) || parentText.match(dateRegex);
         if (dateMatch) {
           date = `${dateMatch[1]}/${dateMatch[2]}/${dateMatch[3]}`;
           if (dateMatch[3].length === 2) date = `${dateMatch[1]}/${dateMatch[2]}/20${dateMatch[3]}`;
+        }
+
+        // Extract effective date (usually preceded by "decorrere dal" or "dal")
+        // Supports: 06/05/2026, 6 maggio 2026, etc.
+        const monthsMap: Record<string, string> = {
+          gennaio: '01', febbraio: '02', marzo: '03', aprile: '04', maggio: '05', giugno: '06',
+          luglio: '07', agosto: '08', settembre: '09', ottobre: '10', novembre: '11', dicembre: '12'
+        };
+        const dateDigitRegex = /(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/;
+        const dateTextRegex = /(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/i;
+        
+        const effTextMatch = combinedText.match(new RegExp(`(?:decorrenza|decorrere dal|dal)\\s+${dateTextRegex.source}`, 'i'));
+        const effDigitMatch = combinedText.match(new RegExp(`(?:decorrenza|decorrere dal|dal)\\s+${dateDigitRegex.source}`, 'i'));
+        
+        if (effTextMatch) {
+          const day = effTextMatch[1].padStart(2, '0');
+          const month = monthsMap[effTextMatch[2].toLowerCase()];
+          const year = effTextMatch[3];
+          effectiveDate = `${day}/${month}/${year}`;
+        } else if (effDigitMatch) {
+          effectiveDate = effDigitMatch[1].replace(/[\-\.]/g, '/');
+          const day = effDigitMatch[1].padStart(2, '0');
+          const month = effDigitMatch[2].padStart(2, '0');
+          let year = effDigitMatch[3];
+          if (year.length === 2) year = `20${year}`;
+          effectiveDate = `${day}/${month}/${year}`;
+        } else if (date !== 'Non disponibile') {
+          // Fallback: Day after news publication
+          try {
+            const [d, m, y] = date.split('/').map(Number);
+            const pubDate = new Date(y, m - 1, d);
+            const nextDay = new Date(pubDate);
+            nextDay.setDate(pubDate.getDate() + 1);
+            effectiveDate = `${String(nextDay.getDate()).padStart(2, '0')}/${String(nextDay.getMonth() + 1).padStart(2, '0')}/${nextDay.getFullYear()}`;
+          } catch (e) {
+            console.warn("[ADM-News] Fallback date calculation failed:", e);
+          }
         }
 
         const fullUrl = href.startsWith('http') ? href : `${BASE_URL}${href}`;
@@ -168,6 +209,7 @@ export async function fetchADMNews() {
             title: title.replace(/\s*-\s*pdf/i, '').trim(),
             url: fullUrl,
             date,
+            effectiveDate,
             type: 'Novità',
             status: 'Novità',
             category: 'Variazioni Prezzi'
