@@ -90,7 +90,7 @@ describe('productMapper', () => {
 
     testCases.forEach(({ info, expected }) => {
       const mockData = { identity: { packageInfo: info } };
-      const mockSnapshot = { id: 'test', data: () => mockData } as any;
+      const mockSnapshot = { id: 'test', data: () => mockData as unknown as Record<string, unknown> };
       const product = mapFirestoreDocToProduct(mockSnapshot);
       expect(product.identity.package).toEqual(expected);
     });
@@ -103,7 +103,7 @@ describe('productMapper', () => {
         package: { type: 'SCATOLA', quantity: 50, unit: 'GRAMS' }
       }
     };
-    const mockSnapshot = { id: 'test', data: () => mockData } as any;
+    const mockSnapshot = { id: 'test', data: () => mockData as unknown as Record<string, unknown> };
     const product = mapFirestoreDocToProduct(mockSnapshot);
     expect(product.identity.package).toEqual({ type: 'SCATOLA', quantity: 50, unit: 'GRAMS' });
   });

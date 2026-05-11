@@ -93,7 +93,8 @@ export const ADMAutoUpdater: React.FC = () => {
       {isMyProcessing && (
          <div className="bg-blue-100/50 dark:bg-blue-900/30 rounded p-4 flex flex-col items-center justify-center mt-4 border border-blue-200 dark:border-blue-800">
            <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-3" />
-           <p className="text-sm font-bold text-blue-800 dark:text-blue-200 text-center mb-4 leading-relaxed max-w-sm">{t(statusMsg as any)}</p>
+           {/* @ts-expect-error - dynamic translation key */}
+           <p className="text-sm font-bold text-blue-800 dark:text-blue-200 text-center mb-4 leading-relaxed max-w-sm">{t(statusMsg)}</p>
            <button 
              onClick={cancelProcessing}
              className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 text-xs font-bold uppercase rounded-lg transition-colors border border-red-200 dark:border-red-800/50"

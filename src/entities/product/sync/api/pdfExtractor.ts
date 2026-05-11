@@ -19,13 +19,14 @@ export const extractTextFromPDF = async (file: File, onProgress?: (page: number,
     let pageText = '';
     let lastY = -1;
 
-    content.items.forEach((item: any) => {
-      if (!('str' in item)) return;
+    content.items.forEach((item: unknown) => {
+      if (typeof item !== 'object' || item === null || !('str' in item)) return;
+      const pdfItem = item as { str: string, transform: number[] };
       
-      const str = item.str.trim();
+      const str = pdfItem.str.trim();
       if (!str) return; // Skip empty elements to avoid double separators
       
-      const y = item.transform[5];
+      const y = pdfItem.transform[5];
       // If the Y coordinate changes by more than 4 points, we assume it's a new line.
       if (lastY !== -1 && Math.abs(y - lastY) > 4) {
         pageText += '\\n';

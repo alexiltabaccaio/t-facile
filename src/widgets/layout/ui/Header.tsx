@@ -79,7 +79,7 @@ const Header: React.FC = () => {
       } else {
         setSyncError("Impossibile recuperare la configurazione dal server.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[Header] Manual refresh error:", err);
       setSyncError("Errore durante l'aggiornamento manuale.");
     } finally {

@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { useNotificationStore } from './useNotificationStore';
 import { notificationService } from '../api/notificationService';
+import { UpdateRecord } from './types';
 
 // Mock notification service
 vi.mock('../api/notificationService', () => ({
@@ -28,18 +29,18 @@ describe('useNotificationStore', () => {
   it('should handle notification updates and unread status', () => {
     const now = Date.now();
     const mockUpdates = [
-      { id: '1', title: 'Update 1', timestamp: { toMillis: () => now + 1000 } },
-      { id: '2', title: 'Update 2', timestamp: { toMillis: () => now + 2000 } }
+      { id: '1', title: 'Update 1', date: '01/01/2026', type: 'price', read: false, timestamp: { toMillis: () => now + 1000 } },
+      { id: '2', title: 'Update 2', date: '01/01/2026', type: 'price', read: false, timestamp: { toMillis: () => now + 2000 } }
     ];
 
-    let callback: any;
-    (notificationService.subscribeToNotifications as any).mockImplementation((cb: any) => {
+    let callback: (updates: unknown[]) => void;
+    (notificationService.subscribeToNotifications as Mock).mockImplementation((cb: (updates: unknown[]) => void) => {
       callback = cb;
       return () => {};
     });
 
     useNotificationStore.getState().actions.init();
-    callback(mockUpdates);
+    callback!(mockUpdates);
 
     const state = useNotificationStore.getState();
     expect(state.updates).toHaveLength(2);
@@ -51,18 +52,18 @@ describe('useNotificationStore', () => {
     useNotificationStore.setState({ installDate });
 
     const mockUpdates = [
-      { id: 'new', title: 'After Install', timestamp: { toMillis: () => installDate + 1000 } },
-      { id: 'old', title: 'Before Install', timestamp: { toMillis: () => installDate - 1000 } }
+      { id: 'new', title: 'After Install', date: '01/01/2026', type: 'price', read: false, timestamp: { toMillis: () => installDate + 1000 } },
+      { id: 'old', title: 'Before Install', date: '01/01/2026', type: 'price', read: false, timestamp: { toMillis: () => installDate - 1000 } }
     ];
 
-    let callback: any;
-    (notificationService.subscribeToNotifications as any).mockImplementation((cb: any) => {
+    let callback: (updates: unknown[]) => void;
+    (notificationService.subscribeToNotifications as Mock).mockImplementation((cb: (updates: unknown[]) => void) => {
       callback = cb;
       return () => {};
     });
 
     useNotificationStore.getState().actions.init();
-    callback(mockUpdates);
+    callback!(mockUpdates);
 
     const state = useNotificationStore.getState();
     expect(state.updates).toHaveLength(1);
@@ -74,18 +75,18 @@ describe('useNotificationStore', () => {
     useNotificationStore.setState({ deletedIds: ['deleted-id'] });
 
     const mockUpdates = [
-      { id: 'visible', title: 'Visible', timestamp: { toMillis: () => now + 1000 } },
-      { id: 'deleted-id', title: 'Deleted', timestamp: { toMillis: () => now + 1000 } }
+      { id: 'visible', title: 'Visible', date: '01/01/2026', type: 'price', read: false, timestamp: { toMillis: () => now + 1000 } },
+      { id: 'deleted-id', title: 'Deleted', date: '01/01/2026', type: 'price', read: false, timestamp: { toMillis: () => now + 1000 } }
     ];
 
-    let callback: any;
-    (notificationService.subscribeToNotifications as any).mockImplementation((cb: any) => {
+    let callback: (updates: unknown[]) => void;
+    (notificationService.subscribeToNotifications as Mock).mockImplementation((cb: (updates: unknown[]) => void) => {
       callback = cb;
       return () => {};
     });
 
     useNotificationStore.getState().actions.init();
-    callback(mockUpdates);
+    callback!(mockUpdates);
 
     const state = useNotificationStore.getState();
     expect(state.updates).toHaveLength(1);
@@ -94,12 +95,12 @@ describe('useNotificationStore', () => {
 
   it('should mark all as read', () => {
     const mockUpdates = [
-      { id: 'latest', title: 'New' },
-      { id: 'old', title: 'Old' }
+      { id: 'latest', title: 'New', date: '02/01/2026', type: 'price', read: false },
+      { id: 'old', title: 'Old', date: '01/01/2026', type: 'price', read: false }
     ];
     
     useNotificationStore.setState({ 
-      updates: mockUpdates as any, 
+      updates: mockUpdates as unknown as UpdateRecord[], 
       hasUnread: true 
     });
 
@@ -113,11 +114,11 @@ describe('useNotificationStore', () => {
 
   it('should delete a notification locally', async () => {
     const mockUpdates = [
-      { id: '1', title: 'Keep' },
-      { id: '2', title: 'Delete' }
+      { id: '1', title: 'Keep', date: '01/01/2026', type: 'price', read: false },
+      { id: '2', title: 'Delete', date: '01/01/2026', type: 'price', read: false }
     ];
     
-    useNotificationStore.setState({ updates: mockUpdates as any });
+    useNotificationStore.setState({ updates: mockUpdates as unknown as UpdateRecord[] });
 
     await useNotificationStore.getState().actions.handleDeleteNotification('2');
     
@@ -129,11 +130,11 @@ describe('useNotificationStore', () => {
 
   it('should delete all notifications locally', async () => {
     const mockUpdates = [
-      { id: '1', title: '1' },
-      { id: '2', title: '2' }
+      { id: '1', title: '1', date: '01/01/2026', type: 'price', read: false },
+      { id: '2', title: '2', date: '01/01/2026', type: 'price', read: false }
     ];
     
-    useNotificationStore.setState({ updates: mockUpdates as any, hasUnread: true });
+    useNotificationStore.setState({ updates: mockUpdates as unknown as UpdateRecord[], hasUnread: true });
 
     await useNotificationStore.getState().actions.handleDeleteAllNotifications();
     
@@ -146,18 +147,18 @@ describe('useNotificationStore', () => {
 
   it('should handle clicking a notification', () => {
     const mockUpdates = [
-      { id: 'newest', title: 'newest' },
-      { id: 'middle', title: 'middle' },
-      { id: 'oldest', title: 'oldest' }
+      { id: 'newest', title: 'newest', date: '03/01/2026', type: 'price', read: false },
+      { id: 'middle', title: 'middle', date: '02/01/2026', type: 'price', read: false },
+      { id: 'oldest', title: 'oldest', date: '01/01/2026', type: 'price', read: false }
     ];
     
     useNotificationStore.setState({ 
-      updates: mockUpdates as any,
+      updates: mockUpdates as unknown as UpdateRecord[],
       hasUnread: true
     });
 
     // Click middle one
-    useNotificationStore.getState().actions.handleUpdateClick(mockUpdates[1] as any);
+    useNotificationStore.getState().actions.handleUpdateClick(mockUpdates[1] as unknown as UpdateRecord);
     
     const state = useNotificationStore.getState();
     expect(state.selectedUpdate?.id).toBe('middle');
@@ -171,14 +172,14 @@ describe('useNotificationStore', () => {
   });
 
   it('should handle empty updates array', () => {
-    let callback: any;
-    (notificationService.subscribeToNotifications as any).mockImplementation((cb: any) => {
+    let callback: (updates: unknown[]) => void;
+    (notificationService.subscribeToNotifications as Mock).mockImplementation((cb: (updates: unknown[]) => void) => {
       callback = cb;
       return () => {};
     });
 
     useNotificationStore.getState().actions.init();
-    callback([]); // Empty array
+    callback!([]); // Empty array
 
     const state = useNotificationStore.getState();
     expect(state.updates).toHaveLength(0);
@@ -187,7 +188,7 @@ describe('useNotificationStore', () => {
   });
 
   it('should prevent double subscription', () => {
-    (notificationService.subscribeToNotifications as any).mockReturnValue(() => {});
+    (notificationService.subscribeToNotifications as Mock).mockReturnValue(() => {});
 
     useNotificationStore.getState().actions.init();
     useNotificationStore.getState().actions.init();

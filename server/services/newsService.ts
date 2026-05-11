@@ -9,7 +9,7 @@ export async function getAnalyzedNewsUrls(): Promise<string[]> {
     const db = getDb(databaseId);
     const snapshot = await db.collection(COLLECTION_NAME).get();
     return snapshot.docs.map(doc => doc.data().url);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching analyzed news:', error);
     return [];
   }
@@ -29,7 +29,7 @@ export async function markNewsAsAnalyzed(url: string, title: string) {
       processedAt: new Date().toISOString(),
       status: 'analyzed'
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error marking news as analyzed:', error);
   }
 }

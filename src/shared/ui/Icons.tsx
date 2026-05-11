@@ -17,7 +17,8 @@ import {
   Sun,
   Laptop,
   RefreshCcw,
-  Copy
+  Copy,
+  LucideProps
 } from 'lucide-react';
 
 export const SearchIcon = Search;
@@ -39,5 +40,5 @@ export const LaptopIcon = Laptop;
 export const RefreshIcon = RefreshCcw;
 export const CopyIcon = Copy;
 
-export const TriangleUpIcon = (props: any) => <Triangle {...props} fill="currentColor" />;
-export const TriangleDownIcon = (props: any) => <Triangle {...props} fill="currentColor" className={`${props.className || ''} rotate-180`} />;
+export const TriangleUpIcon = (props: LucideProps) => <Triangle {...props} fill="currentColor" />;
+export const TriangleDownIcon = ({ className, ...props }: LucideProps) => <Triangle {...props} fill="currentColor" className={`${className || ''} rotate-180`} />;

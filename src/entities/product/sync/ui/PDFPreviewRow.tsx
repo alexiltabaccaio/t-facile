@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatPackage } from '../../index';
+import { formatPackage, PackageData } from '../../index';
 import { DiffItem } from '../model/types';
 import { DiffStatusBadge } from './DiffStatusBadge';
 import { ArrowRight } from 'lucide-react';
@@ -12,8 +12,8 @@ interface PDFPreviewRowProps {
 export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
   const { t } = useTranslation();
 
-  const localizedCategory = t(`catalog.categories.${item.product.category}`, { defaultValue: item.product.category });
-  const localizedPackage = formatPackage(item.product.package, item.product.packageInfo || '', t);
+  const localizedCategory = t(`catalog.categories.${item.product.category}`, item.product.category || 'Varie');
+  const localizedPackage = formatPackage(item.product.package as PackageData, item.product.packageInfo || '', t);
 
   return (
     <tr className="bg-white dark:bg-neutral-900/40 hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group">
@@ -36,7 +36,7 @@ export const PDFPreviewRow: React.FC<PDFPreviewRowProps> = ({ item }) => {
       </td>
       <td className="px-4 py-3 text-right lg:px-6 lg:py-4">
         <div className="flex items-center justify-end gap-2 text-xs lg:text-sm">
-          {item.type === 'price' ? (
+          {item.type === 'price' && item.diffData.oldPrice !== undefined && item.diffData.newPrice !== undefined ? (
             <>
               <span className="text-neutral-400 line-through text-[10px] lg:text-xs">€{item.diffData.oldPrice.toFixed(2)}</span>
               <ArrowRight className="w-3 h-3 text-neutral-400" />

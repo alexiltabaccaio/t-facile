@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import SettingsPage from './SettingsPage';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     useNavigate: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
 });
 
 vi.mock('@/shared/lib', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     useThemeStore: vi.fn(),
@@ -44,17 +44,17 @@ describe('SettingsPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as any).mockReturnValue(mockNavigate);
-    (useTranslation as any).mockReturnValue({
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
+    (useTranslation as Mock).mockReturnValue({
       t: mockT,
       i18n: {
         changeLanguage: mockChangeLanguage,
         resolvedLanguage: 'it',
       },
     });
-    (useThemeStore as any).mockImplementation((selector: any) => selector({ theme: 'system' }));
-    (useThemeActions as any).mockReturnValue({ setTheme: mockSetTheme });
-    (useAuth as any).mockReturnValue({ isAdmin: false });
+    (useThemeStore as unknown as Mock).mockImplementation((selector: (state: unknown) => unknown) => selector({ theme: 'system' }));
+    (useThemeActions as Mock).mockReturnValue({ setTheme: mockSetTheme });
+    (useAuth as Mock).mockReturnValue({ isAdmin: false });
   });
 
   it('renders correctly', () => {
@@ -96,7 +96,7 @@ describe('SettingsPage', () => {
   });
 
   it('shows admin section for admin users', () => {
-    (useAuth as any).mockReturnValue({ isAdmin: true });
+    (useAuth as Mock).mockReturnValue({ isAdmin: true });
     
     render(
       <MemoryRouter>
@@ -112,7 +112,7 @@ describe('SettingsPage', () => {
   });
 
   it('hides admin section for non-admin users', () => {
-    (useAuth as any).mockReturnValue({ isAdmin: false });
+    (useAuth as Mock).mockReturnValue({ isAdmin: false });
     
     render(
       <MemoryRouter>

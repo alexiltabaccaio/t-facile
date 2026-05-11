@@ -2,9 +2,10 @@ import { CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { formatToDisplayDate } from '@/shared/lib';
+import { Listino } from '@/entities/product';
 
 interface ADMUpdateItemProps {
-  listino: any;
+  listino: Listino;
   categoryDate: string;
   onToggle: () => void;
 }

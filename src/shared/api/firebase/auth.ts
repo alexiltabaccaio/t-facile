@@ -20,8 +20,8 @@ export const checkAdminStatus = async (uid: string): Promise<boolean> => {
     const adminDocRef = doc(db, 'admins', uid);
     const adminDoc = await getDoc(adminDocRef);
     return adminDoc.exists();
-  } catch (error) {
-    console.error("Errore verifica stato admin:", error);
+  } catch {
+    console.error("Errore verifica stato admin");
     return false;
   }
 };
@@ -32,8 +32,8 @@ export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
     return result.user;
-  } catch (error: any) {
-    if (error.code === 'auth/popup-closed-by-user') {
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'auth/popup-closed-by-user') {
       console.warn("L'utente ha chiuso il popup di login o è stato bloccato dal browser.");
       return null;
     }
@@ -46,8 +46,8 @@ export const handleRedirectResult = async () => {
   try {
     const result = await getRedirectResult(auth);
     return result?.user || null;
-  } catch (error) {
-    console.error("Error handling redirect result:", error);
+  } catch (_error) {
+    console.error("Error handling redirect result:", _error);
     return null;
   }
 };
@@ -55,8 +55,8 @@ export const handleRedirectResult = async () => {
 export const signOut = async () => {
   try {
     await firebaseSignOut(auth);
-  } catch (error) {
-    console.error("Error signing out:", error);
-    throw error;
+  } catch (_error) {
+    console.error("Error signing out:", _error);
+    throw _error;
   }
 };

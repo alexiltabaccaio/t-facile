@@ -1,7 +1,6 @@
 import React from 'react';
 import { RefreshCw, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-// @ts-ignore
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export const UpdatePwaPrompt: React.FC = () => {
@@ -9,7 +8,7 @@ export const UpdatePwaPrompt: React.FC = () => {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r: any) {
+    onRegistered(r: ServiceWorkerRegistration | undefined) {
       // Setup periodic update checks
       if (r) {
         setInterval(() => {
@@ -17,7 +16,7 @@ export const UpdatePwaPrompt: React.FC = () => {
         }, 60 * 60 * 1000); // Check every hour
       }
     },
-    onRegisterError(error: any) {
+    onRegisterError(error: unknown) {
       console.log('SW registration error', error);
     },
   });

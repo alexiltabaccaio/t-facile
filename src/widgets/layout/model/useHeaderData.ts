@@ -42,7 +42,7 @@ export const useHeaderData = () => {
     else if (path === '/settings/about') titleKey = 'layout.sidebar.info';
     else if (path === '/admin') titleKey = 'layout.sidebar.admin';
     
-    const translated = t(titleKey as any) as string;
+    const translated = t(titleKey as never) as string;
     return { mobile: translated, desktop: translated };
   };
 

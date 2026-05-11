@@ -25,9 +25,10 @@ router.get("/listini", requireAdmin, async (_req, res) => {
   try {
     const listini = await fetchADMListini();
     res.json({ success: true, listini });
-  } catch (err: any) {
-    console.error("Error in /api/adm/listini:", err);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("Error in API route:", errorMessage);
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
@@ -46,9 +47,10 @@ router.get("/news", requireAdmin, async (_req, res) => {
     const filtered = allNovita.filter(n => !analyzedUrls.includes(n.url));
     
     res.json({ success: true, news: filtered });
-  } catch (err: any) {
-    console.error("Error in /api/adm/news:", err);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("Error in /api/adm/news:", errorMessage);
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
@@ -62,9 +64,10 @@ router.post("/news/mark", requireAdmin, async (req, res) => {
     if (!url) return res.status(400).json({ success: false, error: "URL mancante" });
     await markNewsAsAnalyzed(url, title || "Novità ADM");
     res.json({ success: true });
-  } catch (err: any) {
-    console.error("Error in /api/adm/news/mark:", err);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("Error in /api/adm/news/mark:", errorMessage);
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
@@ -74,12 +77,14 @@ router.post("/news/mark", requireAdmin, async (req, res) => {
  */
 router.get("/download", requireAdmin, validateADMUrl, async (req, res) => {
   try {
-    const path = (req as any).validatedPath;
+    // @ts-expect-error - Custom property on Request
+    const path = req.validatedPath;
     const base64 = await downloadADMPdfAsBase64(path);
     res.json({ success: true, base64 });
-  } catch (err: any) {
-    console.error("Error in /api/adm/download:", err);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("Error in /api/adm/download:", errorMessage);
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
@@ -96,9 +101,10 @@ router.post("/analyze", requireAdmin, async (req, res) => {
     }
     const result = await analyzeTextWithAI(fileName, textData, aiModel);
     res.json({ success: true, result });
-  } catch (err: any) {
-    console.error("Error in /api/adm/analyze:", err);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("Error in /api/adm/analyze:", errorMessage);
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 

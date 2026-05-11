@@ -52,7 +52,7 @@ describe('syncUtils', () => {
       };
       const result = mapParsedProductToFirestore(parsed, true);
       expect(result.lifecycle.status).toBe('Fuori Catalogo');
-      expect(result.emissions.tar).toBe(10);
+      expect(result.emissions!.tar).toBe(10);
     });
   });
 

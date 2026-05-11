@@ -17,7 +17,7 @@ vi.mock('firebase/app', () => ({
 const mockOnAuthStateChanged = vi.fn();
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
-  onAuthStateChanged: (_auth: any, callback: (user: any) => void) => {
+  onAuthStateChanged: (_auth: unknown, callback: (user: unknown) => void) => {
     mockOnAuthStateChanged(callback);
     return () => {};
   },
@@ -27,10 +27,10 @@ vi.mock('firebase/auth', () => ({
 const mockGetDoc = vi.fn();
 vi.mock('firebase/firestore', () => ({
   getFirestore: vi.fn(() => ({})),
-  doc: vi.fn((_db: any, _coll: string, id: string) => ({ id })),
-  getDoc: (ref: any) => mockGetDoc(ref),
+  doc: vi.fn((_db: unknown, _coll: string, id: string) => ({ id })),
+  getDoc: (ref: unknown) => mockGetDoc(ref),
   onSnapshot: vi.fn(() => () => {}),
-  collection: vi.fn((_db: any, coll: string) => ({ coll })),
+  collection: vi.fn((_db: unknown, coll: string) => ({ coll })),
   query: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
@@ -54,11 +54,11 @@ vi.mock('pdfjs-dist', () => ({
 
 // Mock the catalog service (to avoid errors in App boot)
 vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<typeof import('@/entities/product')>();
   return {
     ...actual,
     catalogService: {
-      subscribeToConfig: vi.fn((onUpdate: (config: any) => void) => {
+      subscribeToConfig: vi.fn((onUpdate: (config: unknown) => void) => {
         onUpdate({ lastUpdateDate: '01/01/2026', syncId: 'test', totalChunks: 0 });
         return () => {};
       }),
@@ -69,14 +69,14 @@ vi.mock('@/entities/product', async (importOriginal) => {
         persist: {
             ...actual.useCatalogDataStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
     useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
         persist: {
             ...actual.useCatalogSyncStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
   };

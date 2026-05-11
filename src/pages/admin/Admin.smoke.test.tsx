@@ -11,7 +11,7 @@ vi.mock('firebase/app', () => ({ initializeApp: vi.fn(() => ({})) }));
 const mockOnAuthStateChanged = vi.fn();
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
-  onAuthStateChanged: (_auth: any, callback: (user: any) => void) => {
+  onAuthStateChanged: (_auth: unknown, callback: (user: unknown) => void) => {
     mockOnAuthStateChanged(callback);
     return () => {};
   },
@@ -21,10 +21,10 @@ vi.mock('firebase/auth', () => ({
 const mockGetDoc = vi.fn();
 vi.mock('firebase/firestore', () => ({
   getFirestore: vi.fn(() => ({})),
-  doc: vi.fn((_db: any, _coll: string, id: string) => ({ id })),
-  getDoc: (ref: any) => mockGetDoc(ref),
+  doc: vi.fn((_db: unknown, _coll: string, id: string) => ({ id })),
+  getDoc: (ref: unknown) => mockGetDoc(ref),
   onSnapshot: vi.fn(() => () => {}),
-  collection: vi.fn((_db: any, coll: string) => ({ coll })),
+  collection: vi.fn((_db: unknown, coll: string) => ({ coll })),
   query: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
@@ -58,10 +58,10 @@ vi.mock('@/features/system-update', () => ({
 
 // Mock the admin-sync entity logic now located in @/entities/product
 vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
-    useADMSyncStore: vi.fn((selector) => selector({ aiModel: 'gemini-3-flash-preview' })),
+    useADMSyncStore: vi.fn((selector: (state: Record<string, unknown>) => unknown) => selector({ aiModel: 'gemini-3-flash-preview' })),
     useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
   };
 });

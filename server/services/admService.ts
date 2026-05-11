@@ -34,8 +34,8 @@ export async function fetchADMListini() {
           });
         }
       });
-    } catch (error: any) {
-      console.error(`[ADMService] Error fetching source ${url}:`, error.message);
+    } catch (error: unknown) {
+      console.error(`[ADMService] Error fetching source ${url}:`, error instanceof Error ? error.message : String(error));
     }
   }));
 
@@ -69,8 +69,8 @@ export async function fetchADMNews() {
   try {
     const html = await ADMClient.fetchHTML(url);
     return ADMParser.parseNews(html);
-  } catch (error: any) {
-    console.error(`[ADMService] Error fetching ADM News:`, error.message);
+  } catch (error: unknown) {
+    console.error(`[ADMService] Error fetching ADM News:`, error instanceof Error ? error.message : String(error));
     throw error;
   }
 }

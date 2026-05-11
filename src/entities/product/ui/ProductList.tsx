@@ -46,8 +46,16 @@ const LoadingState: React.FC = () => {
 
 const ITEM_HEIGHT = 88;
 
+interface ProductListData {
+    products: Product[];
+    onProductClick: (product: Product) => void;
+    searchKeywords: string[];
+    sortOption: SortOption;
+    columnCount?: number;
+}
+
 // Row rendering for the single list (mobile)
-const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSProperties, data: any }) => {
+const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSProperties, data: ProductListData }) => {
     const { products, onProductClick, searchKeywords, sortOption } = data;
     const product = products[index];
     if (!product) return null;
@@ -63,8 +71,8 @@ const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSP
 });
 
 // Cell rendering for the grid (desktop)
-const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: number, rowIndex: number, style: React.CSSProperties, data: any }) => {
-    const { products, onProductClick, searchKeywords, sortOption, columnCount } = data;
+const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: number, rowIndex: number, style: React.CSSProperties, data: ProductListData }) => {
+    const { products, onProductClick, searchKeywords, sortOption, columnCount = 1 } = data;
     const index = rowIndex * columnCount + columnIndex;
     const product = products[index];
     
@@ -88,7 +96,7 @@ const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: nu
 // We will use a custom hook to measure the container size synchronously before paint
 
 const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, searchKeywords, sortOption, initialOffset = 0, onScrollUpdate, isLoading = false }) => {
-  const listRef = useRef<any>(null);
+  const listRef = useRef<List<ProductListData> | Grid<ProductListData>>(null);
   const scrollUpdateRef = useRef(onScrollUpdate);
   const searchKey = searchKeywords.join(' ');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -127,10 +135,10 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
 
   useEffect(() => {
     if (listRef.current) {
-      if (listRef.current.scrollTo) {
-        listRef.current.scrollTo(0);
-      } else if (listRef.current.scrollToPosition) {
-        listRef.current.scrollToPosition(0);
+      if ('columnCount' in listRef.current) {
+        (listRef.current as Grid<ProductListData>).scrollTo({ scrollTop: 0 });
+      } else {
+        (listRef.current as List<ProductListData>).scrollTo(0);
       }
       if (scrollUpdateRef.current) {
         scrollUpdateRef.current(0);
@@ -138,9 +146,9 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
     }
   }, [searchKey, sortOption]);
 
-  const handleScroll = (scrollProps: any) => {
+  const handleScroll = (scrollProps: { scrollOffset?: number; scrollTop?: number; scrollLeft?: number }) => {
     const offset = scrollProps.scrollOffset !== undefined ? scrollProps.scrollOffset : scrollProps.scrollTop;
-    if (onScrollUpdate) {
+    if (offset !== undefined && onScrollUpdate) {
         onScrollUpdate(offset);
     }
   };
@@ -167,7 +175,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
                 if (columnCount === 1) {
                   return (
                       <List
-                          ref={listRef}
+                          ref={listRef as React.RefObject<List<ProductListData>>}
                           height={h}
                           itemCount={products.length}
                           itemSize={ITEM_HEIGHT}
@@ -184,7 +192,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
                   const rowCount = Math.ceil(products.length / columnCount);
                   return (
                     <Grid
-                      ref={listRef}
+                      ref={listRef as React.RefObject<Grid<ProductListData>>}
                       columnCount={columnCount}
                       columnWidth={w / columnCount}
                       height={h}

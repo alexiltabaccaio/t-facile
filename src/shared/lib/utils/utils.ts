@@ -24,3 +24,9 @@ export const SYNONYM_MAP: { [key: string]: string[] } = {
   cigarillos: ['cigarillo'],
   tobacco: ['tabacco'],
 };
+
+export const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  return String(error);
+};

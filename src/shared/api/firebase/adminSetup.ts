@@ -16,13 +16,16 @@ export async function setupInitialAdmin(uid: string) {
     });
     console.log(`Utente ${uid} promosso con successo.`);
     return true;
-  } catch (error: any) {
-    console.error("Errore dettagliato promozione:", {
-      code: error.code,
-      message: error.message,
-      name: error.name,
-      uid: uid
-    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Errore dettagliato promozione:", {
+        message: error.message,
+        name: error.name,
+        uid: uid
+      });
+    } else {
+      console.error("Errore promozione (tipo sconosciuto):", error);
+    }
     throw error;
   }
 }

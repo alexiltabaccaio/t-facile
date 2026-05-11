@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { analyzePdfChunks } from './pdfAnalyzer';
 import { extractTextFromPDF } from './pdfExtractor';
 import { analyzeTextWithAI } from './aiService';
@@ -18,9 +18,9 @@ describe('pdfAnalyzer', () => {
 
   it('should process PDF and merge products', async () => {
     const mockFile = new File([''], 'test.pdf', { type: 'application/pdf' });
-    (extractTextFromPDF as any).mockResolvedValue('--- PAGE 1 ---\nSome text');
+    (extractTextFromPDF as Mock).mockResolvedValue('--- PAGE 1 ---\nSome text');
     
-    (analyzeTextWithAI as any).mockResolvedValue({
+    (analyzeTextWithAI as Mock).mockResolvedValue({
       updateDate: '2024-05-20',
       products: [
         { code: '001', name: 'Product 1', price: 5.00 },
@@ -44,9 +44,9 @@ describe('pdfAnalyzer', () => {
     const file1 = new File([''], '1.pdf');
     const file2 = new File([''], '2.pdf');
     
-    (extractTextFromPDF as any).mockResolvedValue('text');
+    (extractTextFromPDF as Mock).mockResolvedValue('text');
     
-    (analyzeTextWithAI as any)
+    (analyzeTextWithAI as Mock)
       .mockResolvedValueOnce({ updateDate: '2024-05-01', products: [{ code: '1' }] })
       .mockResolvedValueOnce({ updateDate: '2024-05-10', products: [{ code: '2' }] });
 
@@ -58,8 +58,8 @@ describe('pdfAnalyzer', () => {
 
   it('should throw error if no products extracted', async () => {
     const file = new File([''], 'empty.pdf');
-    (extractTextFromPDF as any).mockResolvedValue('text');
-    (analyzeTextWithAI as any).mockResolvedValue({ products: [] });
+    (extractTextFromPDF as Mock).mockResolvedValue('text');
+    (analyzeTextWithAI as Mock).mockResolvedValue({ products: [] });
 
     await expect(analyzePdfChunks([file], () => {}))
       .rejects.toThrow("L'estrazione non ha prodotto risultati");

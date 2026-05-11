@@ -7,9 +7,9 @@ import { useEffect } from 'react';
 export const useOrientationLock = () => {
   useEffect(() => {
     // Lock orientation if supported
-    const screenAny = screen as any;
-    if (screenAny && screenAny.orientation && screenAny.orientation.lock) {
-      screenAny.orientation.lock('portrait').catch(() => {
+    const orientation = (screen as unknown as { orientation?: { lock?: (o: string) => Promise<void> } }).orientation;
+    if (orientation?.lock) {
+      orientation.lock('portrait').catch(() => {
         // Silently ignore failures (e.g. on desktop or if not supported)
       });
     }

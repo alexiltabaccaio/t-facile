@@ -23,7 +23,7 @@ export async function fetchListini(): Promise<Listino[]> {
   let data;
   try {
     data = JSON.parse(textResponse);
-  } catch (parseError) {
+  } catch {
     throw new Error(`Errore dal server (${res.status}): ${textResponse}`);
   }
   
@@ -32,7 +32,7 @@ export async function fetchListini(): Promise<Listino[]> {
   }
   
   if (!data.success) throw new Error(data.error);
-  return data.listini.map((l: any) => ({ ...l, selected: true }));
+  return data.listini.map((l: Listino) => ({ ...l, selected: true }));
 }
 
 export async function downloadListinoAsFile(listino: Listino, signal?: AbortSignal): Promise<File> {
@@ -46,7 +46,7 @@ export async function downloadListinoAsFile(listino: Listino, signal?: AbortSign
   let dlData;
   try {
     dlData = JSON.parse(dlText);
-  } catch (parseError) {
+  } catch {
     throw new Error(`Errore dal server durante il download (${dlRes.status}): ${dlText}`);
   }
 
@@ -95,7 +95,7 @@ export async function fetchNews(): Promise<Listino[]> {
   let data;
   try {
     data = JSON.parse(textResponse);
-  } catch (parseError) {
+  } catch {
     throw new Error(`Errore dal server (${res.status}): ${textResponse}`);
   }
   
@@ -104,7 +104,7 @@ export async function fetchNews(): Promise<Listino[]> {
   }
   
   if (!data.success) throw new Error(data.error);
-  return data.news.map((n: any) => ({ ...n, selected: true }));
+  return data.news.map((n: Listino) => ({ ...n, selected: true }));
 }
 
 export async function markNewsAsAnalyzed(url: string, title: string): Promise<void> {

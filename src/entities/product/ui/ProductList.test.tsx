@@ -35,7 +35,7 @@ describe('ProductList', () => {
     products: mockProducts,
     onProductClick: vi.fn(),
     searchKeywords: [],
-    sortOption: { key: 'smart' as any, order: 'desc' as const },
+    sortOption: { key: 'smart' as 'smart' | 'name' | 'nicotine' | 'tar' | 'co', order: 'desc' as const },
   };
 
   it('renders a list of products', () => {

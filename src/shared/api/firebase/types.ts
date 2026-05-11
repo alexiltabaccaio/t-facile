@@ -3,6 +3,15 @@ export interface CatalogConfig {
   categoryDates?: Record<string, string>;
   syncId: number;
   totalChunks: number;
+  backupCreatedAt?: unknown; // Timestamp di Firebase
+}
+
+export interface ScheduledUpdate {
+  id: string;
+  parsedData: string; // I dati del catalogo sono solitamente stringhe JSON compresse
+  effectiveDate: string;
+  createdAt: unknown; // Timestamp di Firebase
+  historyEntry?: UpdateHistoryEntry;
 }
 
 export interface SupportTicket {
@@ -17,7 +26,7 @@ export interface UpdateHistoryEntry {
   title: string;
   date: string;
   summary?: string;
-  type?: 'pre-announcement' | 'price' | 'system';
+  type?: 'pre-announcement' | 'price' | 'system' | 'news';
   effectiveDate?: string;
   stats: {
     new: number;

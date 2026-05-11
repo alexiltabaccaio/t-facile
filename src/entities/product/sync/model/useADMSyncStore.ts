@@ -4,6 +4,7 @@ import { saveParsedDataToFirestore } from '../api/dbSyncer';
 import { Product } from '../../index';
 import { Listino, fetchListini, fetchNews, markNewsAsAnalyzed } from '../api/admApiService';
 import { processListiniBatch } from '../api/admProcessor';
+import { getErrorMessage } from '@/shared/lib/utils/errorUtils';
 
 interface ADMSyncState {
   aiModel: string;
@@ -89,9 +90,9 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
         set({ statusMsg: "admin.sync.contacting" });
         const listini = await fetchListini();
         set({ availableUpdates: listini });
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
-        set({ error: err.message || "Impossibile leggere il sito dell'Agenzia delle Dogane." });
+        set({ error: getErrorMessage(err) || "Impossibile leggere il sito dell'Agenzia delle Dogane." });
       } finally {
         set({ isChecking: false });
       }
@@ -107,9 +108,9 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
           selected: index === 0
         }));
         set({ availableUpdates: autoSelectedNews });
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
-        set({ error: err.message || "Errore durante la scansione delle news." });
+        set({ error: getErrorMessage(err) || "Errore durante la scansione delle news." });
       } finally {
         set({ isChecking: false });
       }
@@ -143,13 +144,14 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
           processedData: combinedParsedData, 
           availableUpdates: availableUpdates.filter(u => !u.selected) 
         });
-      } catch(err: any) {
+      } catch(err: unknown) {
         console.error(err);
-        if (err.name === 'AbortError' || err.message === 'Operazione annullata dall\'utente.') {
+        const message = getErrorMessage(err);
+        if (message === 'AbortError' || message === 'Operazione annullata dall\'utente.') {
            // Silently cancel without showing error message
            set({ error: null });
         } else {
-           set({ error: err.message || "Errore sincronizzazione IA" });
+           set({ error: message || "Errore sincronizzazione IA" });
         }
       } finally {
         set({ isProcessing: false, statusMsg: "", abortController: null });
@@ -187,8 +189,8 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
         onSuccess(finalDate);
         set({ success: true, processedData: null, currentNews: null });
         setTimeout(() => set({ success: false }), 5000);
-      } catch (err: any) {
-         set({ error: err.message || "Errore durante il salvataggio" });
+      } catch (err: unknown) {
+         set({ error: getErrorMessage(err) || "Errore durante il salvataggio" });
       } finally {
          set({ isProcessing: false, statusMsg: "" });
       }

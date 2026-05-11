@@ -44,7 +44,7 @@ export const useProductSearch = ({
       showOutOfCatalog,
       emissionFilters,
       searchKeywords,
-      t
+      t: t as (key: string, options?: Record<string, unknown>) => string
     });
 
     // 3. Exact Code Match Handling (absolute priority if a single number is searched)

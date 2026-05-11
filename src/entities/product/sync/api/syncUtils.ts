@@ -90,10 +90,10 @@ export const normalizeCategory = (category: string | undefined): string => {
 /**
  * Maps a product extracted by the AI into the data structure required by the Firestore Database.
  */
-export const mapParsedProductToFirestore = (product: ParsedProduct, isNew: boolean): any => {
+export const mapParsedProductToFirestore = (product: ParsedProduct, isNew: boolean): Product => {
   const isEmissionOnly = product.price === undefined && product.pricePerKg === undefined;
   
-  const data: any = {
+  const data: Product = {
     identity: {
       code: product.code,
       name: product.name || 'Senza Nome',
@@ -101,8 +101,8 @@ export const mapParsedProductToFirestore = (product: ParsedProduct, isNew: boole
       packageInfo: product.packageInfo || '',
     },
     lifecycle: {
-      status: product.status || (isNew && isEmissionOnly ? 'Fuori Catalogo' : 'Attivo'),
-      radiationDate: product.radiationDate || null
+      status: (product.status as 'Attivo' | 'Radiato' | 'Fuori Catalogo' | undefined) || (isNew && isEmissionOnly ? 'Fuori Catalogo' : 'Attivo'),
+      radiationDate: product.radiationDate || undefined
     },
     pricing: {
       currentPrice: product.price || 0,

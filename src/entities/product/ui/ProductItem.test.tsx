@@ -23,7 +23,7 @@ describe('ProductItem', () => {
     product: mockProduct,
     onClick: vi.fn(),
     searchKeywords: [],
-    sortKey: 'smart' as any,
+    sortKey: 'smart' as 'smart' | 'name' | 'nicotine' | 'tar' | 'co',
   };
 
   it('renders product information correctly', () => {

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import SortModal from './SortModal';
 import { useCatalogFilterStore, useCatalogFilterActions } from '@/entities/product';
 
@@ -16,12 +16,12 @@ describe('SortModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCatalogFilterStore as any).mockReturnValue({
+    (useCatalogFilterStore as unknown as Mock).mockReturnValue({
       sortOption: { key: 'smart', order: 'desc' },
       showRetired: false,
       showOutOfCatalog: false,
     });
-    (useCatalogFilterActions as any).mockReturnValue({
+    (useCatalogFilterActions as unknown as Mock).mockReturnValue({
       setSortOption: mockSetSortOption,
       setShowRetired: mockSetShowRetired,
       setShowOutOfCatalog: mockSetShowOutOfCatalog,
@@ -58,7 +58,7 @@ describe('SortModal', () => {
   });
 
   it('calls setSortOption with toggled order when order button is clicked', () => {
-     (useCatalogFilterStore as any).mockReturnValue({
+     (useCatalogFilterStore as unknown as Mock).mockReturnValue({
       sortOption: { key: 'name', order: 'asc' },
       showRetired: false,
       showOutOfCatalog: false,

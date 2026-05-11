@@ -15,7 +15,7 @@ interface PDFPreviewTableProps {
 
 export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, onCancel, onSave }) => {
   const { t } = useTranslation();
-  const products = useCatalogDataStore((state: any) => state.products);
+  const products = useCatalogDataStore((state) => state.products);
   const [activeTab, setActiveTab] = useState<ChangeType | 'all'>('all');
   const [copied, setCopied] = useState(false);
 
@@ -23,7 +23,7 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
 
   const filteredItems = activeTab === 'all' 
     ? diffItems 
-    : diffItems.filter((i: any) => i.type === activeTab);
+    : diffItems.filter((i) => i.type === activeTab);
 
   const getTabLabel = (type: ChangeType | 'all') => {
     switch(type) {
@@ -111,7 +111,7 @@ export const PDFPreviewTable: React.FC<PDFPreviewTableProps> = ({ parsedData, on
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-neutral-400 italic">{t('admin.preview.noProducts')}</td>
               </tr>
-            ) : filteredItems.map((item: any, i: number) => (
+            ) : filteredItems.map((item, i) => (
               <PDFPreviewRow key={i} item={item} />
             ))}
           </tbody>

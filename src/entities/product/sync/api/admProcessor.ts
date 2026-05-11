@@ -23,10 +23,9 @@ export async function processListiniBatch(
       const file = await downloadListinoAsFile(listino, progress.signal);
       allFiles.push(file);
       if (!latestDate || isDateNewer(listino.date, latestDate)) latestDate = listino.date;
-    } catch (err: any) {
-      console.warn(`Salto listino ${listino.title} per errore:`, err.message);
-      // Do not block the entire batch if a single download fails, unless it's an abort
-      if (err.name === 'AbortError') throw err;
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') throw err;
+      console.warn(`Salto listino ${listino.title} per errore:`, err instanceof Error ? err.message : String(err));
     }
   }
 

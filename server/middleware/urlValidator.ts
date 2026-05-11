@@ -23,12 +23,14 @@ export const validateADMUrl = (req: Request, res: Response, next: NextFunction) 
     }
 
     // Attach sanitized path to request for services to use
-    (req as any).validatedPath = parsedUrl.pathname + parsedUrl.search;
+    // @ts-expect-error - Custom property on Request
+    req.validatedPath = parsedUrl.pathname + parsedUrl.search;
     next();
-  } catch (e) {
+  } catch {
     // If it's not a valid absolute URL, check if it's a relative path starting with /
     if (url.startsWith('/')) {
-      (req as any).validatedPath = url;
+      // @ts-expect-error - Custom property on Request
+      req.validatedPath = url;
       return next();
     }
     

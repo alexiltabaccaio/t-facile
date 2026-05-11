@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import { extractTextFromPDF } from './pdfExtractor';
 import * as pdfjs from 'pdfjs-dist';
 
@@ -29,7 +29,7 @@ describe('pdfExtractor', () => {
       getPage: vi.fn().mockResolvedValue(mockPage)
     };
 
-    (pdfjs.getDocument as any).mockReturnValue({
+    (pdfjs.getDocument as Mock).mockReturnValue({
       promise: Promise.resolve(mockPdf)
     });
 
@@ -61,7 +61,7 @@ describe('pdfExtractor', () => {
       getPage: vi.fn().mockResolvedValue(mockPage)
     };
 
-    (pdfjs.getDocument as any).mockReturnValue({
+    (pdfjs.getDocument as Mock).mockReturnValue({
       promise: Promise.resolve(mockPdf)
     });
 

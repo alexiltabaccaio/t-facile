@@ -33,8 +33,9 @@ export async function getPromptTemplate(type: string): Promise<PromptTemplate> {
     } else {
       throw new Error(`Prompt document "${docId}" not found in 'prompts' collection.`);
     }
-  } catch (error: any) {
-    console.error(`[PromptRepository] Error fetching prompt for ${type} from Firestore:`, error);
-    throw new Error(`Unable to retrieve AI instructions for lists of type "${type}". Details: ${error.message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[PromptRepository] Error fetching prompt for ${type} from Firestore:`, errorMessage);
+    throw new Error(`Unable to retrieve AI instructions for lists of type "${type}". Details: ${errorMessage}`);
   }
 }

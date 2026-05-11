@@ -16,6 +16,7 @@ export const notificationRepository = {
    * Subscription to notifications (last 100)
    */
   subscribeToNotifications: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onUpdate: (data: any[]) => void,
     onError: (error: FirestoreError) => void
   ) => {

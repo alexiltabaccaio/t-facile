@@ -57,7 +57,7 @@ vi.mock('virtual:pwa-register/react', () => ({
 
 // Mock the catalog service to avoid real calls to Firestore
 vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<typeof import('@/entities/product')>();
   return {
     ...actual,
     catalogService: {
@@ -76,14 +76,14 @@ vi.mock('@/entities/product', async (importOriginal) => {
         persist: {
             ...actual.useCatalogDataStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
     useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
         persist: {
             ...actual.useCatalogSyncStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
   };

@@ -33,10 +33,11 @@ export interface FirestoreErrorInfo {
 /**
  * Enhanced error handler for Firestore permission issues
  */
-export function handleFirestoreError(error: any, operation: FirestoreErrorInfo['operationType'], path: string | null = null): never {
-  if (error?.message?.includes('Missing or insufficient permissions')) {
+export function handleFirestoreError(error: unknown, operation: FirestoreErrorInfo['operationType'], path: string | null = null): never {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.includes('Missing or insufficient permissions')) {
     const errorInfo: FirestoreErrorInfo = {
-      error: error.message,
+      error: message,
       operationType: operation,
       path: path
     };

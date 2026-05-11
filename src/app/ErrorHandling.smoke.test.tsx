@@ -10,7 +10,7 @@ vi.mock('@vercel/analytics/react', () => ({ Analytics: () => null }));
 vi.mock('firebase/app', () => ({ initializeApp: vi.fn(() => ({})) }));
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
-  onAuthStateChanged: (_auth: any, callback: (user: any) => void) => {
+  onAuthStateChanged: (_auth: unknown, callback: (user: unknown) => void) => {
     callback(null);
     return () => {};
   },
@@ -19,10 +19,10 @@ vi.mock('firebase/auth', () => ({
 const mockGetDoc = vi.fn();
 vi.mock('firebase/firestore', () => ({
   getFirestore: vi.fn(() => ({})),
-  doc: vi.fn((_db: any, _coll: string, id: string) => ({ id })),
-  getDoc: (ref: any) => mockGetDoc(ref),
+  doc: vi.fn((_db: unknown, _coll: string, id: string) => ({ id })),
+  getDoc: (ref: unknown) => mockGetDoc(ref),
   onSnapshot: vi.fn(() => () => {}),
-  collection: vi.fn((_db: any, coll: string) => ({ coll })),
+  collection: vi.fn((_db: unknown, coll: string) => ({ coll })),
   query: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
@@ -45,13 +45,13 @@ vi.mock('virtual:pwa-register/react', () => ({
 }));
 
 // Mock catalogService to trigger error
-let mockErrorTrigger: ((err: any) => void) | null = null;
+let mockErrorTrigger: ((err: unknown) => void) | null = null;
 vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<typeof import('@/entities/product')>();
   return {
     ...actual,
     catalogService: {
-      subscribeToConfig: vi.fn((_onSuccess: any, onError: any) => {
+      subscribeToConfig: vi.fn((_onSuccess: (config: unknown) => void, onError: (err: unknown) => void) => {
         mockErrorTrigger = onError;
         return () => {};
       }),
@@ -62,14 +62,14 @@ vi.mock('@/entities/product', async (importOriginal) => {
         persist: {
             ...actual.useCatalogDataStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
     useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
         persist: {
             ...actual.useCatalogSyncStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
   };

@@ -1,7 +1,8 @@
 import { adminAuth, getDb } from '../firebaseAdmin.js';
 import { getFirebaseConfig } from '../utils/config.js';
+import { Request, Response, NextFunction } from 'express';
 
-export const requireAdmin = async (req: any, res: any, next: any) => {
+export const requireAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const { firestoreDatabaseId: databaseId = '(default)' } = getFirebaseConfig();
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -23,10 +24,12 @@ export const requireAdmin = async (req: any, res: any, next: any) => {
       return res.status(403).json({ success: false, error: 'Accesso negato: Solo amministratori' });
     }
     
+    // @ts-expect-error - Custom property on Request
     req.user = decodedToken;
     next();
-  } catch (error: any) {
-    console.error("Auth Middleware Error:", error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Auth Middleware Error:", errorMessage);
     return res.status(401).json({ success: false, error: 'Token invalido o scaduto' });
   }
 };

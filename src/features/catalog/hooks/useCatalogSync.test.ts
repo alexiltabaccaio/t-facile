@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useCatalogSync } from './useCatalogSync';
-import { useCatalogSyncStore, useCatalogDataStore, catalogService } from '@/entities/product';
+import { useCatalogSyncStore, useCatalogDataStore, catalogService, Product } from '@/entities/product';
 
 // Mocking catalogService
 vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     catalogService: {
@@ -50,13 +50,13 @@ describe('useCatalogSync', () => {
   });
 
   it('should trigger full sync when cache is empty', async () => {
-    let configCallback: any;
-    (catalogService.subscribeToConfig as any).mockImplementation((onUpdate: any) => {
+    let configCallback: (config: unknown) => void;
+    (catalogService.subscribeToConfig as unknown as Mock).mockImplementation((onUpdate: (config: unknown) => void) => {
       configCallback = onUpdate;
       return vi.fn(); // unsubscribe
     });
 
-    (catalogService.fetchCatalogInChunks as any).mockResolvedValue([
+    (catalogService.fetchCatalogInChunks as unknown as Mock).mockResolvedValue([
       { identity: { code: '1' }, pricing: { currentPrice: 10 } }
     ]);
 
@@ -78,12 +78,12 @@ describe('useCatalogSync', () => {
 
   it('should NOT sync when cache is already updated', async () => {
     // Pre-fill store
-    useCatalogDataStore.getState().actions.setProducts([{ identity: { code: '1' } }] as any);
+    useCatalogDataStore.getState().actions.setProducts([{ identity: { code: '1' } }] as unknown as Product[]);
     useCatalogSyncStore.getState().actions.setLastUpdateDate('2024-05-01');
     useCatalogSyncStore.getState().actions.setLastSyncId(100);
 
-    let configCallback: any;
-    (catalogService.subscribeToConfig as any).mockImplementation((onUpdate: any) => {
+    let configCallback: (config: unknown) => void;
+    (catalogService.subscribeToConfig as unknown as Mock).mockImplementation((onUpdate: (config: unknown) => void) => {
       configCallback = onUpdate;
       return vi.fn();
     });
@@ -101,13 +101,13 @@ describe('useCatalogSync', () => {
   });
 
   it('should handle sync errors gracefully', async () => {
-    let configCallback: any;
-    (catalogService.subscribeToConfig as any).mockImplementation((onUpdate: any) => {
+    let configCallback: (config: unknown) => void;
+    (catalogService.subscribeToConfig as unknown as Mock).mockImplementation((onUpdate: (config: unknown) => void) => {
       configCallback = onUpdate;
       return vi.fn();
     });
 
-    (catalogService.fetchCatalogInChunks as any).mockRejectedValue(new Error('Network error'));
+    (catalogService.fetchCatalogInChunks as unknown as Mock).mockRejectedValue(new Error('Network error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -127,8 +127,8 @@ describe('useCatalogSync', () => {
   });
 
   it('should set isOnline to false when config subscription fails', async () => {
-    let errorCallback: any;
-    (catalogService.subscribeToConfig as any).mockImplementation((_onUpdate: any, onError: any) => {
+    let errorCallback: (error: unknown) => void;
+    (catalogService.subscribeToConfig as unknown as Mock).mockImplementation((_onUpdate: unknown, onError: (error: unknown) => void) => {
       errorCallback = onError;
       return vi.fn();
     });

@@ -13,7 +13,7 @@ import {
   FirestoreError
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { CatalogConfig, UpdateHistoryEntry } from './types';
+import { CatalogConfig, UpdateHistoryEntry, ScheduledUpdate } from './types';
 
 export const productRepository = {
   /**
@@ -124,19 +124,20 @@ export const productRepository = {
    * Executes a generic batch update
    */
   executeBatch: async (action: (batch: { 
-    update: (path: string[], data: any) => void;
-    set: (path: string[], data: any, options?: any) => void;
+    update: (path: string[], data: Record<string, unknown>) => void;
+    set: (path: string[], data: Record<string, unknown>, options?: { merge?: boolean }) => void;
     delete: (path: string[]) => void;
   }) => void) => {
     const batch = writeBatch(db);
     action({
-      update: (path: string[], data: any) => {
+      update: (path, data) => {
         const ref = doc(db, path[0], ...path.slice(1));
-        batch.update(ref, data);
+        // @ts-expect-error - Firestore update expects specific nested types that are hard to satisfy with generic data
+        batch.update(ref, data); 
       },
-      set: (path: string[], data: any, options?: any) => {
+      set: (path, data, options) => {
         const ref = doc(db, path[0], ...path.slice(1));
-        batch.set(ref, data, options);
+        batch.set(ref, data, options || {});
       },
       delete: (path: string[]) => {
         const ref = doc(db, path[0], ...path.slice(1));
@@ -166,7 +167,7 @@ export const productRepository = {
    * Saves a scheduled catalog update
    */
   saveScheduledSync: async (params: {
-    parsedData: any;
+    parsedData: string;
     effectiveDate: string;
     historyEntry?: UpdateHistoryEntry;
   }) => {
@@ -180,14 +181,14 @@ export const productRepository = {
   /**
    * Fetches all pending scheduled syncs that should be applied
    */
-  fetchPendingScheduledSyncs: async (todayStr: string): Promise<any[]> => {
+  fetchPendingScheduledSyncs: async (todayStr: string): Promise<ScheduledUpdate[]> => {
     const q = query(
       collection(db, 'scheduled_updates'),
       where('effectiveDate', '<=', todayStr)
     );
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({
-      ...doc.data(),
+      ...(doc.data() as Omit<ScheduledUpdate, 'id'>),
       id: doc.id
     }));
   },
@@ -255,8 +256,8 @@ export const productRepository = {
     // 1. Get backup config
     const backupConfigDoc = await getDoc(doc(db, 'system', 'backup_config'));
     if (!backupConfigDoc.exists()) throw new Error("Nessun backup trovato.");
-    const config = backupConfigDoc.data();
-    delete (config as any).backupCreatedAt;
+    const config = backupConfigDoc.data() as CatalogConfig;
+    delete config.backupCreatedAt;
 
     // 2. Restore main config
     const configRef = doc(db, 'system', 'config');
@@ -267,8 +268,8 @@ export const productRepository = {
     for (let i = 0; i < totalChunks; i++) {
       const backupChunkDoc = await getDoc(doc(db, 'system', `backup_catalog_chunk_${i}`));
       if (backupChunkDoc.exists()) {
-        const chunkData = backupChunkDoc.data();
-        delete (chunkData as any).backupCreatedAt;
+        const chunkData = backupChunkDoc.data() as { data: string; backupCreatedAt?: unknown };
+        delete chunkData.backupCreatedAt;
         
         const chunkRef = doc(db, 'system', `catalog_chunk_${i}`);
         batch.set(chunkRef, chunkData);

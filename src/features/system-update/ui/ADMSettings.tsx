@@ -3,6 +3,7 @@ import { Cpu, RotateCcw, Zap, Sparkles } from 'lucide-react';
 import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
 import { productRepository } from '@/shared/api';
 import { useTranslation } from 'react-i18next';
+import { getErrorMessage } from '@/shared/lib';
 
 export const ADMSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -21,9 +22,9 @@ export const ADMSettings: React.FC = () => {
       await productRepository.restoreCatalogBackup();
       alert(t('admin.settings.restore.success'));
       window.location.reload();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err.message || t('admin.settings.restore.error'));
+      alert(getErrorMessage(err) || t('admin.settings.restore.error'));
     } finally {
       setIsRestoring(false);
     }

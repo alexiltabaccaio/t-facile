@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCatalogFilterStore } from './useCatalogFilterStore';
+import { Product } from './types';
 
 describe('useCatalogFilterStore', () => {
   beforeEach(() => {
@@ -47,7 +48,7 @@ describe('useCatalogFilterStore', () => {
   });
 
   it('should set selected product', () => {
-    const mockProduct = { id: '1', name: 'Test' } as any;
+    const mockProduct = { identity: { code: '1' } } as unknown as Product;
     useCatalogFilterStore.getState().actions.setSelectedProduct(mockProduct);
     expect(useCatalogFilterStore.getState().selectedProduct).toEqual(mockProduct);
   });

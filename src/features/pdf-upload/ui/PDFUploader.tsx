@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { auth, handleFirestoreError } from '@/shared/api';
+import { getErrorMessage } from '@/shared/lib';
 import { 
   useCatalogDataStore, 
   useCatalogSyncStore, 
@@ -55,9 +56,9 @@ export const PDFUploader: React.FC = () => {
       
       setParsedData(result);
       setProcessStatus("");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || t('admin.manual.errorProcessing'));
+      setError(getErrorMessage(err) || t('admin.manual.errorProcessing'));
     } finally {
       setIsProcessing(false);
     }
@@ -78,7 +79,7 @@ export const PDFUploader: React.FC = () => {
       setLastUpdateDate(finalDate);
       setProcessSuccess(true);
       setParsedData(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Save error:", err);
       handleFirestoreError(err, 'write', 'system/catalog_chunks');
     } finally {

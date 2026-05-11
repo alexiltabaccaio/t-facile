@@ -1,7 +1,9 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
+import { Express } from 'express';
 import { createApp } from './app';
+import { Mock } from 'vitest';
 
 const { mockDoc, mockDb } = vi.hoisted(() => {
   const mDoc = { get: vi.fn() };
@@ -19,7 +21,7 @@ vi.mock('./firebaseAdmin', () => ({
 }));
 
 describe('Security Tests', () => {
-  let app: any;
+  let app: Express;
 
   beforeEach(async () => {
     app = await createApp();
@@ -34,7 +36,7 @@ describe('Security Tests', () => {
 
     it('should reject requests with invalid tokens', async () => {
       const { adminAuth } = await import('./firebaseAdmin');
-      (adminAuth.verifyIdToken as any).mockRejectedValue(new Error('Invalid token'));
+      (adminAuth.verifyIdToken as Mock).mockRejectedValue(new Error('Invalid token'));
 
       const response = await request(app)
         .get('/api/adm/listini')
@@ -45,7 +47,7 @@ describe('Security Tests', () => {
 
     it('should reject non-admin users (403)', async () => {
       const { adminAuth } = await import('./firebaseAdmin');
-      (adminAuth.verifyIdToken as any).mockResolvedValue({ uid: 'user123' });
+      (adminAuth.verifyIdToken as Mock).mockResolvedValue({ uid: 'user123' });
       mockDoc.get.mockResolvedValue({ exists: false });
 
       const response = await request(app)
@@ -60,7 +62,7 @@ describe('Security Tests', () => {
     beforeEach(async () => {
        // Mock success auth for SSRF tests
        const { adminAuth } = await import('./firebaseAdmin');
-       (adminAuth.verifyIdToken as any).mockResolvedValue({ uid: 'admin123' });
+       (adminAuth.verifyIdToken as Mock).mockResolvedValue({ uid: 'admin123' });
        mockDoc.get.mockResolvedValue({ exists: true });
     });
 

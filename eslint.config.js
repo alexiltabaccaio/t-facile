@@ -1,5 +1,6 @@
 import firebaseRulesPlugin from '@firebase/eslint-plugin-security-rules';
 import featureSliced from '@conarti/eslint-plugin-feature-sliced';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import { fixupPluginRules } from '@eslint/compat';
 
@@ -21,12 +22,19 @@ export default [
   },
   {
     files: ['**/*.{ts,tsx}'],
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
       },
+    },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
     settings: {
       'import/resolver': {

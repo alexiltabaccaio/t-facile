@@ -4,6 +4,7 @@ import { ParsedPDFResult } from './pdfAnalyzer';
 import { isDateNewer, chunkArray } from '@/shared/lib';
 import { mergeParsedCatalog, calculateNextCategoryDates } from './catalogMergeUtils';
 import { formatHistoryEntry } from './syncHistoryUtils';
+import { UpdateHistoryEntry } from '@/shared/api';
 
 export const saveParsedDataToFirestore = async (
   parsedData: ParsedPDFResult,
@@ -58,12 +59,12 @@ export const saveParsedDataToFirestore = async (
       ...historyEntry,
       title: `Imminente: ${historyEntry.title}`,
       summary: `Cambio prezzi previsto per il ${formattedEffectiveDate?.split('-').reverse().join('/')}`,
-      type: 'pre-announcement' as any,
+      type: 'pre-announcement' as UpdateHistoryEntry['type'],
       effectiveDate: formattedEffectiveDate
     } : undefined;
 
     await productRepository.saveScheduledSync({
-      parsedData,
+      parsedData: JSON.stringify(parsedData),
       effectiveDate: formattedEffectiveDate!,
       historyEntry: scheduledEntry
     });

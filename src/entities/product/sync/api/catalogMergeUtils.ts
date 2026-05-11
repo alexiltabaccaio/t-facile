@@ -21,7 +21,7 @@ export const mergeParsedCatalog = (
 ): MergeResult => {
   const stats: SyncStats = { new: 0, price: 0, status: 0, emissions: 0 };
   const allVariations: string[] = [];
-  const mergedCatalogMap = new Map<string, any>();
+  const mergedCatalogMap = new Map<string, Product>();
   
   const updatedCategories = new Set<string>();
   const categoriesWithPrices = new Set<string>();

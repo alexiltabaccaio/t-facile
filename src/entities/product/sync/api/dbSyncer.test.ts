@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { saveParsedDataToFirestore } from './dbSyncer';
+import { ParsedPDFResult, ParsedProduct } from './pdfAnalyzer';
 import * as api from '@/shared/api';
 
 vi.mock('@/shared/api', () => ({
@@ -27,9 +28,9 @@ describe('dbSyncer', () => {
         category: 'Sigari'
       }));
 
-      const mockParsedData: any = {
+      const mockParsedData: ParsedPDFResult = {
         updateDate: '10/01/2026',
-        products: mockProducts
+        products: mockProducts as unknown as ParsedProduct[]
       };
 
       const result = await saveParsedDataToFirestore(mockParsedData, '01/01/2026', [], {});
@@ -37,7 +38,7 @@ describe('dbSyncer', () => {
       expect(result.finalDate).toBe('10/01/2026');
       
       expect(mockProductRepository.saveCatalogSync).toHaveBeenCalledTimes(1);
-      const callArgs = (mockProductRepository.saveCatalogSync as any).mock.calls[0][0];
+      const callArgs = (mockProductRepository.saveCatalogSync as Mock).mock.calls[0][0];
       
       // Chunks
       expect(callArgs.chunks.length).toBe(2);
@@ -52,7 +53,7 @@ describe('dbSyncer', () => {
     });
 
     it('should handle case with no changes (no history entry)', async () => {
-      const mockParsedData: any = {
+      const mockParsedData: ParsedPDFResult = {
         updateDate: '01/01/2026',
         products: []
       };
@@ -60,7 +61,7 @@ describe('dbSyncer', () => {
       await saveParsedDataToFirestore(mockParsedData, '01/01/2026', [], {});
       
       expect(mockProductRepository.saveCatalogSync).toHaveBeenCalledTimes(1);
-      const callArgs = (mockProductRepository.saveCatalogSync as any).mock.calls[0][0];
+      const callArgs = (mockProductRepository.saveCatalogSync as Mock).mock.calls[0][0];
       expect(callArgs.historyEntry).toBeUndefined();
       expect(callArgs.config.totalChunks).toBe(0);
     });

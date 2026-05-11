@@ -3,7 +3,7 @@ import { Product } from '@/entities/product';
 import { SYNONYM_MAP, escapeRegExp, createWordStartRegex } from '@/shared/lib';
 import { EmissionFilter } from './searchParser';
 
-export const checkTextMatch = (p: Product, keyword: string, t?: any): boolean => {
+export const checkTextMatch = (p: Product, keyword: string, t?: (key: string, options?: Record<string, unknown>) => string): boolean => {
   const regex = createWordStartRegex(keyword);
   const inName = regex.test(p.identity.name);
   const inCode = p.identity.code.startsWith(keyword);
@@ -40,7 +40,7 @@ export const filterProducts = (
     showOutOfCatalog: boolean;
     emissionFilters: EmissionFilter[];
     searchKeywords: string[];
-    t?: any;
+    t?: (key: string, options?: Record<string, unknown>) => string;
   }
 ) => {
   let filtered = products;
@@ -61,9 +61,10 @@ export const filterProducts = (
   // 2. Emission Filter
   if (emissionFilters.length > 0) {
     filtered = filtered.filter(p => {
-      if (!p.emissions) return false;
+      const emissions = p.emissions;
+      if (!emissions) return false;
       return emissionFilters.every(f => {
-        const val = p.emissions![f.key];
+        const val = emissions[f.key as keyof typeof emissions];
         if (val === undefined) return false;
         if (f.operator === '>') return val > f.value;
         if (f.operator === '<') return val < f.value;

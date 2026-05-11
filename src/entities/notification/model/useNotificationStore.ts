@@ -67,7 +67,7 @@ export const useNotificationStore = create<NotificationState>()(
               const { deletedIds, lastReadId, installDate } = get();
 
               // Filter by install date and deleted IDs
-              const updates = (allUpdates as any[]).filter(u => {
+              const updates = allUpdates.filter(u => {
                 const isDeleted = deletedIds.includes(u.id);
                 const timestamp = u.timestamp?.toMillis ? u.timestamp.toMillis() : 
                                 (u.timestamp?.seconds ? u.timestamp.seconds * 1000 : 0);

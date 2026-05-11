@@ -1,4 +1,4 @@
-import { productRepository, CatalogConfig, DbError } from '@/shared/api';
+import { productRepository, CatalogConfig, DbError, ScheduledUpdate, UpdateHistoryEntry } from '@/shared/api';
 import { Product } from '../model/types';
 import { parseLegacyPackageInfo } from '../lib/productParser';
 import { mergeParsedCatalog, calculateNextCategoryDates } from '../sync/api/catalogMergeUtils';
@@ -21,14 +21,14 @@ export const catalogService = {
    * Downloads the products from the database divided by chunks
    */
   fetchCatalogInChunks: async (totalChunks: number): Promise<Product[]> => {
-    const rawArray: any[] = [];
+    const rawArray: unknown[] = [];
     
     for (let i = 0; i < totalChunks; i++) {
       const chunkData = await productRepository.fetchCatalogChunk(i);
       
       if (chunkData) {
         try {
-          const parsedChunk = JSON.parse(chunkData) as any[];
+          const parsedChunk = JSON.parse(chunkData) as unknown[];
           rawArray.push(...parsedChunk);
         } catch (parseErr) {
           console.error(`Error parsing JSON in chunk ${i}:`, parseErr);
@@ -36,7 +36,8 @@ export const catalogService = {
       }
     }
 
-    return rawArray.map(raw => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (rawArray as any[]).map(raw => {
       const packageInfo = raw.identity?.packageInfo || '';
       const packageData = raw.identity?.package;
 
@@ -87,8 +88,10 @@ export const catalogService = {
   /**
    * Applies a scheduled update to the active catalog
    */
-  applyScheduledUpdate: async (scheduledUpdate: any, existingProducts: Product[], config: CatalogConfig) => {
-    const { parsedData, id } = scheduledUpdate;
+  applyScheduledUpdate: async (scheduledUpdate: ScheduledUpdate, existingProducts: Product[], config: CatalogConfig) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsedData = JSON.parse(scheduledUpdate.parsedData) as any;
+    const { id } = scheduledUpdate;
     
     // 1. Merge
     const { mergedProducts, stats, allVariations, updatedCategories } = mergeParsedCatalog(parsedData, existingProducts);
@@ -120,7 +123,7 @@ export const catalogService = {
     if (historyEntry) {
       historyEntry.title = `Effettivo: ${historyEntry.title}`;
       historyEntry.summary = "L'aggiornamento programmato è ora attivo nel catalogo.";
-      historyEntry.type = 'price' as any;
+      historyEntry.type = 'price' as UpdateHistoryEntry['type'];
     }
 
     // 6. Save and Delete

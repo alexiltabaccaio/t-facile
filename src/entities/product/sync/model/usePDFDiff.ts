@@ -17,7 +17,7 @@ export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
       }
 
       let type: ChangeType = 'unchanged';
-      let diffData: any = {};
+      let diffData: DiffItem['diffData'] = {};
       
       // Inject debugging info to help developers trace how products were mapped
       if (existing) {

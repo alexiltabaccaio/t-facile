@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import Header from './Header';
 import { useNotificationStore } from '@/entities/notification';
 import { useCatalogSyncStore, useCatalogDataStore, useADMSyncStore, useADMSyncActions } from '@/entities/product';
@@ -12,7 +12,7 @@ vi.mock('@/entities/notification', () => ({
 }));
 
 vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     useCatalogSyncStore: vi.fn(),
@@ -32,6 +32,7 @@ vi.mock('@/entities/product', async (importOriginal) => {
   };
 });
 
+// Mock @shared/api
 vi.mock('@/shared/api', () => ({
   productRepository: {
     getGlobalConfig: vi.fn(),
@@ -46,7 +47,7 @@ vi.mock('pdfjs-dist', () => ({
 
 // Mock useNavigate
 vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     useNavigate: vi.fn(),
@@ -58,25 +59,25 @@ describe('Header Component', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    (useNavigate as any).mockReturnValue(mockNavigate);
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
     
     // Default store implementations
-    (useNotificationStore as any).mockImplementation((selector: any) => selector ? selector({ hasUnread: false }) : { hasUnread: false });
-    (useCatalogSyncStore as any).mockImplementation((selector: any) => selector ? selector({ isOnline: true, lastUpdateDate: '01/01/2026' }) : { isOnline: true, lastUpdateDate: '01/01/2026' });
-    (useCatalogDataStore as any).mockImplementation((selector: any) => selector ? selector({ products: [] }) : { products: [] });
-    (useADMSyncStore as any).mockImplementation((selector: any) => selector ? selector({ aiModel: 'gemini-3-flash-preview' }) : { aiModel: 'gemini-3-flash-preview' });
-    (useADMSyncActions as any).mockReturnValue({ setAiModel: vi.fn() });
+    (useNotificationStore as unknown as Mock).mockImplementation((selector: (state: unknown) => unknown) => selector ? selector({ hasUnread: false }) : { hasUnread: false });
+    (useCatalogSyncStore as unknown as Mock).mockImplementation((selector: (state: unknown) => unknown) => selector ? selector({ isOnline: true, lastUpdateDate: '01/01/2026' }) : { isOnline: true, lastUpdateDate: '01/01/2026' });
+    (useCatalogDataStore as unknown as Mock).mockImplementation((selector: (state: unknown) => unknown) => selector ? selector({ products: [] }) : { products: [] });
+    (useADMSyncStore as unknown as Mock).mockImplementation((selector: (state: unknown) => unknown) => selector ? selector({ aiModel: 'gemini-3-flash-preview' }) : { aiModel: 'gemini-3-flash-preview' });
+    (useADMSyncActions as Mock).mockReturnValue({ setAiModel: vi.fn() });
     
     // Default API mocks
     const { productRepository } = await import('@/shared/api');
-    (productRepository.getGlobalConfig as any).mockResolvedValue({
+    (productRepository.getGlobalConfig as Mock).mockResolvedValue({
       syncId: 'test-sync',
       lastUpdateDate: '01/01/2026',
       totalChunks: 1,
       categoryDates: {}
     });
     const { catalogService } = await import('@/entities/product');
-    (catalogService.fetchCatalogInChunks as any).mockResolvedValue([{ id: '1' }]);
+    (catalogService.fetchCatalogInChunks as Mock).mockResolvedValue([{ id: '1' }]);
   });
 
   it('renders correctly with title T-Facile on catalog view', () => {

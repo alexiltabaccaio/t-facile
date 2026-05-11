@@ -35,20 +35,20 @@ import itTranslations from './shared/lib/i18n/locales/it.json';
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      // Recursive function to navigate the translations object via dot-notation string (e.g., 'layout.header.catalog')
+    t: (key: string, options?: Record<string, string>) => {
       const keys = key.split('.');
-      let result: any = itTranslations;
+      let result: unknown = itTranslations;
       for (const k of keys) {
-        result = result?.[k];
+        result = (result as Record<string, unknown>)?.[k];
       }
       
       if (typeof result === 'string') {
-        // Basic variable handling (e.g., {{version}})
         if (options) {
+          let replaced = result;
           Object.keys(options).forEach(optKey => {
-            result = result.replace(`{{${optKey}}}`, options[optKey]);
+            replaced = replaced.replace(`{{${optKey}}}`, options[optKey]);
           });
+          return replaced;
         }
         return result;
       }
@@ -88,7 +88,7 @@ vi.mock('virtual:pwa-register/react', () => ({
 
 // Mock OrientationLockOverlay to avoid interfering with tests
 vi.mock('@/shared/ui', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     OrientationLockOverlay: () => null,
@@ -97,21 +97,24 @@ vi.mock('@/shared/ui', async (importOriginal) => {
 
 // Ensure stores are always "hydrated" in tests
 vi.mock('./entities/product', async (importOriginal) => {
-  const actual = await importOriginal<any>();
+  const actual = await importOriginal<Record<string, unknown>>();
+  const catalogDataStore = actual.useCatalogDataStore as { persist: { hasHydrated: () => boolean, onFinishHydration: (cb: () => void) => () => void } };
+  const catalogSyncStore = actual.useCatalogSyncStore as { persist: { hasHydrated: () => boolean, onFinishHydration: (cb: () => void) => () => void } };
+
   return {
     ...actual,
-    useCatalogDataStore: Object.assign(actual.useCatalogDataStore, {
+    useCatalogDataStore: Object.assign(actual.useCatalogDataStore as object, {
         persist: {
-            ...actual.useCatalogDataStore.persist,
+            ...catalogDataStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
-    useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore, {
+    useCatalogSyncStore: Object.assign(actual.useCatalogSyncStore as object, {
         persist: {
-            ...actual.useCatalogSyncStore.persist,
+            ...catalogSyncStore.persist,
             hasHydrated: () => true,
-            onFinishHydration: (cb: any) => { cb(); return () => {}; },
+            onFinishHydration: (cb: () => void) => { cb(); return () => {}; },
         }
     }),
   };

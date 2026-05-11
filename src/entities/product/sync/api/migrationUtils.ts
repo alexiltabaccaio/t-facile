@@ -1,4 +1,5 @@
 import { productRepository } from '@/shared/api';
+import { getErrorMessage } from '@/shared/lib';
 import { PackageType, PackageUnit } from '../../index';
 
 /**
@@ -53,6 +54,7 @@ export const migratePackageData = async (): Promise<{ success: boolean; migrated
         const products = JSON.parse(rawData);
         let chunkChanged = false;
         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updatedProducts = products.map((p: any) => {
           if (p.identity && p.identity.packageInfo && !p.identity.package) {
             const parsed = parseLegacyPackageInfo(p.identity.packageInfo);
@@ -81,8 +83,8 @@ export const migratePackageData = async (): Promise<{ success: boolean; migrated
     });
 
     return { success: true, migratedCount };
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Migration failed:', e);
-    return { success: false, migratedCount: 0, error: e.message };
+    return { success: false, migratedCount: 0, error: getErrorMessage(e) };
   }
 };

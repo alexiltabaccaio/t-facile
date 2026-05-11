@@ -1,6 +1,33 @@
 import { GoogleGenAI } from "@google/genai";
 import { getGeminiApiKey } from "../repositories/secretRepository.js";
 import { createBackendPrompts } from "./promptBuilder.js";
+import { getErrorMessage } from "../utils/errorUtils.js";
+
+export interface ParsedProduct {
+  code: string;
+  name?: string;
+  category?: string;
+  packageInfo?: string;
+  package?: {
+    type?: string;
+    quantity?: number;
+    unit?: string;
+  };
+  oldPricePerKg?: number;
+  pricePerKg?: number;
+  price?: number;
+  status?: 'Attivo' | 'Radiato';
+  tar?: number;
+  nicotine?: number;
+  co?: number;
+  radiationDate?: string;
+  listinoDate?: string;
+}
+
+export interface ParsedPDFResult {
+  updateDate: string;
+  products: ParsedProduct[];
+}
 
 /**
  * Orchestrates the AI analysis of text extracted from a document.
@@ -10,7 +37,7 @@ export async function analyzeTextWithAI(
   fileName: string,
   textData: string,
   aiModel: string = "gemini-3-flash-preview"
-) {
+): Promise<ParsedPDFResult> {
   const apiKey = await getGeminiApiKey();
   
   if (!apiKey) {
@@ -23,7 +50,7 @@ export async function analyzeTextWithAI(
   try {
     const modelId = aiModel;
     
-    let response: any;
+    let response: { text?: string } | null = null;
     const maxRetries = 6;
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -35,17 +62,20 @@ export async function analyzeTextWithAI(
             systemInstruction: systemPrompt,
             responseMimeType: "application/json"
           }
-        });
+        }) as { text?: string };
         break; // Success, exit loop
-      } catch(err: any) {
+      } catch(err: unknown) {
+        const errorMessage = getErrorMessage(err);
+        const status = (err as { status?: number })?.status; 
+        
         const isRetryableError = 
-          err?.status === 429 || 
-          err?.status === 503 ||
-          err?.message?.includes("429") || 
-          err?.message?.includes("503") ||
-          err?.message?.includes("RESOURCE_EXHAUSTED") ||
-          err?.message?.includes("UNAVAILABLE") ||
-          err?.message?.includes("high demand");
+          status === 429 || 
+          status === 503 ||
+          errorMessage.includes("429") || 
+          errorMessage.includes("503") ||
+          errorMessage.includes("RESOURCE_EXHAUSTED") ||
+          errorMessage.includes("UNAVAILABLE") ||
+          errorMessage.includes("high demand");
 
         if (isRetryableError && attempt < maxRetries - 1) {
           const delayMs = Math.pow(2, attempt) * 5000; // 5s, 10s, 20s, 40s...
@@ -57,7 +87,7 @@ export async function analyzeTextWithAI(
       }
     }
 
-    if (!response.text) throw new Error("L'IA ha restituito una risposta vuota.");
+    if (!response || !response.text) throw new Error("L'IA ha restituito una risposta vuota.");
     
     let text = response.text.trim();
     if (text.startsWith("```json")) {
@@ -66,19 +96,20 @@ export async function analyzeTextWithAI(
        text = text.replace(/^```/, "").replace(/```$/, "").trim();
     }
     
-    const result = JSON.parse(text);
+    const result = JSON.parse(text) as ParsedPDFResult;
     console.log("=== AI ANALYZER DEBUG ===");
     console.log("TEXT DATA RECEIVED (first 500 chars):\n", textData.substring(0, 500));
     console.log("==========================");
 
     // Update date validation
     if (result.updateDate && !/^\d{4}-\d{2}-\d{2}$/.test(result.updateDate)) {
-      delete result.updateDate;
+      result.updateDate = "";
     }
 
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
     console.error(`Gemini AI Analysis Error (${aiModel}):`, error);
-    throw new Error(`Errore durante l'interpretazione dei dati (${aiModel}): ${error.message}`);
+    throw new Error(`Errore durante l'interpretazione dei dati (${aiModel}): ${message}`);
   }
 }

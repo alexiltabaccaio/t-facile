@@ -25,7 +25,7 @@ export const ADMNewsScanner: React.FC = () => {
     success,
     currentNews,
     hasScannedNews
-  } = useADMSyncStore(useShallow((state: any) => ({
+  } = useADMSyncStore(useShallow((state) => ({
     isChecking: state.isChecking,
     isProcessing: state.isProcessing,
     statusMsg: state.statusMsg,
@@ -47,12 +47,12 @@ export const ADMNewsScanner: React.FC = () => {
     cancelProcessing
   } = useADMSyncActions();
 
-  const { lastUpdateDate, categoryDates } = useCatalogSyncStore(useShallow((state: any) => ({
+  const { lastUpdateDate, categoryDates } = useCatalogSyncStore(useShallow((state) => ({
     lastUpdateDate: state.lastUpdateDate,
     categoryDates: state.categoryDates
   })));
   
-  const products = useCatalogDataStore((state: any) => state.products);
+  const products = useCatalogDataStore((state) => state.products);
   
   const { setLastUpdateDate } = useCatalogSyncActions();
 
@@ -120,7 +120,8 @@ export const ADMNewsScanner: React.FC = () => {
       {isMyProcessing && (
          <div className="bg-amber-100/50 dark:bg-amber-900/30 rounded p-4 flex flex-col items-center justify-center mt-4 border border-amber-200 dark:border-amber-800">
            <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-3" />
-           <p className="text-sm font-bold text-amber-800 dark:text-amber-200 text-center mb-4 leading-relaxed max-w-sm">{t(statusMsg as any)}</p>
+           {/* @ts-expect-error - dynamic translation key */}
+           <p className="text-sm font-bold text-amber-800 dark:text-amber-200 text-center mb-4 leading-relaxed max-w-sm">{t(statusMsg)}</p>
            <button 
              onClick={cancelProcessing}
              className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 text-xs font-bold uppercase rounded-lg transition-colors border border-red-200 dark:border-red-800/50"
@@ -217,10 +218,10 @@ export const ADMNewsScanner: React.FC = () => {
           <div className="mb-3 space-y-4">
             <button 
               onClick={processSelectedListini}
-              disabled={availableUpdates.filter((u: any) => u.selected).length === 0}
+              disabled={availableUpdates.filter((u) => u.selected).length === 0}
               className="w-full flex items-center justify-center gap-2 py-3 bg-amber-600 text-white rounded-lg text-xs font-bold hover:bg-amber-700 shadow-md disabled:opacity-50 transition-all uppercase tracking-widest"
             >
-              {t('admin.news.analyze')} ({availableUpdates.filter((u: any) => u.selected).length})
+              {t('admin.news.analyze')} ({availableUpdates.filter((u) => u.selected).length})
               <ArrowRight className="w-4 h-4" />
             </button>
             
@@ -229,16 +230,16 @@ export const ADMNewsScanner: React.FC = () => {
                 onClick={toggleAll}
                 className="text-[10px] font-bold text-neutral-500 uppercase hover:text-amber-600 transition-colors"
               >
-                {availableUpdates.every((u: any) => u.selected) ? t('admin.auto.deselectAll') : t('admin.auto.selectAll')}
+                {availableUpdates.every((u) => u.selected) ? t('admin.auto.deselectAll') : t('admin.auto.selectAll')}
               </button>
               <span className="text-[10px] font-bold text-neutral-400 uppercase">
-                {t('admin.news.selectedCount', { count: availableUpdates.filter((u: any) => u.selected).length })}
+                {t('admin.news.selectedCount', { count: availableUpdates.filter((u) => u.selected).length })}
               </span>
             </div>
           </div>
 
           <div className="space-y-3 overflow-y-auto max-h-[55vh] pr-2 pb-2 scrollbar-thin scrollbar-thumb-amber-300 dark:scrollbar-thumb-amber-600">
-            {availableUpdates.map((listino: any, i: number) => (
+            {availableUpdates.map((listino, i) => (
               <ADMUpdateItem 
                 key={i} 
                 listino={{...listino, category: listino.title}} // Show title instead of category

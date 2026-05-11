@@ -134,7 +134,7 @@ export const useCatalogSync = () => {
                 console.error("[useCatalogSync] No products found in downloaded chunks.");
                 setSyncError("Errore integrità dati: i cataloghi risultano vuoti.");
               }
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error("[useCatalogSync] Error during chunk fetch:", error);
               setSyncError("Errore di sincronizzazione dati.");
             } finally {

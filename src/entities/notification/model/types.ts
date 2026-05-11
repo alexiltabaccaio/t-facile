@@ -23,4 +23,8 @@ export interface UpdateRecord {
   };
   variations?: string[];
   read: boolean;
+  timestamp?: {
+    toMillis?: () => number;
+    seconds?: number;
+  };
 }
