@@ -1,12 +1,9 @@
 /// <reference types="vitest" />
-import path from 'path';
 import { defineConfig } from 'vite';
-import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import pkg from './package.json';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(() => {
     return {
@@ -16,6 +13,7 @@ export default defineConfig(() => {
         'import.meta.env.VITE_APP_BUILD': JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA?.substring(0, 7) || 'dev'),
       },
       plugins: [
+        tsconfigPaths(),
         tailwindcss(),
         VitePWA({
           registerType: 'prompt',
@@ -41,11 +39,6 @@ export default defineConfig(() => {
           }
         })
       ],
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, './src'),
-        }
-      },
       build: {
         chunkSizeWarningLimit: 1600,
       },

@@ -20,7 +20,7 @@ export default [
     },
   },
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -35,6 +35,9 @@ export default [
         },
       },
     },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
     plugins: {
       'feature-sliced': fixupPluginRules(featureSliced),
     },
@@ -91,6 +94,61 @@ export default [
             message: 'Violazione FSD: Il layer shared non può importare dai layer superiori.'
           }
         ]
+      }],
+    },
+  },
+  {
+    files: ['server/utils/**/*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['../services/**', '../routes/**', '../repositories/**', '../middleware/**'],
+          message: 'Violazione Architettura: Il layer utils è il più basso e non può importare dagli altri layer del backend.'
+        }]
+      }],
+    },
+  },
+  {
+    files: ['server/repositories/**/*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['../services/**', '../routes/**', '../middleware/**'],
+          message: 'Violazione Architettura: I repositories non possono importare services, routes o middleware.'
+        }]
+      }],
+    },
+  },
+  {
+    files: ['server/services/**/*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['../routes/**', '../middleware/**'],
+          message: 'Violazione Architettura: I services non possono importare routes o middleware.'
+        }]
+      }],
+    },
+  },
+  {
+    files: ['server/middleware/**/*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['../routes/**'],
+          message: 'Violazione Architettura: I middleware non possono importare le routes.'
+        }]
+      }],
+    },
+  },
+  {
+    files: ['server/routes/**/*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['../repositories/**', '../utils/**'],
+          message: 'Violazione Architettura: Le routes devono passare dai services. Non possono importare direttamente repositories o utils.'
+        }]
       }],
     },
   },
