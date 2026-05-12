@@ -13,6 +13,12 @@ interface UseProductSearchProps {
   sortOption: SortOption;
   showRetired: boolean;
   showOutOfCatalog: boolean;
+  maxNicotine: number;
+  maxTar: number;
+  maxCo: number;
+  minNicotine: number;
+  minTar: number;
+  minCo: number;
 }
 
 export const useProductSearch = ({
@@ -21,6 +27,12 @@ export const useProductSearch = ({
   sortOption,
   showRetired,
   showOutOfCatalog,
+  maxNicotine,
+  maxTar,
+  maxCo,
+  minNicotine,
+  minTar,
+  minCo,
 }: UseProductSearchProps) => {
   const { t } = useTranslation();
   const { isRetiredSearch, searchKeywords, emissionFilters } = useMemo(() => {
@@ -44,7 +56,13 @@ export const useProductSearch = ({
       showOutOfCatalog,
       emissionFilters,
       searchKeywords,
-      t: t as (key: string, options?: Record<string, unknown>) => string
+      t: t as (key: string, options?: Record<string, unknown>) => string,
+      maxNicotine,
+      maxTar,
+      maxCo,
+      minNicotine,
+      minTar,
+      minCo
     });
 
     // 3. Exact Code Match Handling (absolute priority if a single number is searched)
@@ -70,7 +88,7 @@ export const useProductSearch = ({
     }
     
     return processed;
-  }, [initialProducts, showRetired, showOutOfCatalog, sortOption, isRetiredSearch, searchKeywords, emissionFilters, t]);
+  }, [initialProducts, showRetired, showOutOfCatalog, sortOption, isRetiredSearch, searchKeywords, emissionFilters, t, maxNicotine, maxTar, maxCo, minNicotine, minTar, minCo]);
 
   return { displayedProducts, searchKeywords };
 };

@@ -26,13 +26,25 @@ export const ProductCatalog: React.FC = () => {
     sortOption, 
     showRetired, 
     showOutOfCatalog,
-    listScrollPosition
+    listScrollPosition,
+    maxNicotine,
+    maxTar,
+    maxCo,
+    minNicotine,
+    minTar,
+    minCo
   } = useCatalogFilterStore(useShallow(state => ({
     searchTerm: state.searchTerm,
     sortOption: state.sortOption,
     showRetired: state.showRetired,
     showOutOfCatalog: state.showOutOfCatalog,
-    listScrollPosition: state.listScrollPosition
+    listScrollPosition: state.listScrollPosition,
+    maxNicotine: state.maxNicotine,
+    maxTar: state.maxTar,
+    maxCo: state.maxCo,
+    minNicotine: state.minNicotine,
+    minTar: state.minTar,
+    minCo: state.minCo
   })));
   
   const products = useCatalogDataStore(state => state.products);
@@ -48,6 +60,12 @@ export const ProductCatalog: React.FC = () => {
     sortOption,
     showRetired,
     showOutOfCatalog,
+    maxNicotine,
+    maxTar,
+    maxCo,
+    minNicotine,
+    minTar,
+    minCo,
   });
 
   const activeProduct = id ? products.find(p => p.identity.code === id) : null;

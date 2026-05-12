@@ -41,10 +41,16 @@ export const filterProducts = (
     emissionFilters: EmissionFilter[];
     searchKeywords: string[];
     t?: (key: string, options?: Record<string, unknown>) => string;
+    maxNicotine?: number;
+    maxTar?: number;
+    maxCo?: number;
+    minNicotine?: number;
+    minTar?: number;
+    minCo?: number;
   }
 ) => {
   let filtered = products;
-  const { isRetiredSearch, showRetired, showOutOfCatalog, emissionFilters, searchKeywords, t } = options;
+  const { isRetiredSearch, showRetired, showOutOfCatalog, emissionFilters, searchKeywords, t, maxNicotine = 1.0, maxTar = 10, maxCo = 10, minNicotine = 0.1, minTar = 1, minCo = 1 } = options;
 
   // 1. Status Filter
   if (isRetiredSearch) {
@@ -70,6 +76,28 @@ export const filterProducts = (
         if (f.operator === '<') return val < f.value;
         return val === f.value;
       });
+    });
+  }
+
+  // Visual Slider Emission Filters
+  if (maxNicotine < 1.0 || maxTar < 10 || maxCo < 10 || minNicotine > 0.1 || minTar > 1 || minCo > 1) {
+    filtered = filtered.filter(p => {
+      // If we are filtering and the product has no emissions, we filter it out (strict filtering)
+      if (!p.emissions) return false;
+      
+      const { nicotine, tar, co } = p.emissions;
+      
+      // Check maximums
+      if (maxNicotine < 1.0 && (nicotine === undefined || nicotine > maxNicotine)) return false;
+      if (maxTar < 10 && (tar === undefined || tar > maxTar)) return false;
+      if (maxCo < 10 && (co === undefined || co > maxCo)) return false;
+      
+      // Check minimums
+      if (minNicotine > 0.1 && (nicotine === undefined || nicotine < minNicotine)) return false;
+      if (minTar > 1 && (tar === undefined || tar < minTar)) return false;
+      if (minCo > 1 && (co === undefined || co < minCo)) return false;
+      
+      return true;
     });
   }
 
