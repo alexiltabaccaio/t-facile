@@ -2,7 +2,7 @@ import { CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { formatToDisplayDate } from '@/shared/lib';
-import { Listino } from '@/entities/product';
+import { Listino } from '@/features/product-sync';
 
 interface ADMUpdateItemProps {
   listino: Listino;

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mergeParsedCatalog } from './catalogMergeUtils';
-import { Product } from '../../model/types';
-import { ParsedPDFResult } from '../api/pdfAnalyzer';
+import { Product } from '../model/types';
+import { ParsedPDFResult } from '../sync/api/pdfAnalyzer';
 
 describe('catalogMergeUtils', () => {
   const existingProducts: Product[] = [

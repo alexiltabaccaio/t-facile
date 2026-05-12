@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Cpu, RotateCcw, Zap, Sparkles } from 'lucide-react';
-import { useADMSyncStore, useADMSyncActions } from '@/entities/product';
+import { useADMSyncStore, useADMSyncActions } from '@/features/product-sync';
 import { productRepository } from '@/shared/api';
 import { useTranslation } from 'react-i18next';
 import { getErrorMessage } from '@/shared/lib';

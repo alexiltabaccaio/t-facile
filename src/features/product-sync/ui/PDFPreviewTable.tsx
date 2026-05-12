@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Zap, Copy, Check } from 'lucide-react';
-import { ParsedPDFResult } from '../api/pdfAnalyzer';
-import { useCatalogDataStore } from '../../index';
+import { ParsedPDFResult } from '@/entities/product/lib/syncUtils';
+import { useCatalogDataStore } from '@/entities/product';
 import { usePDFDiff } from '../model/usePDFDiff';
 import { ChangeType } from '../model/types';
 import { PDFPreviewRow } from './PDFPreviewRow';

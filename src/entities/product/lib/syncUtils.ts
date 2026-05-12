@@ -1,5 +1,30 @@
-import { ParsedProduct } from '../api/pdfAnalyzer';
-import { Product } from '../../index';
+import { Product } from '../index';
+
+export interface ParsedProduct {
+  code: string;
+  name?: string;
+  category?: string;
+  packageInfo?: string;
+  package?: {
+    type?: string;
+    quantity?: number;
+    unit?: string;
+  };
+  oldPricePerKg?: number;
+  pricePerKg?: number;
+  price?: number;
+  status?: 'Attivo' | 'Radiato';
+  tar?: number;
+  nicotine?: number;
+  co?: number;
+  radiationDate?: string;
+  listinoDate?: string;
+}
+
+export interface ParsedPDFResult {
+  updateDate: string;
+  products: ParsedProduct[];
+}
 
 /**
  * Normalizes a product name for fuzzy matching

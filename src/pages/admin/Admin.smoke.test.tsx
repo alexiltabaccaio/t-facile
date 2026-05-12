@@ -56,15 +56,12 @@ vi.mock('@/features/system-update', () => ({
   ADMNewsScanner: () => <div data-testid="news-scanner">News Scanner Component</div>,
 }));
 
-// Mock the admin-sync entity logic now located in @/entities/product
-vi.mock('@/entities/product', async (importOriginal) => {
-  const actual = await importOriginal<Record<string, unknown>>();
-  return {
-    ...actual,
-    useADMSyncStore: vi.fn((selector: (state: Record<string, unknown>) => unknown) => selector({ aiModel: 'gemini-3-flash-preview' })),
-    useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
-  };
-});
+// Mock the product-sync feature logic
+vi.mock('@/features/product-sync', () => ({
+  useADMSyncStore: vi.fn((selector: (state: Record<string, unknown>) => unknown) => selector({ aiModel: 'gemini-3-flash-preview' })),
+  useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
+  PDFPreviewTable: () => <div data-testid="pdf-preview-table">PDF Preview Table</div>,
+}));
 
 describe('Admin Page Smoke Test', () => {
   beforeEach(() => {

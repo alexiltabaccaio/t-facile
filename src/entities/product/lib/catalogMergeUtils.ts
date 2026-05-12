@@ -1,5 +1,5 @@
-import { Product } from '../../index';
-import { ParsedPDFResult, ParsedProduct } from '../api/pdfAnalyzer';
+import { Product } from '../model/types';
+import { ParsedPDFResult, ParsedProduct } from './syncUtils';
 import { mapParsedProductToFirestore, detectProductVariations, findMatchingProduct } from './syncUtils';
 import { SyncStats } from './syncHistoryUtils';
 

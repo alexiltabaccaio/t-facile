@@ -1,9 +1,9 @@
 import { productRepository, CatalogConfig, DbError, ScheduledUpdate, UpdateHistoryEntry } from '@/shared/api';
 import { Product } from '../model/types';
 import { parseLegacyPackageInfo } from '../lib/productParser';
-import { mergeParsedCatalog, calculateNextCategoryDates } from '../sync/api/catalogMergeUtils';
+import { mergeParsedCatalog, calculateNextCategoryDates } from '../lib/catalogMergeUtils';
 import { chunkArray } from '@/shared/lib';
-import { formatHistoryEntry } from '../sync/api/syncHistoryUtils';
+import { formatHistoryEntry } from '../lib/syncHistoryUtils';
 
 
 export const catalogService = {

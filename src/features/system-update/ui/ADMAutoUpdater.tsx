@@ -3,7 +3,9 @@ import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle, RefreshCw, Do
 import { 
   useADMSyncStore, 
   useADMSyncActions, 
-  PDFPreviewTable, 
+  PDFPreviewTable
+} from '@/features/product-sync';
+import { 
   useCatalogDataStore, 
   useCatalogSyncStore, 
   useCatalogSyncActions 

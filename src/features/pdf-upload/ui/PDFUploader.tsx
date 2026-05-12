@@ -5,13 +5,15 @@ import { getErrorMessage } from '@/shared/lib';
 import { 
   useCatalogDataStore, 
   useCatalogSyncStore, 
-  useCatalogSyncActions, 
+  useCatalogSyncActions
+} from '@/entities/product';
+import { 
   analyzePdfChunks, 
-  ParsedPDFResult, 
   saveParsedDataToFirestore, 
   useADMSyncStore, 
   PDFPreviewTable 
-} from '@/entities/product';
+} from '@/features/product-sync';
+import { ParsedPDFResult } from '@/entities/product/lib/syncUtils';
 import { PDFUploadDropzone } from './PDFUploadDropzone';
 import { PDFFileList } from './PDFFileList';
 import { useTranslation } from 'react-i18next';

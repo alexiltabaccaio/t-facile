@@ -9,4 +9,3 @@ export { default as ProductItem } from './ui/ProductItem';
 export { default as ProductDetail } from './ui/ProductDetail';
 export * from './lib/packageFormatter';
 export * from './lib/productParser';
-export * from './sync';

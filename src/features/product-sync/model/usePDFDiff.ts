@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { ParsedPDFResult } from '../api/pdfAnalyzer';
-import { Product } from '../../index';
-
-import { ChangeType, DiffItem } from '../model/types';
-import { findMatchingProduct } from '../api/syncUtils';
+import { ParsedPDFResult } from '@/entities/product/lib/syncUtils';
+import { Product } from '@/entities/product';
+import { ChangeType, DiffItem } from './types';
+import { findMatchingProduct } from '@/entities/product/lib/syncUtils';
 
 export function usePDFDiff(parsedData: ParsedPDFResult, products: Product[]) {
   const diffItems = useMemo<DiffItem[]>(() => {

@@ -1,6 +1,6 @@
 import { productRepository } from '@/shared/api';
 import { getErrorMessage } from '@/shared/lib';
-import { PackageType, PackageUnit } from '../../index';
+import { PackageType, PackageUnit } from '../index';
 
 /**
  * Parser identical to the Mapper one for consistency

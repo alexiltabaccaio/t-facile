@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { ParsedPDFResult } from '../api/pdfAnalyzer';
+import { ParsedPDFResult } from '@/entities/product/lib/syncUtils';
 import { saveParsedDataToFirestore } from '../api/dbSyncer';
-import { Product } from '../../index';
+import { Product } from '@/entities/product';
 import { Listino, fetchListini, fetchNews, markNewsAsAnalyzed, downloadListinoAsFile } from '../api/admApiService';
 import { processListiniBatch } from '../api/admProcessor';
 import { getErrorMessage } from '@/shared/lib/utils/errorUtils';

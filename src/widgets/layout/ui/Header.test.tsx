@@ -2,7 +2,8 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import Header from './Header';
 import { useNotificationStore } from '@/entities/notification';
-import { useCatalogSyncStore, useCatalogDataStore, useADMSyncStore, useADMSyncActions } from '@/entities/product';
+import { useCatalogSyncStore, useCatalogDataStore } from '@/entities/product';
+import { useADMSyncStore, useADMSyncActions } from '@/features/product-sync';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 
 // Mock the stores
@@ -24,13 +25,16 @@ vi.mock('@/entities/product', async (importOriginal) => {
     })),
     useCatalogDataStore: vi.fn(),
     useCatalogDataActions: vi.fn(() => ({ setProducts: vi.fn() })),
-    useADMSyncStore: vi.fn(),
-    useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
     catalogService: {
       fetchCatalogInChunks: vi.fn(),
     },
   };
 });
+
+vi.mock('@/features/product-sync', () => ({
+  useADMSyncStore: vi.fn(),
+  useADMSyncActions: vi.fn(() => ({ setAiModel: vi.fn() })),
+}));
 
 // Mock @shared/api
 vi.mock('@/shared/api', () => ({

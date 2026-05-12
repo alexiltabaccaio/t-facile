@@ -1,6 +1,6 @@
 export type ChangeType = 'new' | 'price' | 'status' | 'emissions' | 'unchanged';
 
-import { ParsedProduct } from '../api/pdfAnalyzer';
+import { ParsedProduct } from '@/entities/product/lib/syncUtils';
 
 export interface DiffItem {
   product: ParsedProduct;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatPackage, PackageData } from '../../index';
+import { formatPackage, PackageData } from '@/entities/product';
 import { DiffItem } from '../model/types';
 import { DiffStatusBadge } from './DiffStatusBadge';
 import { ArrowRight } from 'lucide-react';
