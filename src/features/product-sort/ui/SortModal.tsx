@@ -85,7 +85,7 @@ const SortModal: React.FC<SortModalProps> = ({
       {/* Bottom Sheet wrapper */}
       <div
         className="relative bg-white dark:bg-dark-card-bg w-full rounded-t-xl shadow-2xl flex flex-col overflow-hidden border-t border-neutral-200 dark:border-dark-border pointer-events-auto"
-        style={{ maxHeight: '75dvh' }}
+        style={{ height: '420px', maxHeight: '75dvh' }}
         onClick={(e) => e.stopPropagation()}
       >
 
