@@ -14,6 +14,7 @@ interface ProductListProps {
   initialOffset?: number;
   onScrollUpdate?: (offset: number) => void;
   isLoading?: boolean;
+  showEmissions: boolean;
 }
 
 const NoResults: React.FC = () => {
@@ -51,12 +52,13 @@ interface ProductListData {
     onProductClick: (product: Product) => void;
     searchKeywords: string[];
     sortOption: SortOption;
+    showEmissions: boolean;
     columnCount?: number;
 }
 
 // Row rendering for the single list (mobile)
 const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSProperties, data: ProductListData }) => {
-    const { products, onProductClick, searchKeywords, sortOption } = data;
+    const { products, onProductClick, searchKeywords, sortOption, showEmissions } = data;
     const product = products[index];
     if (!product) return null;
     return (
@@ -66,13 +68,14 @@ const ListRow = memo(({ index, style, data }: { index: number, style: React.CSSP
             onClick={() => onProductClick(product)}
             searchKeywords={searchKeywords}
             sortKey={sortOption.key}
+            showEmissions={showEmissions}
         />
     );
 });
 
 // Cell rendering for the grid (desktop)
 const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: number, rowIndex: number, style: React.CSSProperties, data: ProductListData }) => {
-    const { products, onProductClick, searchKeywords, sortOption, columnCount = 1 } = data;
+    const { products, onProductClick, searchKeywords, sortOption, showEmissions, columnCount = 1 } = data;
     const index = rowIndex * columnCount + columnIndex;
     const product = products[index];
     
@@ -89,13 +92,14 @@ const GridCell = memo(({ columnIndex, rowIndex, style, data }: { columnIndex: nu
             onClick={() => onProductClick(product)}
             searchKeywords={searchKeywords}
             sortKey={sortOption.key}
+            showEmissions={showEmissions}
         />
     );
 });
 
 // We will use a custom hook to measure the container size synchronously before paint
 
-const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, searchKeywords, sortOption, initialOffset = 0, onScrollUpdate, isLoading = false }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, searchKeywords, sortOption, initialOffset = 0, onScrollUpdate, isLoading = false, showEmissions }) => {
   const listRef = useRef<List<ProductListData> | Grid<ProductListData>>(null);
   const scrollUpdateRef = useRef(onScrollUpdate);
   const searchKey = searchKeywords.join(' ');
@@ -180,7 +184,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
                           itemCount={products.length}
                           itemSize={ITEM_HEIGHT}
                           width={w}
-                          itemData={{ products, onProductClick, searchKeywords, sortOption }}
+                          itemData={{ products, onProductClick, searchKeywords, sortOption, showEmissions }}
                           initialScrollOffset={initialOffset}
                           onScroll={handleScroll}
                           overscanCount={15}
@@ -199,7 +203,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, onProductClick, sea
                       rowCount={rowCount}
                       rowHeight={ITEM_HEIGHT}
                       width={w}
-                      itemData={{ products, onProductClick, searchKeywords, sortOption, columnCount }}
+                      itemData={{ products, onProductClick, searchKeywords, sortOption, showEmissions, columnCount }}
                       initialScrollTop={initialOffset}
                       onScroll={handleScroll}
                       overscanRowCount={15}

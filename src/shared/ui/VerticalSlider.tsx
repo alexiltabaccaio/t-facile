@@ -10,6 +10,7 @@ interface VerticalSliderProps {
   unit?: string;
   className?: string;
   color?: string;
+  disabled?: boolean;
 }
 
 export const VerticalSlider: React.FC<VerticalSliderProps> = ({
@@ -21,7 +22,8 @@ export const VerticalSlider: React.FC<VerticalSliderProps> = ({
   label,
   unit = '',
   className = '',
-  color = 'bg-blue-500 dark:bg-blue-600'
+  color = 'bg-blue-500 dark:bg-blue-600',
+  disabled = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -34,7 +36,7 @@ export const VerticalSlider: React.FC<VerticalSliderProps> = ({
   }, [value, isDragging]);
 
   const handlePointerMove = useCallback((e: PointerEvent | React.PointerEvent) => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDragging || !containerRef.current || disabled) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const y = e.clientY - rect.top;
@@ -72,6 +74,7 @@ export const VerticalSlider: React.FC<VerticalSliderProps> = ({
   }, [isDragging, handlePointerMove, handlePointerUp]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (disabled) return;
     e.preventDefault();
     containerRef.current?.setPointerCapture(e.pointerId);
     setIsDragging(true);
@@ -81,7 +84,7 @@ export const VerticalSlider: React.FC<VerticalSliderProps> = ({
   const percentage = ((localValue - min) / (max - min)) * 100;
 
   return (
-    <div className={`flex flex-col items-center select-none ${className}`}>
+    <div className={`flex flex-col items-center select-none ${className} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}>
       <div className="mb-1 text-center">
         <h4 className="text-[8px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-0.5">
           {label}
@@ -94,7 +97,7 @@ export const VerticalSlider: React.FC<VerticalSliderProps> = ({
       <div
         ref={containerRef}
         onPointerDown={handlePointerDown}
-        className="relative w-5 h-24 bg-neutral-100 dark:bg-neutral-800/50 rounded-full cursor-pointer touch-none shadow-inner overflow-hidden border border-neutral-200 dark:border-neutral-700/30"
+        className={`relative w-5 h-24 bg-neutral-100 dark:bg-neutral-800/50 rounded-full touch-none shadow-inner overflow-hidden border border-neutral-200 dark:border-neutral-700/30 ${disabled ? '' : 'cursor-pointer'}`}
       >
         <div
           className={`absolute bottom-0 left-0 right-0 w-full rounded-full transition-all duration-75 origin-bottom ${color}`}

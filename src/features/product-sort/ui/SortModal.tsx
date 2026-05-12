@@ -32,7 +32,7 @@ const SortKeyButton: React.FC<{
   </button>
 );
 
-type TabKey = 'ordine' | 'visibilita' | 'emissioni';
+type TabKey = 'ordine' | 'visibilita';
 
 interface SortModalProps {
   onClose: () => void;
@@ -43,7 +43,7 @@ const SortModal: React.FC<SortModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabKey>('ordine');
-  const { sortOption, showRetired, showOutOfCatalog, maxNicotine, maxTar, maxCo, minNicotine, minTar, minCo } = useCatalogFilterStore(useShallow((state) => ({
+  const { sortOption, showRetired, showOutOfCatalog, maxNicotine, maxTar, maxCo, minNicotine, minTar, minCo, showEmissions } = useCatalogFilterStore(useShallow((state) => ({
     sortOption: state.sortOption,
     showRetired: state.showRetired,
     showOutOfCatalog: state.showOutOfCatalog,
@@ -52,9 +52,10 @@ const SortModal: React.FC<SortModalProps> = ({
     maxCo: state.maxCo,
     minNicotine: state.minNicotine,
     minTar: state.minTar,
-    minCo: state.minCo
+    minCo: state.minCo,
+    showEmissions: state.showEmissions
   })));
-  const { setSortOption, setShowRetired, setShowOutOfCatalog, setMaxNicotine, setMaxTar, setMaxCo, setMinNicotine, setMinTar, setMinCo } = useCatalogFilterActions();
+  const { setSortOption, setShowRetired, setShowOutOfCatalog, setMaxNicotine, setMaxTar, setMaxCo, setMinNicotine, setMinTar, setMinCo, setShowEmissions } = useCatalogFilterActions();
 
   const handleSortKeyChange = (key: SortKey) => {
     if (key !== sortOption.key) {
@@ -62,6 +63,11 @@ const SortModal: React.FC<SortModalProps> = ({
           key,
           order: key === 'smart' ? 'desc' : 'asc'
         });
+        
+        // Se l'utente seleziona un criterio di emissioni, attiva automaticamente la modalità
+        if (['nicotine', 'tar', 'co'].includes(key)) {
+          setShowEmissions(true);
+        }
     }
   };
 
@@ -71,8 +77,6 @@ const SortModal: React.FC<SortModalProps> = ({
       order: sortOption.order === 'asc' ? 'desc' : 'asc'
     });
   };
-
-  const isSmartSort = sortOption.key === 'smart';
 
   return (
     <div className="absolute inset-x-0 top-0 bottom-[80px] lg:bottom-[104px] z-40 flex items-end justify-center pointer-events-none">
@@ -105,38 +109,160 @@ const SortModal: React.FC<SortModalProps> = ({
             >
               {t('catalog.sort.visibility', 'Visibilità')}
             </button>
-            <button
-              onClick={() => setActiveTab('emissioni')}
-              className={`flex-1 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'emissioni' ? 'border-blue-600 text-blue-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'}`}
-            >
-              {t('catalog.sort.emissions', 'Emissioni')}
-            </button>
           </div>
 
           <div className="px-5 py-5 overflow-y-auto space-y-5">
             {activeTab === 'ordine' && (
-              <section>
-                <div className="flex justify-between items-center mb-2 px-1">
-                     <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px]">
-                       {t('catalog.sort.sortBy')}
-                     </h3>
-                     <button
-                        onClick={handleToggleOrder}
-                        disabled={isSmartSort}
-                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 disabled:opacity-40"
-                     >
-                         <ArrowsUpDownIcon size={14} />
-                         {sortOption.order === 'asc' ? t('catalog.sort.orderAsc') : t('catalog.sort.orderDesc')}
-                     </button>
+              <section className="space-y-6">
+                <div>
+                  <div className="flex justify-between items-center mb-2 px-1">
+                       <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px]">
+                         {t('catalog.sort.sortBy')}
+                       </h3>
+                       <button
+                          onClick={handleToggleOrder}
+                          className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400"
+                       >
+                           <ArrowsUpDownIcon size={14} />
+                           {sortOption.order === 'asc' ? t('catalog.sort.orderAsc') : t('catalog.sort.orderDesc')}
+                       </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                      <SortKeyButton label={t('catalog.sort.name')} active={sortOption.key === 'name'} onClick={() => handleSortKeyChange('name')} />
+                      <SortKeyButton label={t('catalog.sort.price')} active={sortOption.key === 'price'} onClick={() => handleSortKeyChange('price')} />
+                      <SortKeyButton label={t('catalog.sort.code')} active={sortOption.key === 'code'} onClick={() => handleSortKeyChange('code')} />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                    <SortKeyButton label={t('catalog.sort.relevance')} active={sortOption.key === 'smart'} onClick={() => handleSortKeyChange('smart')} />
-                    <SortKeyButton label={t('catalog.sort.name')} active={sortOption.key === 'name'} onClick={() => handleSortKeyChange('name')} />
-                    <SortKeyButton label={t('catalog.sort.price')} active={sortOption.key === 'price'} onClick={() => handleSortKeyChange('price')} />
-                    <SortKeyButton label={t('catalog.sort.code')} active={sortOption.key === 'code'} onClick={() => handleSortKeyChange('code')} />
-                    <SortKeyButton label={t('catalog.sort.nicotine')} active={sortOption.key === 'nicotine'} onClick={() => handleSortKeyChange('nicotine')} />
-                    <SortKeyButton label={t('catalog.sort.tar')} active={sortOption.key === 'tar'} onClick={() => handleSortKeyChange('tar')} />
-                    <SortKeyButton label={t('catalog.sort.co')} active={sortOption.key === 'co'} onClick={() => handleSortKeyChange('co')} />
+
+                <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50">
+                   <ToggleSwitch
+                     id="emissions-mode-toggle"
+                     label="Modalità Emissioni"
+                     checked={showEmissions}
+                     onChange={() => {
+                       if (showEmissions) {
+                         if (['nicotine', 'tar', 'co'].includes(sortOption.key)) {
+                           setSortOption({ key: 'name', order: 'asc' });
+                         }
+                         setMaxNicotine(1.0); setMinNicotine(0.1);
+                         setMaxTar(10); setMinTar(1);
+                         setMaxCo(10); setMinCo(1);
+                         setShowEmissions(false);
+                       } else {
+                         setShowEmissions(true);
+                       }
+                     }}
+                   />
+                   
+                   {showEmissions && (
+                     <div className="p-4 border-t border-neutral-200/50 dark:border-neutral-800/50 space-y-6">
+                       <div>
+                         <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-2">
+                           Criterio Emissioni
+                         </h4>
+                         <div className="grid grid-cols-3 gap-2">
+                           <SortKeyButton label={t('catalog.sort.nicotine')} active={sortOption.key === 'nicotine'} onClick={() => handleSortKeyChange('nicotine')} />
+                           <SortKeyButton label={t('catalog.sort.tar')} active={sortOption.key === 'tar'} onClick={() => handleSortKeyChange('tar')} />
+                           <SortKeyButton label={t('catalog.sort.co')} active={sortOption.key === 'co'} onClick={() => handleSortKeyChange('co')} />
+                         </div>
+                       </div>
+
+                       <div>
+                         <div className="flex justify-between items-center mb-6">
+                           <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+                             {t('catalog.sort.emissions_limits', 'Limiti Massimi')}
+                           </h4>
+                           <button 
+                             onClick={() => {
+                               setMaxNicotine(1.0); setMinNicotine(0.1);
+                               setMaxTar(10); setMinTar(1);
+                               setMaxCo(10); setMinCo(1);
+                             }}
+                             className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400"
+                           >
+                             Reset
+                           </button>
+                         </div>
+                         
+                         <div className="flex justify-between items-end pb-2">
+                           {/* Nicotina Section */}
+                           <div className="flex flex-col items-center">
+                             <h4 className="text-[9px] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 mb-2">Nicotina</h4>
+                             <div className="flex gap-2">
+                               <VerticalSlider 
+                                 label="Min" min={0.1} max={1.0} step={0.1} 
+                                 value={minNicotine} 
+                                 onChange={(val) => {
+                                   setMinNicotine(val);
+                                   if (val > maxNicotine) setMaxNicotine(val);
+                                 }} 
+                                 unit="mg" color="bg-orange-500 dark:bg-orange-600" 
+                               />
+                               <VerticalSlider 
+                                 label="Max" min={0.1} max={1.0} step={0.1} 
+                                 value={maxNicotine} 
+                                 onChange={(val) => {
+                                   setMaxNicotine(val);
+                                   if (val < minNicotine) setMinNicotine(val);
+                                 }} 
+                                 unit="mg" 
+                               />
+                             </div>
+                           </div>
+
+                           {/* Catrame Section */}
+                           <div className="flex flex-col items-center">
+                             <h4 className="text-[9px] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 mb-2">Catrame</h4>
+                             <div className="flex gap-2">
+                               <VerticalSlider 
+                                 label="Min" min={1} max={10} step={1} 
+                                 value={minTar} 
+                                 onChange={(val) => {
+                                   setMinTar(val);
+                                   if (val > maxTar) setMaxTar(val);
+                                 }} 
+                                 unit="mg" color="bg-orange-500 dark:bg-orange-600" 
+                               />
+                               <VerticalSlider 
+                                 label="Max" min={1} max={10} step={1} 
+                                 value={maxTar} 
+                                 onChange={(val) => {
+                                   setMaxTar(val);
+                                   if (val < minTar) setMinTar(val);
+                                 }} 
+                                 unit="mg" 
+                               />
+                             </div>
+                           </div>
+
+                           {/* CO Section */}
+                           <div className="flex flex-col items-center">
+                             <h4 className="text-[9px] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 mb-2">CO</h4>
+                             <div className="flex gap-2">
+                               <VerticalSlider 
+                                 label="Min" min={1} max={10} step={1} 
+                                 value={minCo} 
+                                 onChange={(val) => {
+                                   setMinCo(val);
+                                   if (val > maxCo) setMaxCo(val);
+                                 }} 
+                                 unit="mg" color="bg-orange-500 dark:bg-orange-600" 
+                               />
+                               <VerticalSlider 
+                                 label="Max" min={1} max={10} step={1} 
+                                 value={maxCo} 
+                                 onChange={(val) => {
+                                   setMaxCo(val);
+                                   if (val < minCo) setMinCo(val);
+                                 }} 
+                                 unit="mg" 
+                               />
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   )}
                 </div>
               </section>
             )}
@@ -161,103 +287,6 @@ const SortModal: React.FC<SortModalProps> = ({
                         onChange={() => setShowOutOfCatalog(!showOutOfCatalog)}
                     />
                 </div>
-              </section>
-            )}
-
-            {activeTab === 'emissioni' && (
-              <section>
-                 <div className="flex justify-between items-center mb-6 px-1">
-                   <h3 className="text-neutral-500 dark:text-dark-text-secondary font-bold uppercase tracking-widest text-[10px]">
-                     {t('catalog.sort.emissions_limits', 'Limiti Massimi Emissioni')}
-                   </h3>
-                   <button 
-                     onClick={() => {
-                       setMaxNicotine(1.0); setMinNicotine(0.1);
-                       setMaxTar(10); setMinTar(1);
-                       setMaxCo(10); setMinCo(1);
-                     }}
-                     className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400"
-                   >
-                     Reset
-                   </button>
-                 </div>
-                 
-                 <div className="flex justify-between items-end pb-6 px-1">
-                   {/* Nicotina Section */}
-                   <div className="flex flex-col items-center">
-                     <h4 className="text-[9px] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 mb-2">Nicotina</h4>
-                     <div className="flex gap-2">
-                       <VerticalSlider 
-                         label="Min" min={0.1} max={1.0} step={0.1} 
-                         value={minNicotine} 
-                         onChange={(val) => {
-                           setMinNicotine(val);
-                           if (val > maxNicotine) setMaxNicotine(val);
-                         }} 
-                         unit="mg" color="bg-orange-500 dark:bg-orange-600" 
-                       />
-                       <VerticalSlider 
-                         label="Max" min={0.1} max={1.0} step={0.1} 
-                         value={maxNicotine} 
-                         onChange={(val) => {
-                           setMaxNicotine(val);
-                           if (val < minNicotine) setMinNicotine(val);
-                         }} 
-                         unit="mg" 
-                       />
-                     </div>
-                   </div>
-
-                   {/* Catrame Section */}
-                   <div className="flex flex-col items-center">
-                     <h4 className="text-[9px] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 mb-2">Catrame</h4>
-                     <div className="flex gap-2">
-                       <VerticalSlider 
-                         label="Min" min={1} max={10} step={1} 
-                         value={minTar} 
-                         onChange={(val) => {
-                           setMinTar(val);
-                           if (val > maxTar) setMaxTar(val);
-                         }} 
-                         unit="mg" color="bg-orange-500 dark:bg-orange-600" 
-                       />
-                       <VerticalSlider 
-                         label="Max" min={1} max={10} step={1} 
-                         value={maxTar} 
-                         onChange={(val) => {
-                           setMaxTar(val);
-                           if (val < minTar) setMinTar(val);
-                         }} 
-                         unit="mg" 
-                       />
-                     </div>
-                   </div>
-
-                   {/* CO Section */}
-                   <div className="flex flex-col items-center">
-                     <h4 className="text-[9px] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 mb-2">CO</h4>
-                     <div className="flex gap-2">
-                       <VerticalSlider 
-                         label="Min" min={1} max={10} step={1} 
-                         value={minCo} 
-                         onChange={(val) => {
-                           setMinCo(val);
-                           if (val > maxCo) setMaxCo(val);
-                         }} 
-                         unit="mg" color="bg-orange-500 dark:bg-orange-600" 
-                       />
-                       <VerticalSlider 
-                         label="Max" min={1} max={10} step={1} 
-                         value={maxCo} 
-                         onChange={(val) => {
-                           setMaxCo(val);
-                           if (val < minCo) setMinCo(val);
-                         }} 
-                         unit="mg" 
-                       />
-                     </div>
-                   </div>
-                 </div>
               </section>
             )}
           </div>

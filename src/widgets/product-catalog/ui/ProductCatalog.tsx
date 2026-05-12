@@ -32,7 +32,8 @@ export const ProductCatalog: React.FC = () => {
     maxCo,
     minNicotine,
     minTar,
-    minCo
+    minCo,
+    showEmissions
   } = useCatalogFilterStore(useShallow(state => ({
     searchTerm: state.searchTerm,
     sortOption: state.sortOption,
@@ -44,7 +45,8 @@ export const ProductCatalog: React.FC = () => {
     maxCo: state.maxCo,
     minNicotine: state.minNicotine,
     minTar: state.minTar,
-    minCo: state.minCo
+    minCo: state.minCo,
+    showEmissions: state.showEmissions
   })));
   
   const products = useCatalogDataStore(state => state.products);
@@ -101,6 +103,7 @@ export const ProductCatalog: React.FC = () => {
             sortOption={sortOption}
             initialOffset={listScrollPosition}
             isLoading={isInitialLoading}
+            showEmissions={showEmissions}
             onScrollUpdate={(offset) => { if(!isDetailView) setListScrollPosition(offset); }}
           />
         </div>

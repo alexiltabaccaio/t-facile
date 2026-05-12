@@ -14,6 +14,7 @@ interface CatalogFilterState {
   minNicotine: number;
   minTar: number;
   minCo: number;
+  showEmissions: boolean;
   actions: {
     setSearchTerm: (term: string) => void;
     setSortOption: (option: SortOption) => void;
@@ -27,6 +28,7 @@ interface CatalogFilterState {
     setMinNicotine: (min: number) => void;
     setMinTar: (min: number) => void;
     setMinCo: (min: number) => void;
+    setShowEmissions: (show: boolean) => void;
   };
 }
 
@@ -47,6 +49,7 @@ export const useCatalogFilterStore = create<CatalogFilterState>((set) => ({
   minNicotine: 0.1,
   minTar: 1,
   minCo: 1,
+  showEmissions: false,
   actions: {
     setSearchTerm: (searchTerm) => set({ searchTerm }),
     setSortOption: (sortOption) => set({ sortOption }),
@@ -60,6 +63,7 @@ export const useCatalogFilterStore = create<CatalogFilterState>((set) => ({
     setMinNicotine: (minNicotine) => set({ minNicotine }),
     setMinTar: (minTar) => set({ minTar }),
     setMinCo: (minCo) => set({ minCo }),
+    setShowEmissions: (showEmissions) => set({ showEmissions }),
   },
 }));
 

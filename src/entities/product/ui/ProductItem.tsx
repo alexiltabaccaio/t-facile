@@ -13,16 +13,17 @@ interface ProductItemProps {
   searchKeywords: string[];
   style?: React.CSSProperties;
   sortKey: SortKey;
+  showEmissions: boolean;
 }
 
 
 
-const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywords, style, sortKey }) => {
+const ProductItem: React.FC<ProductItemProps> = ({ product, onClick, searchKeywords, style, sortKey, showEmissions: showEmissionsProp }) => {
   const { t } = useTranslation();
   const formattedPrice = `€ ${product.pricing.currentPrice.toFixed(2).replace('.', ',')}`;
   const isRetired = product.lifecycle.status === 'Radiato';
   const isOutOfCatalog = product.lifecycle.status === 'Fuori Catalogo';
-  const showEmissions = ['nicotine', 'tar', 'co'].includes(sortKey) && product.emissions;
+  const showEmissions = (showEmissionsProp || ['nicotine', 'tar', 'co'].includes(sortKey)) && product.emissions;
 
   const localizedCategory = t(`catalog.categories.${product.identity.category}`, { defaultValue: product.identity.category });
   const localizedPackage = formatPackage(product.identity.package, product.identity.packageInfo, t);
