@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { ParsedPDFResult } from '../api/pdfAnalyzer';
 import { saveParsedDataToFirestore } from '../api/dbSyncer';
 import { Product } from '../../index';
-import { Listino, fetchListini, fetchNews, markNewsAsAnalyzed } from '../api/admApiService';
+import { Listino, fetchListini, fetchNews, markNewsAsAnalyzed, downloadListinoAsFile } from '../api/admApiService';
 import { processListiniBatch } from '../api/admProcessor';
 import { getErrorMessage } from '@/shared/lib/utils/errorUtils';
 
@@ -45,6 +45,7 @@ interface ADMSyncState {
       skipNotifications?: boolean;
     }) => Promise<void>;
     cancelStaging: () => void;
+    downloadSelectedListini: () => Promise<void>;
   };
 }
 
@@ -198,6 +199,37 @@ export const useADMSyncStore = create<ADMSyncState>((set, get) => ({
 
     cancelStaging: () => {
       set({ processedData: null, currentNews: null });
+    },
+    
+    downloadSelectedListini: async () => {
+      const { availableUpdates } = get();
+      const selected = availableUpdates.filter(u => u.selected);
+      if (selected.length === 0) return;
+
+      set({ isProcessing: true, statusMsg: "admin.auto.downloading" });
+      try {
+        for (const listino of selected) {
+          const file = await downloadListinoAsFile(listino);
+          const url = window.URL.createObjectURL(file);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = file.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          
+          // Ritardo di 1.5s tra un download e l'altro per evitare blocchi o limitazioni server (rate limiting)
+          if (selected.length > 1) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          }
+        }
+      } catch (err: unknown) {
+        console.error(err);
+        set({ error: getErrorMessage(err) || "Errore durante il download dei file." });
+      } finally {
+        set({ isProcessing: false, statusMsg: "" });
+      }
     }
   }
 }));

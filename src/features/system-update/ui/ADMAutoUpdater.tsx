@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Loader2, ArrowRight, XCircle, AlertTriangle, RefreshCw, Download } from 'lucide-react';
 import { 
   useADMSyncStore, 
   useADMSyncActions, 
@@ -42,7 +42,8 @@ export const ADMAutoUpdater: React.FC = () => {
     processSelectedListini,
     finalSaveToDatabase,
     cancelStaging,
-    cancelProcessing
+    cancelProcessing,
+    downloadSelectedListini
   } = useADMSyncActions();
 
   // Selected from Catalog Stores to decouple it from ADM Sync Store logic
@@ -72,21 +73,56 @@ export const ADMAutoUpdater: React.FC = () => {
   const isMySuccess = success && !isProcessing && !currentNews;
   const isMyError = error && !isProcessing && !currentNews;
 
+  const hasUpdates = availableUpdates.length > 0 && availableUpdates[0].type !== 'Novità' && !isProcessing && !processedData;
+
   return (
     <div className="bg-blue-50 dark:bg-blue-900/5 border border-blue-100 dark:border-blue-900/20 rounded-2xl p-4 lg:p-6 shadow-sm w-full mb-2 transition-all">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
-        <button 
-          onClick={checkUpdates}
-          disabled={isChecking || isProcessing}
-          className="w-full px-6 py-3 bg-blue-600 text-white font-black text-[10px] sm:text-xs rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-widest"
-        >
-          {isChecking ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              {t('admin.auto.checking')}
-            </>
-          ) : t('admin.auto.search')}
-        </button>
+        {hasUpdates ? (
+          <div className="flex w-full overflow-hidden rounded-xl shadow-lg shadow-blue-500/20">
+            <button 
+              onClick={processSelectedListini}
+              disabled={availableUpdates.filter(u => u.selected).length === 0}
+              className="flex-1 px-6 py-3 bg-blue-600 text-white font-black text-[10px] sm:text-xs hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-widest border-r border-blue-500/40"
+            >
+              {t('admin.auto.analyzeCount', { count: availableUpdates.filter(u => u.selected).length })}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={downloadSelectedListini}
+              disabled={availableUpdates.filter(u => u.selected).length === 0 || isProcessing}
+              className="w-12 sm:w-14 bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50 flex items-center justify-center border-r border-blue-500/40 group"
+              title={t('admin.auto.download')}
+            >
+              <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            </button>
+            <button
+              onClick={checkUpdates}
+              disabled={isChecking || isProcessing}
+              className="w-12 sm:w-14 bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50 flex items-center justify-center group"
+              title={t('admin.auto.search')}
+            >
+              {isChecking ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+              )}
+            </button>
+          </div>
+        ) : (
+          <button 
+            onClick={checkUpdates}
+            disabled={isChecking || isProcessing}
+            className="w-full px-6 py-3 bg-blue-600 text-white font-black text-[10px] sm:text-xs rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-widest"
+          >
+            {isChecking ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                {t('admin.auto.checking')}
+              </>
+            ) : t('admin.auto.search')}
+          </button>
+        )}
       </div>
 
       {/* Processing Status Area */}
@@ -183,15 +219,6 @@ export const ADMAutoUpdater: React.FC = () => {
       {availableUpdates.length > 0 && availableUpdates[0].type !== 'Novità' && !isProcessing && !processedData && (
         <div className="mt-4 flex flex-col">
           <div className="mb-3 space-y-4">
-            <button 
-              onClick={processSelectedListini}
-              disabled={availableUpdates.filter(u => u.selected).length === 0}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 shadow-md disabled:opacity-50 transition-all uppercase tracking-widest"
-            >
-              {t('admin.auto.analyzeCount', { count: availableUpdates.filter(u => u.selected).length })}
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
             <div className="flex justify-between items-center px-1">
               <button 
                 onClick={toggleAll}

@@ -170,7 +170,9 @@
       "analyzeCount": "Analizza {{count}} listini con IA",
       "deselectAll": "Deseleziona tutto",
       "selectAll": "Seleziona tutto",
-      "selectedCount": "{{count}} selezionati"
+      "selectedCount": "{{count}} selezionati",
+      "download": "Scarica i PDF selezionati",
+      "downloading": "Download in corso..."
     },
     "news": {
       "title": "Scanner Novità ADM",
