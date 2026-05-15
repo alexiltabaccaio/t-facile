@@ -28,18 +28,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const isCatalogRoute = location.pathname === '/' || location.pathname.startsWith('/catalog');
   const isListView = isCatalogRoute;
 
-  const [showExperimentalBanner, setShowExperimentalBanner] = useState(false);
-
-  useEffect(() => {
-    const isDismissed = localStorage.getItem('hideExperimentalBanner');
-    if (isDismissed !== 'true') {
-      setShowExperimentalBanner(true);
-    }
-  }, []);
+  const [showExperimentalBanner, setShowExperimentalBanner] = useState(true);
 
   const dismissBanner = () => {
     setShowExperimentalBanner(false);
-    localStorage.setItem('hideExperimentalBanner', 'true');
   };
 
   return (

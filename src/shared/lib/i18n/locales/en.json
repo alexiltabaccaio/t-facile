@@ -58,8 +58,8 @@
       "offline": "OFFLINE"
     },
     "banner": {
-      "experimental": "Experimental version.",
-      "verify": "Always verify the source of information.",
+      "experimental": "Database not updated.",
+      "verify": "Thank you for participating in the tests.",
       "close": "Close alert"
     }
   },
@@ -286,7 +286,8 @@
     "submitting": "Sending...",
     "footerNote": "Your report will help improve the app for all tobacconists.",
     "error": "An error occurred during submission. Please try again later.",
-    "loginRequired": "You must be logged in to send a report."
+    "loginRequired": "You must be logged in to send a report.",
+    "testEnded": "The testing period has ended. Reporting is disabled."
   },
   "productDetail": {
     "advancedInfo": "Advanced Information",

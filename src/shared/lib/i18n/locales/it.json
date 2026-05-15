@@ -58,8 +58,8 @@
       "offline": "OFFLINE"
     },
     "banner": {
-      "experimental": "App in fase sperimentale.",
-      "verify": "Verifica sempre la fonte delle informazioni.",
+      "experimental": "Database non aggiornato.",
+      "verify": "Grazie per aver partecipato ai test.",
       "close": "Chiudi avviso"
     }
   },
@@ -288,7 +288,8 @@
     "submitting": "Invio in corso...",
     "footerNote": "La tua segnalazione aiuterà a migliorare l'app per tutti i tabaccai.",
     "error": "Si è verificato un errore durante l'invio. Riprova più tardi.",
-    "loginRequired": "Devi effettuare l'accesso per poter inviare una segnalazione."
+    "loginRequired": "Devi effettuare l'accesso per poter inviare una segnalazione.",
+    "testEnded": "Il periodo di test è terminato. L'invio di segnalazioni è disabilitato."
   },
   "productDetail": {
     "advancedInfo": "Informazioni Avanzate",
